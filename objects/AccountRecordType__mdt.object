@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This metadata is for account recordtypes</description>
+    <fields>
+        <fullName>RecordTypeId__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>RecordTypeId</label>
+        <length>18</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>AccountRecordType</label>
+    <pluralLabel>AccountRecordTypes</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

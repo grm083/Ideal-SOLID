@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>A custom metadata record set that stores the mapping between Business Rule records and the objects over which various rules are governed.  The fields provided are primarily relational</description>
+    <fields>
+        <fullName>Business_Rule__c</fullName>
+        <description>The field name of the Business Rule that compared against other records</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Business Rule</label>
+        <length>255</length>
+        <required>true</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Case</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Priority_Value__c</fullName>
+        <description>The priority value (used for sorting of the listview only)</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Priority Value</label>
+        <length>5</length>
+        <required>true</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Quote__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Quote</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Business Rule Field Mapping</label>
+    <listViews>
+        <fullName>Mapping_Overview</fullName>
+        <columns>DeveloperName</columns>
+        <columns>MasterLabel</columns>
+        <columns>Priority_Value__c</columns>
+        <columns>Business_Rule__c</columns>
+        <columns>Case__c</columns>
+        <columns>Quote__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>Mapping Overview</label>
+    </listViews>
+    <pluralLabel>Business Rule Field Mappings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

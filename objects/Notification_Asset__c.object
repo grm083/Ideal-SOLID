@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Notification Asset object to hold asset and service status data</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>Acorn_SBID__c</fullName>
+        <description>To identify the specific component associated to the integrated data (i.e., Pickup rather than the holistic 8yd T DMP)
+This field will reflect Service baseline associated with asset</description>
+        <externalId>false</externalId>
+        <label>Service Baseline</label>
+        <precision>18</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>AssetId__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Asset Detail for which notification is being sent</description>
+        <label>Asset Name</label>
+        <referenceTo>Asset</referenceTo>
+        <relationshipLabel>Notification Assets</relationshipLabel>
+        <relationshipName>Notification_Assets</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>External_Reference__c</fullName>
+        <description>External field for SSIS</description>
+        <externalId>false</externalId>
+        <label>External Reference</label>
+        <length>20</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Frequency__c</fullName>
+        <externalId>false</externalId>
+        <formula>AssetId__r.Schedule__c</formula>
+        <label>Frequency</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Is_Eligible_For_Notification__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Field to hold flag whether asset is eligble for notification or not.</description>
+        <label>Is Eligible For Notification</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Quantity__c</fullName>
+        <description>Quantity on Asset</description>
+        <externalId>false</externalId>
+        <label>Quantity</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_Quantity__c</fullName>
+        <description>Quantity provided by OCS</description>
+        <externalId>false</externalId>
+        <label>Service Quantity</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_StatusId__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <description>Service Status associated with asset</description>
+        <label>Service Status</label>
+        <referenceTo>Service_Status__c</referenceTo>
+        <relationshipLabel>Notification Assets</relationshipLabel>
+        <relationshipName>Notification_Assets</relationshipName>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Status_Date_Local_Time__c</fullName>
+        <description>Status Date formula field  for local date time</description>
+        <externalId>false</externalId>
+        <formula>IF(OR(  ISBLANK(  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c ),ISBLANK(Status_Date__c) ),
+&quot;&quot;,
+MID( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 6, 2 ) &amp; &quot;/&quot; &amp;
+MID( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 9, 2 ) &amp; &quot;/&quot; &amp;
+LEFT( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 4 ) &amp; &quot; &quot; &amp;
+TEXT(
+IF(
+OR(
+VALUE( MID( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 12, 2 ) ) = 0,
+VALUE( MID( TEXT( Status_Date__c + Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 12, 2 ) ) = 12
+),
+12,
+VALUE( MID( TEXT( Status_Date__c + Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 12, 2 ) )
+-
+IF(
+VALUE( MID( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c /24 ), 12, 2 ) ) &lt; 12,
+0,
+12
+)
+)
+)
+&amp;&quot;:&quot;&amp;
+MID( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 15, 2 )
+&amp;&quot; &quot;&amp;
+IF(
+VALUE( MID( TEXT( Status_Date__c +  Service_StatusId__r.Location__r.tz__UTC_Offset_F__c  /24 ), 12, 2 ) ) &lt; 12,
+&quot;AM&quot;,
+&quot;PM&quot;
+)
+&amp; &quot; &quot; &amp;
+IF( NOT(ISBLANK( Service_StatusId__r.Location__r.tz__Timezone_F__c )), Service_StatusId__r.Location__r.tz__Timezone_F__c ,&quot;&quot;)
+)</formula>
+        <label>Status Date Local Time</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Status_Date__c</fullName>
+        <label>Status Date</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <description>To hold Hauler status received</description>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <length>255</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sub_Status__c</fullName>
+        <description>To hold  specific exception sub-type received</description>
+        <externalId>false</externalId>
+        <label>Sub Status</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Notification Asset</label>
+    <nameField>
+        <displayFormat>NA-{0000000}</displayFormat>
+        <label>Notification Asset Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Notification Assets</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

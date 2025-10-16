@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This will store the SERVICE CHARGE TYPE CODE that will be used to send to price only API. This will be fetched with the combination of line of business, service type, market area code, product code.</description>
+    <fields>
+        <fullName>Line_of_business__c</fullName>
+        <description>This will store Line of business. EX : Roll Off or Commercial.</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Line of business</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Market_area_code__c</fullName>
+        <description>This will store market area code. EX: Closed or Open.</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Market area code</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Product_code__c</fullName>
+        <description>This will store product code from SFDC.</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Product code</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Product_name__c</fullName>
+        <description>This will store Product name from SFDC.</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Product name</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_charge_code__c</fullName>
+        <description>This will store the code for generated from Acorn. This need to be updated when updated in acorn.</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Service charge code</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_charge_name__c</fullName>
+        <description>This store service charge name.</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Service charge name</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_type__c</fullName>
+        <description>This will store service type. Ex : TEMP or PERM</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Service type</label>
+        <length>250</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>serviceChargesCodeMapping</label>
+    <listViews>
+        <fullName>Service_charge_code_mapping</fullName>
+        <columns>DeveloperName</columns>
+        <columns>Service_charge_code__c</columns>
+        <columns>Service_charge_name__c</columns>
+        <columns>Product_code__c</columns>
+        <columns>Product_name__c</columns>
+        <columns>Service_type__c</columns>
+        <columns>Line_of_business__c</columns>
+        <columns>Market_area_code__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>Service charge code mapping</label>
+    </listViews>
+    <pluralLabel>serviceChargesCodeMappings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

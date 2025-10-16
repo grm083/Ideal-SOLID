@@ -1,0 +1,1469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>Active__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>Active</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>All_3rd_Party_Vendor__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>All 3P Parent &amp; Non-Parent Vendors</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>All_WM_Vendors__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>All WM Parent Vendors</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Applicable_Priority__c</fullName>
+        <label>Applicable Priority</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>P1</fullName>
+                    <default>false</default>
+                    <label>P1</label>
+                </value>
+                <value>
+                    <fullName>P2</fullName>
+                    <default>false</default>
+                    <label>P2</label>
+                </value>
+                <value>
+                    <fullName>P3</fullName>
+                    <default>false</default>
+                    <label>P3</label>
+                </value>
+                <value>
+                    <fullName>P4</fullName>
+                    <default>false</default>
+                    <label>P4</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Child_VID_Check_Include_Uncheck_Exclude__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Check to Include, Uncheck to Exclude</description>
+        <label>VID Check Include,Uncheck Exclude</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Child_VID_Listed__c</fullName>
+        <label>Child VID Listed</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Customer_All_Canada__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>All And Not All For Canada Clients</description>
+        <label>All Canadian Customers</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Customer_All__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>All And Not All</description>
+        <label>All US Customers</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Customer_Canada__c</fullName>
+        <inlineHelpText>List client 3-character codes, separated by commas, with no spaces between them.</inlineHelpText>
+        <label>Canada Listed Customers</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Customer_Included_Canada__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Customer Included and Excluded for Canada Clients</description>
+        <label>CA Check to Include, Uncheck to Exclude</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Customer_Included__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Customer Included and Excluded</description>
+        <label>US Check to Include, Uncheck to Exclude</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Customer__c</fullName>
+        <inlineHelpText>List client 3-character codes, separated by commas, with no spaces between them.</inlineHelpText>
+        <label>US Listed Customers</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>7</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Duration__c</fullName>
+        <description>Duration for STP criteria. values as Temp, Perm</description>
+        <label>Duration</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Duration</valueSetName>
+        </valueSet>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Eligible_Vendor__c</fullName>
+        <label>Eligible Vendor</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>WM</fullName>
+                    <default>false</default>
+                    <label>WM</label>
+                </value>
+                <value>
+                    <fullName>Third Party</fullName>
+                    <default>false</default>
+                    <label>Third Party</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Equipment__c</fullName>
+        <label>Equipment</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Open Top</fullName>
+                    <default>false</default>
+                    <label>Open Top</label>
+                </value>
+                <value>
+                    <fullName>Compactor</fullName>
+                    <default>false</default>
+                    <label>Compactor</label>
+                </value>
+                <value>
+                    <fullName>Dumpster</fullName>
+                    <default>false</default>
+                    <label>Dumpster</label>
+                </value>
+                <value>
+                    <fullName>Toter</fullName>
+                    <default>false</default>
+                    <label>Toter</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Frequency__c</fullName>
+        <label>Frequency</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>OC</fullName>
+                    <default>false</default>
+                    <label>On-Call</label>
+                </value>
+                <value>
+                    <fullName>SOC</fullName>
+                    <default>false</default>
+                    <label>Scheduled On-Call</label>
+                </value>
+                <value>
+                    <fullName>SCH</fullName>
+                    <default>false</default>
+                    <label>Scheduled</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>MAS__c</fullName>
+        <label>WM Market Areas</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>K00185</fullName>
+                    <default>false</default>
+                    <label>Capitol Area</label>
+                </value>
+                <value>
+                    <fullName>K00129</fullName>
+                    <default>false</default>
+                    <label>Great Lakes Area</label>
+                </value>
+                <value>
+                    <fullName>K00117</fullName>
+                    <default>false</default>
+                    <label>Heartland Area</label>
+                </value>
+                <value>
+                    <fullName>K00136</fullName>
+                    <default>false</default>
+                    <label>Upper Midwest Area</label>
+                </value>
+                <value>
+                    <fullName>K00199</fullName>
+                    <default>false</default>
+                    <label>WM of Canada</label>
+                </value>
+                <value>
+                    <fullName>K00114</fullName>
+                    <default>false</default>
+                    <label>WM of Florida</label>
+                </value>
+                <value>
+                    <fullName>K00125</fullName>
+                    <default>false</default>
+                    <label>WM of Four Corners</label>
+                </value>
+                <value>
+                    <fullName>K00152</fullName>
+                    <default>false</default>
+                    <label>WM of Greater Mid Atlantic</label>
+                </value>
+                <value>
+                    <fullName>K00149</fullName>
+                    <default>false</default>
+                    <label>WM of Gulf Coast</label>
+                </value>
+                <value>
+                    <fullName>K00181</fullName>
+                    <default>false</default>
+                    <label>WM of Mid-South</label>
+                </value>
+                <value>
+                    <fullName>K00113</fullName>
+                    <default>false</default>
+                    <label>WM of New England</label>
+                </value>
+                <value>
+                    <fullName>K00164</fullName>
+                    <default>false</default>
+                    <label>WM of Northern California and Nevada</label>
+                </value>
+                <value>
+                    <fullName>K00133</fullName>
+                    <default>false</default>
+                    <label>WM of Pacific Northwest BC</label>
+                </value>
+                <value>
+                    <fullName>K00126</fullName>
+                    <default>false</default>
+                    <label>WM of South Atlantic</label>
+                </value>
+                <value>
+                    <fullName>K00175</fullName>
+                    <default>false</default>
+                    <label>WM of Southern California</label>
+                </value>
+                <value>
+                    <fullName>K00139</fullName>
+                    <default>false</default>
+                    <label>WM of Texas Oklahoma</label>
+                </value>
+                <value>
+                    <fullName>K00069</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Consolidations</label>
+                </value>
+                <value>
+                    <fullName>K00033</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Corporate Office</label>
+                </value>
+                <value>
+                    <fullName>K00232</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Energy and Environmental Services</label>
+                </value>
+                <value>
+                    <fullName>K00070</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Environmental Legacy Management Group</label>
+                </value>
+                <value>
+                    <fullName>K00087</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Inactives</label>
+                </value>
+                <value>
+                    <fullName>K00226</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Investments and Other Business</label>
+                </value>
+                <value>
+                    <fullName>K00089</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Legal Entity</label>
+                </value>
+                <value>
+                    <fullName>K00244</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Other Corporate</label>
+                </value>
+                <value>
+                    <fullName>K00215</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Recycle America Services</label>
+                </value>
+                <value>
+                    <fullName>K00072</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>WM Renewable Energy</label>
+                </value>
+                <value>
+                    <fullName>K00236</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>WM SBS</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Market_Type__c</fullName>
+        <inlineHelpText>If Scode is one of the following (Franchised, City, Utility, CAM, Landlord) then the market is considered CLOSED.  Otherwise, the market is considered OPEN.</inlineHelpText>
+        <label>Market Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Open</fullName>
+                    <default>false</default>
+                    <label>Open</label>
+                </value>
+                <value>
+                    <fullName>Closed</fullName>
+                    <default>false</default>
+                    <label>Closed</label>
+                </value>
+                <value>
+                    <fullName>Any</fullName>
+                    <default>false</default>
+                    <label>Any</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Material__c</fullName>
+        <label>Material</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Trash</fullName>
+                    <default>false</default>
+                    <label>Trash</label>
+                </value>
+                <value>
+                    <fullName>Cardboard</fullName>
+                    <default>false</default>
+                    <label>Cardboard</label>
+                </value>
+                <value>
+                    <fullName>Construction / Demolition</fullName>
+                    <default>false</default>
+                    <label>Construction / Demolition</label>
+                </value>
+                <value>
+                    <fullName>Food Waste</fullName>
+                    <default>false</default>
+                    <label>Food Waste</label>
+                </value>
+                <value>
+                    <fullName>Single Stream Recycling</fullName>
+                    <default>false</default>
+                    <label>Single Stream Recycling</label>
+                </value>
+                <value>
+                    <fullName>Metal</fullName>
+                    <default>false</default>
+                    <label>Metal</label>
+                </value>
+                <value>
+                    <fullName>Bulk Material</fullName>
+                    <default>false</default>
+                    <label>Bulk Material</label>
+                </value>
+                <value>
+                    <fullName>Concrete</fullName>
+                    <default>false</default>
+                    <label>Concrete</label>
+                </value>
+                <value>
+                    <fullName>Wood</fullName>
+                    <default>false</default>
+                    <label>Wood</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Parent_Account__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <label>Parent Account</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Client</value>
+            </filterItems>
+            <filterItems>
+                <field>Account.Status__c</field>
+                <operation>equals</operation>
+                <value>Active</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>STP Criterias</relationshipLabel>
+        <relationshipName>STP_Criterias</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Parent_Non_Parent_VID_s__c</fullName>
+        <description>3rd Party Parent and Non Parent VID(s)</description>
+        <label>3P Listed Parent &amp; Non-Parent Vendors</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Parent_VID__c</fullName>
+        <externalId>false</externalId>
+        <label>WM Listed Parent VID(s)</label>
+        <length>20</length>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>STP_Type__c</fullName>
+        <label>STP Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Full STP</fullName>
+                    <default>false</default>
+                    <label>Full STP</label>
+                </value>
+                <value>
+                    <fullName>Partial STP</fullName>
+                    <default>false</default>
+                    <label>Partial STP</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Service_Type__c</fullName>
+        <label>Service Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>New Service Case</fullName>
+                    <default>false</default>
+                    <label>New Service Case</label>
+                </value>
+                <value>
+                    <fullName>Add Change</fullName>
+                    <default>false</default>
+                    <label>Add Change</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>WM_Vendor__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>WM Vendor Check Include,Uncheck Exclude</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Zero_Cost_Price_Allowed__c</fullName>
+        <label>Zero Cost/Price Allowed</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Delivery</fullName>
+                    <default>false</default>
+                    <label>Delivery</label>
+                </value>
+                <value>
+                    <fullName>Container Service Charge</fullName>
+                    <default>false</default>
+                    <label>Container Service Charge</label>
+                </value>
+                <value>
+                    <fullName>Disposal</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Disposal</label>
+                </value>
+                <value>
+                    <fullName>Extra Pickup</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Extra Pickup</label>
+                </value>
+                <value>
+                    <fullName>Haul</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Haul</label>
+                </value>
+                <value>
+                    <fullName>Pickup</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Pickup</label>
+                </value>
+                <value>
+                    <fullName>Relocation</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Relocation</label>
+                </value>
+                <value>
+                    <fullName>Removal</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Removal</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <label>STP Criteria</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>Active__c</columns>
+        <columns>NAME</columns>
+        <columns>RECORDTYPE</columns>
+        <columns>Service_Type__c</columns>
+        <columns>Equipment__c</columns>
+        <columns>Duration__c</columns>
+        <columns>Frequency__c</columns>
+        <columns>Material__c</columns>
+        <columns>Customer_Included__c</columns>
+        <columns>Customer_All__c</columns>
+        <columns>Customer_Included_Canada__c</columns>
+        <columns>Customer_All_Canada__c</columns>
+        <columns>Parent_Account__c</columns>
+        <columns>Zero_Cost_Price_Allowed__c</columns>
+        <columns>Market_Type__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <listViews>
+        <fullName>Client_Pricing_Exemption</fullName>
+        <columns>Active__c</columns>
+        <columns>NAME</columns>
+        <columns>Parent_Account__c</columns>
+        <columns>Zero_Cost_Price_Allowed__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>RECORDTYPE</field>
+            <operation>equals</operation>
+            <value>STP_Criteria__c.Client_Pricing_Exemption</value>
+        </filters>
+        <label>Client Pricing Exemption</label>
+    </listViews>
+    <listViews>
+        <fullName>Partial_STP</fullName>
+        <columns>NAME</columns>
+        <columns>Service_Type__c</columns>
+        <columns>Equipment__c</columns>
+        <columns>Material__c</columns>
+        <columns>Frequency__c</columns>
+        <columns>Duration__c</columns>
+        <columns>Market_Type__c</columns>
+        <columns>Customer_All_Canada__c</columns>
+        <columns>Customer_All__c</columns>
+        <columns>All_3rd_Party_Vendor__c</columns>
+        <columns>All_WM_Vendors__c</columns>
+        <columns>Active__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>STP_Type__c</field>
+            <operation>equals</operation>
+            <value>Partial STP</value>
+        </filters>
+        <label>Partial STP</label>
+    </listViews>
+    <listViews>
+        <fullName>STP_Eligibility</fullName>
+        <columns>Active__c</columns>
+        <columns>NAME</columns>
+        <columns>Service_Type__c</columns>
+        <columns>STP_Type__c</columns>
+        <columns>Market_Type__c</columns>
+        <columns>Duration__c</columns>
+        <columns>Equipment__c</columns>
+        <columns>Material__c</columns>
+        <columns>Customer_Included__c</columns>
+        <columns>Customer_All__c</columns>
+        <columns>Customer__c</columns>
+        <columns>Customer_Included_Canada__c</columns>
+        <columns>Customer_All_Canada__c</columns>
+        <columns>Customer_Canada__c</columns>
+        <columns>Parent_VID__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>RECORDTYPE</field>
+            <operation>equals</operation>
+            <value>STP_Criteria__c.STP_Eligibility</value>
+        </filters>
+        <label>STP Eligibility</label>
+    </listViews>
+    <nameField>
+        <label>STP Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>STP Criterias</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Client_Pricing_Exemption</fullName>
+        <active>true</active>
+        <label>Client Pricing Exemption</label>
+        <picklistValues>
+            <picklist>Applicable_Priority__c</picklist>
+            <values>
+                <fullName>P1</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>P2</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>P3</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>P4</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Duration__c</picklist>
+            <values>
+                <fullName>PERM</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SEAS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>TEMP</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Eligible_Vendor__c</picklist>
+            <values>
+                <fullName>Third Party</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WM</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Equipment__c</picklist>
+            <values>
+                <fullName>Compactor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dumpster</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Open Top</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Toter</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Frequency__c</picklist>
+            <values>
+                <fullName>OC</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SCH</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SOC</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>MAS__c</picklist>
+            <values>
+                <fullName>K00113</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00114</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00117</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00125</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00126</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00129</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00133</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00136</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00139</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00149</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00152</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00164</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00175</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00181</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00185</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00199</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Market_Type__c</picklist>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Open</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Material__c</picklist>
+            <values>
+                <fullName>Bulk Material</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cardboard</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Construction %2F Demolition</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Food Waste</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Metal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Single Stream Recycling</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Trash</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>STP_Type__c</picklist>
+            <values>
+                <fullName>Full STP</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Partial STP</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Service_Type__c</picklist>
+            <values>
+                <fullName>Add Change</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New Service Case</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Zero_Cost_Price_Allowed__c</picklist>
+            <values>
+                <fullName>Container Service Charge</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Delivery</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>STP_Eligibility</fullName>
+        <active>true</active>
+        <label>STP Eligibility</label>
+        <picklistValues>
+            <picklist>Applicable_Priority__c</picklist>
+            <values>
+                <fullName>P1</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>P2</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>P3</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>P4</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Duration__c</picklist>
+            <values>
+                <fullName>PERM</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SEAS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>TEMP</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Eligible_Vendor__c</picklist>
+            <values>
+                <fullName>Third Party</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WM</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Equipment__c</picklist>
+            <values>
+                <fullName>Compactor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dumpster</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Open Top</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Toter</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Frequency__c</picklist>
+            <values>
+                <fullName>OC</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SCH</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SOC</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>MAS__c</picklist>
+            <values>
+                <fullName>K00113</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00114</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00117</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00125</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00126</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00129</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00133</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00136</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00139</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00149</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00152</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00164</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00175</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00181</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00185</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>K00199</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Market_Type__c</picklist>
+            <values>
+                <fullName>Any</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Open</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Material__c</picklist>
+            <values>
+                <fullName>Bulk Material</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cardboard</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Concrete</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Construction %2F Demolition</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Food Waste</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Metal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Single Stream Recycling</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Trash</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Wood</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>STP_Type__c</picklist>
+            <values>
+                <fullName>Full STP</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Partial STP</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Service_Type__c</picklist>
+            <values>
+                <fullName>Add Change</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New Service Case</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Zero_Cost_Price_Allowed__c</picklist>
+            <values>
+                <fullName>Container Service Charge</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Delivery</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <searchResultsAdditionalFields>Service_Type__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Duration__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Equipment__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Material__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Frequency__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Customer_Included__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Customer_All__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Customer__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>Canada_Customer_Not_Null_When_All_False</fullName>
+        <active>true</active>
+        <description>Canada Customer should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND( Customer_All_Canada__c  = false,  Customer_Canada__c  = null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If &quot;All Canadian Customers&quot; is unchecked, then Listed Customer(s) must be provided.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Canada_Customer_not_null_and_All_checked</fullName>
+        <active>true</active>
+        <description>Canada Customer should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND( Customer_All_Canada__c  = true,  Customer_Canada__c  != null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If All Canadian Customers is checked, then Canada Listed Customers must be blank.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Customer_Not_Null_When_All_is_False</fullName>
+        <active>true</active>
+        <description>Customer should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND( Customer_All__c  = false,  Customer__c  = null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If &quot;All US Customers&quot; is unchecked, then Listed Customer(s) must be provided.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Customer_Null_When_All_is_True</fullName>
+        <active>true</active>
+        <description>Customer should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND( Customer_All__c  = true,  Customer__c  != null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If All US Customers is checked, then US Listed Customers must be blank.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Exclude_All_Validation</fullName>
+        <active>true</active>
+        <description>Prevent Records From Having to Exclude All Customers</description>
+        <errorConditionFormula>AND(Customer_All__c  = true,  Customer_Included__c  = false, Customer_All_Canada__c = true, Customer_Included_Canada__c = false, RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>All US and all Canadian customers cannot be excluded.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Exclude_All_Vendor_Validation</fullName>
+        <active>true</active>
+        <description>Prevent Records From Having to Exclude All Vendors</description>
+        <errorConditionFormula>AND(All_WM_Vendors__c  = true,  WM_Vendor__c= false, All_3rd_Party_Vendor__c = true, Child_VID_Check_Include_Uncheck_Exclude__c = false, RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>All WM and 3rd Party vendors cannot be excluded.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Exclude_Canada_All_Validation</fullName>
+        <active>false</active>
+        <description>Prevent Canadian Records From Having to Exclude All Customers</description>
+        <errorConditionFormula>AND(Customer_All_Canada__c  = true,  Customer_Included_Canada__c  = false, RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>When excluding Canadian customers, only listed customers, not all customers, can be selected.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Market_area_is_required</fullName>
+        <active>true</active>
+        <description>When selecting WM vendors market area is required.</description>
+        <errorConditionFormula>AND(
+OR( 
+AND((WM_Vendor__c),(All_WM_Vendors__c) , ISBLANK( Parent_VID__c)), 
+AND(NOT((All_WM_Vendors__c)) , NOT(ISBLANK( Parent_VID__c )))
+),
+ (ISNULL( MAS__c ))
+)</errorConditionFormula>
+        <errorMessage>Please select market area.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>ParentVendor_Not_Null_When_All_is_False</fullName>
+        <active>true</active>
+        <description>Parent Vendor should not be blank in case All WM Parent Vendors is Unchecked</description>
+        <errorConditionFormula>AND( All_WM_Vendors__c  = false,  Parent_VID__c  = null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If &quot;All WM Parent Vendors&quot; is unchecked, then Listed WM Parent VID(s) must be provided.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Vendor3P_Not_Null_When_All_False</fullName>
+        <active>true</active>
+        <description>Third Party Vendor should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND(All_3rd_Party_Vendor__c = false,  Parent_Non_Parent_VID_s__c = null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If &quot;All 3P Parent &amp; Non-Parent Vendors&quot; is unchecked, then Listed 3P Listed Parent &amp; Non-Parent Vendors must be provided.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Vendor3P_not_null_and_All_checked</fullName>
+        <active>true</active>
+        <description>Third Party Vendor should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND( All_3rd_Party_Vendor__c = true,  Parent_Non_Parent_VID_s__c  != null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If All Third Party Vendors is checked, then Listed 3rd Party Vendors must be blank.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>WMParentVendor_Null_When_All_is_True</fullName>
+        <active>true</active>
+        <description>WM Parent Vendor should not be blank in case All is Unchecked</description>
+        <errorConditionFormula>AND( All_WM_Vendors__c  = true,  Parent_VID__c  != null,  RecordType.Name = &apos;STP Eligibility&apos;)</errorConditionFormula>
+        <errorMessage>If All WM Parent Vendor is checked, then Listed WM Parent Vendor must be blank.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>WM_Market_Area_Selection</fullName>
+        <active>true</active>
+        <description>WM Market Area must be selected when WM Vendor is selected</description>
+        <errorConditionFormula>AND( RecordType.Name = &apos;STP Eligibility&apos;,
+ NOT(ISNULL(MAS__c)) , WM_Vendor__c = false,  All_WM_Vendors__c  = true,  Parent_VID__c  = null )</errorConditionFormula>
+        <errorMessage>WM Market Area cannot be selected without selecting WM Vendor</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

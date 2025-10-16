@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This is metadata for the dashboard component column names, account record type</description>
+    <fields>
+        <fullName>Value__c</fullName>
+        <description>Field to place all the data comma separated in this.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Value</label>
+        <length>131072</length>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <label>Dashboard Component Data</label>
+    <pluralLabel>Dashboard Component Data</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>
