@@ -1,3 +1,0 @@
-<design:component>
-	<design:attribute name="sObjName" label="Page Name" description="Name of the record page where component is placed" />  
-</design:component>

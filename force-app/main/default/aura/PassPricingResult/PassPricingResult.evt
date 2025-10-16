@@ -1,3 +1,0 @@
-<aura:event type="COMPONENT" description="Passes state and productId into parent wrapper">
-    <aura:attribute name="isPricingAvailable" type="boolean" />
-</aura:event>

@@ -1,3 +1,0 @@
-<aura:component implements="lightning:availableforFlowActions">
-    <aura:attribute name="recordId" type="String" />
-</aura:component>

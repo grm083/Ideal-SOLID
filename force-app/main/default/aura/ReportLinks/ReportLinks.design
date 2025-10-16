@@ -1,4 +1,0 @@
-<design:component>
-	<design:attribute name="ShowAllLinks" label="Show All Report Links" />
-    <design:attribute name="Height" label="Height" />
-</design:component>

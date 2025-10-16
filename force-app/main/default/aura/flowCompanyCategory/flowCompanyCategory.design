@@ -1,5 +1,0 @@
-<design:component>
-	<design:attribute name="picklistValues" label="Picklist Values" description="Desired picklist values"/>
-    <design:attribute name="selectedValue" label="User Selection" description="Selected picklist value"/>
-    <design:attribute name="picklistName" label="Picklist Name" description="Picklist label on screen component" />
-</design:component>

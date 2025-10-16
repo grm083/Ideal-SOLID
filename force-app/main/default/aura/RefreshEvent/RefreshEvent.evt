@@ -1,3 +1,0 @@
-<aura:event type="APPLICATION" description="Refresh Model Window">  
-    <aura:attribute name="reload" type="boolean"/>
-</aura:event>

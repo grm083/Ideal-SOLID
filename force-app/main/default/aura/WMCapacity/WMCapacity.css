@@ -1,8 +1,0 @@
-.THIS .spins::after {
-    position: absolute;
-    content: 'Checking WM Capacity...';
-    width: 100%;
-    text-align: center;
-    top: calc(50% + 3em);
-    font-weight: bold;
-}
