@@ -1,0 +1,400 @@
+<template>
+    <!-- Lightning Message Service -->
+    <lightning-message-service
+        onmessage={handleReceiveMessage}
+        channel={lmsChannel}
+        scope="APPLICATION"
+    ></lightning-message-service>
+
+    <!-- Action Required Panel -->
+    <div class="slds-grid">
+        <div class="setHeight slds-truncate slds-col slds-scrollable">
+            <lightning-card class="slds-scrollable">
+                <!-- Main Spinner -->
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+                </template>
+
+                <!-- Action Required Header -->
+                <ul class="slds-list_inline">
+                    <template if:true={reqInfoMsg}>
+                        <li>
+                            <div class="slds-m-left_small">
+                                <lightning-icon
+                                    icon-name="action:info"
+                                    alternative-text="Required Information"
+                                    size="xx-small"
+                                    class="redicon"
+                                ></lightning-icon>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="slds-text-heading_medium slds-m-left_small">Required Information</div>
+                        </li>
+                        <li class="casemsg">
+                            <div class="slds-text-body_small slds-m-left_medium">{reqInfo}</div>
+                        </li>
+                    </template>
+                    <template if:false={reqInfoMsg}>
+                        <li>
+                            <div class="slds-m-left_small">
+                                <lightning-icon
+                                    icon-name="action:new_task"
+                                    alternative-text="Action Required"
+                                    size="xx-small"
+                                    class={actionIconClass}
+                                ></lightning-icon>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="slds-text-heading_medium slds-m-left_small">Action Required</div>
+                        </li>
+                        <template if:true={showMsgNTE}>
+                            <li class="NTEmsg">
+                                <div class="slds-text-body_medium slds-m-left_medium">{caseMsg}</div>
+                            </li>
+                        </template>
+                        <template if:false={showMsgNTE}>
+                            <li class="casemsg">
+                                <div class="slds-text-body_medium slds-m-left_medium">{caseMsg}</div>
+                            </li>
+                        </template>
+                    </template>
+                </ul>
+
+                <!-- Action Buttons -->
+                <ul class="slds-list_inline slds-float_right">
+                    <template if:true={displayMsg}>
+                        <!-- Multi Assets Button -->
+                        <template if:true={displayMultipleAssetCases}>
+                            <li>
+                                <div class="slds-m-right_medium">
+                                    <lightning-button
+                                        label="Multi Assets"
+                                        variant="brand"
+                                        onclick={handleUpdatedRelatedCases}
+                                    ></lightning-button>
+                                </div>
+                            </li>
+                        </template>
+
+                        <!-- Add Case Assets Button -->
+                        <template if:true={isAddCaseAsset}>
+                            <li>
+                                <div class="slds-m-right_small">
+                                    <lightning-button
+                                        label="Add Case Assets"
+                                        variant="brand"
+                                        onclick={handleAddCaseAsset}
+                                    ></lightning-button>
+                                </div>
+                            </li>
+                        </template>
+
+                        <!-- Progress Case Button -->
+                        <template if:true={isShowProgressCase}>
+                            <li>
+                                <div class="slds-m-right_small">
+                                    <lightning-button
+                                        label="Progress Case"
+                                        variant="brand"
+                                        onclick={handleShowProgressBtns}
+                                    ></lightning-button>
+                                </div>
+                            </li>
+                        </template>
+
+                        <!-- View Case Summary Button -->
+                        <template if:true={showViewCaseSummaryButton}>
+                            <li>
+                                <div class="slds-m-right_small">
+                                    <lightning-button
+                                        label={viewCaseSummaryLabel}
+                                        variant="brand"
+                                        class="btnMargin btnviewcasewdh"
+                                        onclick={handleShowCaseSummary}
+                                    ></lightning-button>
+                                </div>
+                            </li>
+                        </template>
+                    </template>
+
+                    <!-- Add Quote / View Quote Buttons -->
+                    <li>
+                        <div class="slds-m-right_medium">
+                            <template if:true={isAddQuote}>
+                                <lightning-button
+                                    label="Add Quote"
+                                    variant="brand"
+                                    disabled={disableAddQuote}
+                                    onclick={handleCreateQuote}
+                                ></lightning-button>
+                            </template>
+                            <template if:true={isOpportunityAdded}>
+                                <lightning-button
+                                    label="View Quote(s)"
+                                    variant="brand"
+                                    onclick={handleGoToQuote}
+                                ></lightning-button>
+                            </template>
+                        </div>
+                    </li>
+
+                    <!-- Create Pending Information Task Button -->
+                    <template if:false={isCaseClosed}>
+                        <li>
+                            <div class="slds-m-right_medium">
+                                <c-create-pending-information-task
+                                    case-id={recordId}
+                                ></c-create-pending-information-task>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </lightning-card>
+        </div>
+    </div>
+
+    <!-- Case Summary Modal -->
+    <template if:true={viewCaseSummary}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" style="position:fixed !important;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <div class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}
+                    ></lightning-button-icon>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        <b>{caseSummaryTitle}</b>
+                    </h2>
+
+                    <!-- Summary Header Table -->
+                    <table class="slds-table slds-p-around_medium">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="head slds-size_3-of-4">
+                                    <span class="slds-truncate">
+                                        Contact: <b>{caseSummaryContact}</b>
+                                    </span>
+                                </th>
+                                <th scope="col" class="head slds-size_1-of-4">
+                                    <span class="slds-truncate">
+                                        Reference#: <b>{caseSummaryReferenceNo}</b>
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <!-- Case Summary Table -->
+                    <table class="slds-table slds-table_bordered slds-table_striped">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="head slds-size_1-of-16">
+                                    <span class="slds-truncate">Select</span>
+                                </th>
+                                <th scope="col" class="head slds-size_3-of-16">
+                                    <span class="slds-truncate">Asset</span>
+                                </th>
+                                <th scope="col" class="head slds-size_3-of-16">
+                                    <span class="slds-truncate">SID</span>
+                                </th>
+                                <th scope="col" class="head slds-size_3-of-16">
+                                    <span class="slds-truncate">Material</span>
+                                </th>
+                                <th scope="col" class="head slds-size_3-of-16">
+                                    <span class="slds-truncate">Case Sub Type</span>
+                                </th>
+                                <th scope="col" class="head slds-size_3-of-16">
+                                    <span class="slds-truncate">SLA Date</span>
+                                </th>
+                                <th scope="col" class="head slds-size_3-of-16">
+                                    <span class="slds-truncate">Requested Date</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={caseSummary} for:item="caseItem" for:index="index">
+                                <tr key={caseItem.Id}>
+                                    <td class="cell">
+                                        <lightning-input
+                                            type="checkbox"
+                                            data-id={caseItem.Id}
+                                            data-index={index}
+                                            checked
+                                            onchange={handleCaseSelect}
+                                        ></lightning-input>
+                                    </td>
+                                    <td class="slds-size_3-of-16"><b>{caseItem.Asset.Name}</b></td>
+                                    <td class="slds-size_3-of-16"><b>{caseItem.Asset.Acorn_SID__c}</b></td>
+                                    <td class="slds-size_3-of-16 slds-cell-wrap"><b>{caseItem.Asset_Material__c}</b></td>
+                                    <td class="slds-size_3-of-16 slds-cell-wrap"><b>{caseItem.Case_Sub_Type__c}</b></td>
+                                    <td class="slds-size_3-of-16"><b>{caseItem.SLA_Service_DateTime__c}</b></td>
+                                    <td class="slds-size_3-of-16"><b>{caseItem.Service_Date_Text__c}</b></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        variant="brand"
+                        class="slds-float_left"
+                        label="W/O Instructions"
+                        onclick={handleOpenWorkOrderPopup}
+                    ></lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        class="slds-float_left"
+                        label="Work Order Updates"
+                        onclick={handleOpenCaseAssetPopup}
+                        disabled={woUpdatesDisabled}
+                    ></lightning-button>
+                    <template if:true={isTempVisible}>
+                        <lightning-button
+                            variant="brand"
+                            class="slds-float_left"
+                            label="Edit Approval Email"
+                            onclick={handleOpenEmailTemplatePopup}
+                        ></lightning-button>
+                    </template>
+                    <lightning-button
+                        variant="neutral"
+                        label="Cancel"
+                        onclick={handleCloseModal}
+                    ></lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Initiate W/O"
+                        disabled={initiateWoButton}
+                        onclick={handleInitiateWorkorder}
+                    ></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+
+    <!-- Work Order Instructions Modal -->
+    <template if:true={woInstructions}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCancelModal}
+                    ></lightning-button-icon>
+                    <h2 class="slds-text-heading_medium">Work Order Details</h2>
+                </div>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-input
+                        label="Onsite Contact Name"
+                        value={siteContact}
+                        onchange={handleSiteContactChange}
+                    ></lightning-input>
+                    <lightning-input
+                        type="tel"
+                        label="Onsite Contact Number"
+                        value={siteContactPhone}
+                        pattern="^[0-9_ ]*$"
+                        max-length="10"
+                        message-when-pattern-mismatch="Please enter 10 digit numbers only."
+                        onchange={handleSiteContactPhoneChange}
+                    ></lightning-input>
+                    <lightning-textarea
+                        label="Work Order Instructions"
+                        value={woInstructionsText}
+                        onchange={handleWoInstructionsChange}
+                    ></lightning-textarea>
+                    <lightning-input
+                        type="checkbox"
+                        label="By-Pass W/O"
+                        checked={isByPassWO}
+                        onchange={handleByPassWOChange}
+                    ></lightning-input>
+                    <div class="slds-align_absolute-center">
+                        <lightning-button
+                            label="Save"
+                            variant="brand"
+                            class="slds-m-top_medium"
+                            onclick={handleSaveWorkOrderDetails}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+
+    <!-- Email Template Comments Modal -->
+    <template if:true={caseEmailTemp}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCancelModal}
+                    ></lightning-button-icon>
+                    <h2 class="slds-text-heading_medium">Email Template Comments</h2>
+                </div>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-textarea
+                        label="Additional Comments"
+                        value={emailTemplateComments}
+                        onchange={handleEmailTemplateChange}
+                    ></lightning-textarea>
+                    <div class="slds-align_absolute-center">
+                        <lightning-button
+                            variant="neutral"
+                            label="Cancel"
+                            class="slds-m-top_medium"
+                            onclick={handleCancelModal}
+                        ></lightning-button>
+                        <lightning-button
+                            label="Save"
+                            variant="brand"
+                            class="slds-m-top_medium"
+                            onclick={handleSaveCaseTemplate}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+
+    <!-- Quote Modals -->
+    <template if:true={showModal}>
+        <c-case-quote-modal record-id={recordId}></c-case-quote-modal>
+    </template>
+    <template if:true={showQuoteModal}>
+        <c-existing-quote-modal record-id={recordId}></c-existing-quote-modal>
+    </template>
+    <template if:true={showFavoriteModal}>
+        <c-add-favorite-containers show-form={showFavoriteModal} case-id={recordId}></c-add-favorite-containers>
+    </template>
+
+    <!-- Dynamic Component Containers -->
+    <div data-id="subTypeComp"></div>
+    <div data-id="progressComp"></div>
+    <div data-id="slaDateComp"></div>
+    <div data-id="popsiComp"></div>
+    <div data-id="caseAssignmentComp"></div>
+    <div data-id="duplicateCheck"></div>
+    <div data-id="caseAssetComp"></div>
+    <div data-id="dispCaseAsset"></div>
+</template>

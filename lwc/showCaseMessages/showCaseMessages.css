@@ -1,0 +1,52 @@
+.setHeight {
+    height: auto;
+    max-height: 200px;
+}
+
+.redicon {
+    color: #c23934;
+    background-color: #c23934;
+    fill: white;
+    border-radius: 50%;
+}
+
+.greenicon {
+    color: #04844b;
+    background-color: #04844b;
+    fill: white;
+    border-radius: 50%;
+}
+
+.casemsg {
+    flex: 1;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.NTEmsg {
+    flex: 1;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    font-weight: bold;
+}
+
+.btnMargin {
+    margin-right: 0.5rem;
+}
+
+.btnviewcasewdh {
+    min-width: 180px;
+}
+
+.head {
+    font-weight: bold;
+    background-color: #f3f3f3;
+}
+
+.cell {
+    text-align: center;
+}
+
+.spin {
+    z-index: 9999;
+}
