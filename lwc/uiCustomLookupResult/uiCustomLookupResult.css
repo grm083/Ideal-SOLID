@@ -1,0 +1,9 @@
+.wrapped-content {
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+li:hover {
+    cursor: pointer;
+    background-color: #f3f2f2;
+}

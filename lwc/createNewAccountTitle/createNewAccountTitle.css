@@ -1,0 +1,7 @@
+.modal-fixed {
+    position: fixed !important;
+}
+
+.backdrop-fixed {
+    position: fixed !important;
+}
