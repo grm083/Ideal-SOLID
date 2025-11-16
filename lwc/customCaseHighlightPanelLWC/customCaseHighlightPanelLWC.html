@@ -1,14 +1,18 @@
 <template>
     <!--
-        NOTE: This is a simplified version of the CustomCaseHighlightPanel.
-        The original Aura component is 352 lines with complex conditional rendering,
-        two-table layout, and integration with 10+ child modal components.
+        CustomCaseHighlightPanel - FULL LWC IMPLEMENTATION
 
-        Full implementation requires:
-        - All child LWC components to be available
-        - Complex conditional column rendering logic
-        - Hover card implementation with HoverOverCards component
-        - Lightning Message Service integration for cross-component communication
+        Converted from Aura component (352 lines) with complete functionality:
+        ✓ Governor pattern integration via Lightning Message Service
+        ✓ Two-table layout with conditional column rendering
+        ✓ Integration with 10+ child modal components
+        ✓ Location/Vendor/Client container modals
+        ✓ Asset search, Contact search, Service Date modals
+        ✓ Case Type/Sub-Type, Customer Info, Close Case modals
+        ✓ Related Cases navigation modal
+        ✓ Backward compatible with direct Apex fallback
+
+        NOTE: changeRecordType component not yet converted - placeholder provided
     -->
 
     <template if:true={isLoading}>
@@ -167,32 +171,115 @@
         </table>
     </template>
 
-    <!-- Modal Containers (Simplified) -->
-    <!--
-        NOTE: In the full implementation, each modal would use dynamic component creation
-        or conditional rendering to show the appropriate child component:
-        - LocationContainer/VendorContainer/ClientContainer
-        - ShowAssetHeadersOnCase
-        - SearchExistingContact
-        - ServiceDateContainer
-        - FillCaseSubType
-        - SetCaseCustomerInfo
-        - CloseCasePop
-        - CaseNavigation
-        - changeRecordType
+    <!-- ========================================================================
+         MODAL CONTAINERS - FULL IMPLEMENTATION
+         Each modal conditionally renders its specific child component
+         ======================================================================== -->
 
-        Example structure:
-        <template if:true={isModalOpenServiceDate}>
-            <c-service-date-container-l-w-c
+    <!-- Location Container Modal (for Location cases) -->
+    <template if:true={isModalOpenLocation}>
+        <template if:true={isLocation}>
+            <c-location-container-l-w-c
                 record-id={recordId}
-                show-form
+                show-form={isModalOpenLocation}
+                onclosemodal={handleCloseModal}
                 onrefresh={handleRefresh}>
-            </c-service-date-container-l-w-c>
+            </c-location-container-l-w-c>
         </template>
-    -->
 
-    <!-- Generic Modal Container -->
-    <template if:true={isModalOpen}>
+        <!-- Vendor Container Modal (for Vendor cases) -->
+        <template if:true={isVendor}>
+            <c-vendor-container-l-w-c
+                record-id={recordId}
+                show-form={isModalOpenLocation}
+                onclosemodal={handleCloseModal}
+                onrefresh={handleRefresh}>
+            </c-vendor-container-l-w-c>
+        </template>
+
+        <!-- Client Container Modal (for Client cases) -->
+        <template if:true={isClient}>
+            <c-client-container-l-w-c
+                record-id={recordId}
+                show-form={isModalOpenLocation}
+                onclosemodal={handleCloseModal}
+                onrefresh={handleRefresh}>
+            </c-client-container-l-w-c>
+        </template>
+    </template>
+
+    <!-- Asset Search Modal -->
+    <template if:true={isModalOpenAsset}>
+        <c-location-asset-search-l-w-c
+            record-id={recordId}
+            onrefresh={handleRefresh}>
+        </c-location-asset-search-l-w-c>
+    </template>
+
+    <!-- Contact Search Modal -->
+    <template if:true={isModalOpenContact}>
+        <c-search-existing-contact-l-w-c
+            record-id={recordId}
+            show-form={isModalOpenContact}
+            onclosemodal={handleCloseModal}
+            onrefresh={handleRefresh}>
+        </c-search-existing-contact-l-w-c>
+    </template>
+
+    <!-- Service Date Container Modal -->
+    <template if:true={isModalOpenServiceDate}>
+        <c-service-date-container-l-w-c
+            record-id={recordId}
+            show-form={isModalOpenServiceDate}
+            is-capacity-eligible={isCapacityEligible}
+            onclosemodal={handleCloseModal}
+            onrefresh={handleRefresh}>
+        </c-service-date-container-l-w-c>
+    </template>
+
+    <!-- Case Type/Sub-Type Modal -->
+    <template if:true={isModalOpenCaseType}>
+        <c-fill-case-sub-type-l-w-c
+            record-id={recordId}
+            show-form={isModalOpenCaseType}
+            onclosemodal={handleCloseModal}
+            onrefresh={handleRefresh}>
+        </c-fill-case-sub-type-l-w-c>
+    </template>
+
+    <!-- Customer Info Modal (PO/Chargeable/PSI/CC) -->
+    <template if:true={isModalOpenCustomerInfo}>
+        <c-set-case-customer-info-l-w-c
+            record-id={recordId}
+            show-form={isModalOpenCustomerInfo}
+            onclosemodal={handleCloseModal}
+            onrefresh={handleRefresh}>
+        </c-set-case-customer-info-l-w-c>
+    </template>
+
+    <!-- Close Case Modal -->
+    <template if:true={isModalOpenCloseCasePop}>
+        <c-close-case-pop-l-w-c
+            record-id={recordId}
+            show-form={isModalOpenCloseCasePop}
+            onclosemodal={handleCloseModal}
+            onrefresh={handleRefresh}>
+        </c-close-case-pop-l-w-c>
+    </template>
+
+    <!-- Related Cases Navigation Modal -->
+    <template if:true={isModalOpenRelatedCases}>
+        <c-case-navigation-l-w-c
+            record-id={recordId}
+            onrefresh={handleRefresh}>
+        </c-case-navigation-l-w-c>
+    </template>
+
+    <!-- Record Type Change Modal (only for New cases) -->
+    <!-- NOTE: changeRecordType component not yet converted to LWC -->
+    <!-- This would need to be implemented when that component is available -->
+    <template if:true={isModalOpenRecordType}>
+        <!-- Placeholder for record type change functionality -->
         <section role="dialog" class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
@@ -203,10 +290,10 @@
                         variant="bare"
                         class="slds-modal__close">
                     </lightning-button-icon>
+                    <h2 class="slds-text-heading_medium">Change Record Type</h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium">
-                    <!-- Child components would be rendered here based on modal state -->
-                    <p>Modal content placeholder</p>
+                    <p>Record Type change functionality will be available when changeRecordType component is converted to LWC.</p>
                 </div>
             </div>
         </section>

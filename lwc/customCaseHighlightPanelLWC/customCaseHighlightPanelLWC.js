@@ -20,7 +20,7 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { getRecord, getFieldValue, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
-import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
+import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messageService';
 
 // Import LMS Channel
 import CASE_DATA_CHANNEL from '@salesforce/messageChannel/CaseDataChannel__c';
