@@ -1,9 +1,43 @@
+/**
+ * ShowCaseMessagesLWC - Case Action Required Panel
+ *
+ * Displays case validation messages, action-required notifications, and provides
+ * quick actions for case management (quotes, work orders, case summary, etc.)
+ *
+ * ARCHITECTURE - DUAL SUBSCRIPTION PATTERN:
+ * ==========================================
+ * This component uses a dual Lightning Message Service (LMS) subscription pattern:
+ *
+ * 1. CaseDataChannel (from CaseDataGovernor)
+ *    - Purpose: Centralized case data distribution
+ *    - Provides: Case UI state, related records, business rules
+ *    - Benefit: Eliminates redundant Apex calls, improves governor limits
+ *    - Replaces: Direct getCaseMessages Apex call
+ *
+ * 2. LMS Channel (legacy)
+ *    - Purpose: Action/event notifications (multi-asset case actions)
+ *    - Provides: User action signals, workflow triggers
+ *    - Benefit: Component communication for workflows
+ *
+ * DATA LOADING STRATEGY:
+ * ======================
+ * - Primary: Subscribe to CaseDataGovernor for all case data
+ * - Fallback: Direct Apex call if CaseDataGovernor not present (1s timeout)
+ * - Refresh: Request data from governor via LMS, not direct Apex
+ *
+ * This follows the CQRS pattern: CaseDataChannel = queries, LMS = commands
+ *
+ * @see caseDataGovernorLWC - Centralized data hub
+ * @see CaseDataGovernorService - Apex service consolidating data
+ * @see GetCaseInformation - Legacy Apex (being replaced by governor pattern)
+ */
 import { LightningElement, api, wire, track } from 'lwc';
 import { getRecord, getFieldValue, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
 import { publish, subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
 import LMS_CHANNEL from '@salesforce/messageChannel/LMS__c';
+import CASE_DATA_CHANNEL from '@salesforce/messageChannel/CaseDataChannel__c';
 
 // Import Apex methods from service layer
 import getCaseMessages from '@salesforce/apex/GetCaseInformation.getCaseMessages';
@@ -60,9 +94,11 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
     @wire(MessageContext)
     messageContext;
 
-    // LMS Channel
+    // LMS Channels and Subscriptions
     lmsChannel = LMS_CHANNEL;
-    subscription = null;
+    caseDataChannel = CASE_DATA_CHANNEL;
+    lmsSubscription = null;
+    caseDataSubscription = null;
 
     // Wire Case Record
     @wire(getRecord, { recordId: '$recordId', fields: CASE_FIELDS })
@@ -89,6 +125,9 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
     @track isTempVisible = false;
     @track initiateWoButton = false;
     @track woUpdatesDisabled = true;
+
+    // Governor integration flag
+    hasReceivedGovernorData = false;
 
     // Case Data
     @track caseMsg = '';
@@ -150,34 +189,76 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
 
     // Lifecycle Hooks
     connectedCallback() {
-        this.subscribeToMessageChannel();
-        this.loadCaseMessages();
+        this.subscribeToLMSChannel();
+        this.subscribeToCaseDataChannel();
+
+        // Request data from CaseDataGovernor (preferred method)
+        // If CaseDataGovernor is present on the page, it will respond with data
+        this.requestCaseDataRefresh();
+
+        // Fallback: If no response from governor within 1 second, load directly
+        // This ensures component works even without CaseDataGovernor
+        setTimeout(() => {
+            if (!this.hasReceivedGovernorData) {
+                console.log('ShowCaseMessagesLWC: Falling back to direct Apex call');
+                this.loadCaseMessages();
+            }
+        }, 1000);
+
         this.checkCapacityEligibility();
     }
 
     disconnectedCallback() {
-        this.unsubscribeFromMessageChannel();
+        this.unsubscribeFromLMSChannel();
+        this.unsubscribeFromCaseDataChannel();
     }
 
     // LMS Methods
-    subscribeToMessageChannel() {
-        if (!this.subscription) {
-            this.subscription = subscribe(
+
+    /**
+     * Subscribe to LMS channel for action/event notifications (multi-asset, etc.)
+     */
+    subscribeToLMSChannel() {
+        if (!this.lmsSubscription) {
+            this.lmsSubscription = subscribe(
                 this.messageContext,
                 LMS_CHANNEL,
-                (message) => this.handleReceiveMessage(message)
+                (message) => this.handleLMSMessage(message)
             );
         }
     }
 
-    unsubscribeFromMessageChannel() {
-        if (this.subscription) {
-            unsubscribe(this.subscription);
-            this.subscription = null;
+    unsubscribeFromLMSChannel() {
+        if (this.lmsSubscription) {
+            unsubscribe(this.lmsSubscription);
+            this.lmsSubscription = null;
         }
     }
 
-    handleReceiveMessage(message) {
+    /**
+     * Subscribe to CaseDataChannel for centralized case data from CaseDataGovernor
+     */
+    subscribeToCaseDataChannel() {
+        if (!this.caseDataSubscription) {
+            this.caseDataSubscription = subscribe(
+                this.messageContext,
+                CASE_DATA_CHANNEL,
+                (message) => this.handleCaseDataUpdate(message)
+            );
+        }
+    }
+
+    unsubscribeFromCaseDataChannel() {
+        if (this.caseDataSubscription) {
+            unsubscribe(this.caseDataSubscription);
+            this.caseDataSubscription = null;
+        }
+    }
+
+    /**
+     * Handle multi-asset action notifications via LMS
+     */
+    handleLMSMessage(message) {
         if (message && message.caseId === this.recordId) {
             if (message.enable) {
                 const caseData = this.caseRecord.data;
@@ -205,8 +286,80 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
         }
     }
 
+    /**
+     * Handle case data updates from CaseDataGovernor
+     * This provides centralized case data eliminating multiple Apex calls
+     */
+    handleCaseDataUpdate(message) {
+        // Only process messages for this case
+        if (!message || message.caseId !== this.recordId) {
+            return;
+        }
+
+        // Handle different event types
+        switch (message.eventType) {
+            case 'load':
+            case 'refresh':
+            case 'update':
+                this.processCaseDataFromGovernor(message);
+                break;
+            case 'error':
+                console.error('CaseDataGovernor error:', message.errorMessage);
+                break;
+        }
+    }
+
+    /**
+     * Process case data received from CaseDataGovernor
+     */
+    processCaseDataFromGovernor(message) {
+        try {
+            const pageData = JSON.parse(message.pageData);
+
+            // Mark that we've received data from governor
+            this.hasReceivedGovernorData = true;
+
+            // Use caseUI data from governor (replaces direct getCaseMessages call)
+            if (pageData.caseUI) {
+                this.processCaseMessages(pageData.caseUI);
+            }
+
+            // Update case record data if available
+            if (pageData.caseRecord) {
+                // Update local case record reference
+                this.caseRecord = {
+                    data: pageData.caseRecord,
+                    error: null
+                };
+            }
+
+            // Use related case data if needed
+            if (pageData.relatedCases) {
+                // Store related cases for potential use
+                this.relatedCasesData = pageData.relatedCases;
+            }
+
+        } catch (error) {
+            console.error('Error processing case data from governor:', error);
+        }
+    }
+
     publishMessage(payload) {
         publish(this.messageContext, LMS_CHANNEL, payload);
+    }
+
+    /**
+     * Request fresh data from CaseDataGovernor
+     * This is the preferred way to refresh data (uses centralized governor)
+     */
+    requestCaseDataRefresh(section = null) {
+        const message = {
+            caseId: this.recordId,
+            eventType: section ? 'refresh' : 'reload',
+            section: section,
+            requestedBy: 'showCaseMessagesLWC'
+        };
+        publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }
 
     // Data Loading Methods
@@ -513,8 +666,13 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
         // Refresh the case record
         notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
 
-        // Reload case messages
-        this.loadCaseMessages();
+        // Request refresh from CaseDataGovernor (preferred)
+        // Falls back to direct call if governor not present
+        if (this.hasReceivedGovernorData) {
+            this.requestCaseDataRefresh();
+        } else {
+            this.loadCaseMessages();
+        }
     }
 
     showToast(title, message, variant) {
