@@ -52,20 +52,20 @@
                     <!-- Service Date Component (SetCaseSLADate or WMCapacity) -->
                     <template if:true={isModalOpenServiceDate}>
                         <template if:true={isOpenWMCapacityComp}>
-                            <c-wm-capacity
+                            <c-wm-capacity-l-w-c
                                 record-id={recordId}
                                 parent-id={parentId}>
-                            </c-wm-capacity>
+                            </c-wm-capacity-l-w-c>
                         </template>
 
                         <template if:true={isOpenSetCaseDateComp}>
-                            <c-set-case-s-l-a-date
+                            <c-set-case-s-l-a-date-l-w-c
                                 record-id={recordId}
                                 parent-id={parentId}
                                 is-capacity-eligible={isCapacityEligible}
                                 is-avail-date={isAvailDate}
                                 is-date-not-listed-cl={isDateNotListedCl}>
-                            </c-set-case-s-l-a-date>
+                            </c-set-case-s-l-a-date-l-w-c>
                         </template>
                     </template>
 

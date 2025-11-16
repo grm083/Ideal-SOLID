@@ -31,24 +31,10 @@
                             <!-- Only show client search when status is New -->
                             <template if:true={showClientSearch}>
                                 <template if:true={isStatusNew}>
-                                    <!--
-                                        NOTE: The ClientSearch child component (c-client-search-l-w-c)
-                                        was referenced in the original Aura component but does not
-                                        exist in the codebase. This component will need to be created
-                                        or the reference should be updated to an existing component.
-
-                                        Expected usage:
-                                        <c-client-search-l-w-c record-id={recordId}></c-client-search-l-w-c>
-                                    -->
-                                    <div class="slds-text-align_center slds-p-around_large">
-                                        <p class="slds-text-body_regular">
-                                            Client Search functionality will be available when the
-                                            c-client-search-l-w-c component is implemented.
-                                        </p>
-                                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
-                                            Case Status: {caseStatus}
-                                        </p>
-                                    </div>
+                                    <c-client-search-l-w-c record-id={recordId}></c-client-search-l-w-c>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                                        Case Status: {caseStatus}
+                                    </p>
                                 </template>
                                 <template if:false={isStatusNew}>
                                     <div class="slds-text-align_center slds-p-around_large">

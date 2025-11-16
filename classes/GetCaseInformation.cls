@@ -780,6 +780,31 @@ q.SBQQ__ExpirationDate__c = date.today() + 60;
         // Modified for SDT-33453 End
         return 'ok';
     }
+
+    @AuraEnabled
+    public static void insertPlannerComment(Id caseId,String selectedDate,Boolean isAvailDates,Boolean isDateNotListed)
+    {
+        String comment;
+        if(isAvailDates && !isDateNotListed)
+        {
+            comment = Constant_Util.CAPACITY_PLANNER_USERSELECT+selectedDate;
+        }
+        else if(isAvailDates && isDateNotListed)
+        {
+            comment = Constant_Util.CAPACITY_PLANNER_AVAILNOTSELECT;
+        }
+        else
+        {
+            comment = Constant_Util.CAPACITY_PLANNER_NOTAVAIL;
+        }
+        try{
+            AcornController.createAcornComment(comment,caseId);
+        }
+        catch(Exception ex)
+        {
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), UTIL_ErrorConstants.ERROR_APPLICATION,LoggingLevel.ERROR);    
+        }
+    }
     
     // ========================================================================
     // HELPER METHODS - CONVERSION

@@ -27,13 +27,13 @@
                         <lightning-tabset class="slds-p-left_xx-large" active-tab-value="location_search">
                             <lightning-tab label="Location Details" value="location_details" onactive={handleLocationDetailsTab}>
                                 <template if:true={showLocationDetails}>
-                                    <c-case-location-details record-id={recordId}></c-case-location-details>
+                                    <c-case-location-details-l-w-c record-id={recordId}></c-case-location-details-l-w-c>
                                 </template>
                             </lightning-tab>
                             <lightning-tab label="Location Search" value="location_search" onactive={handleLocationSearchTab}>
                                 <template if:true={showLocationSearch}>
                                     <template if:true={isCaseNew}>
-                                        <c-location-asset-search record-id={recordId}></c-location-asset-search>
+                                        <c-location-asset-search-l-w-c record-id={recordId}></c-location-asset-search-l-w-c>
                                     </template>
                                 </template>
                             </lightning-tab>
@@ -45,13 +45,13 @@
                         <lightning-tabset class="slds-p-left_xx-large" active-tab-value="location_details">
                             <lightning-tab label="Location Details" value="location_details" onactive={handleLocationDetailsTab}>
                                 <template if:true={showLocationDetails}>
-                                    <c-case-location-details record-id={recordId}></c-case-location-details>
+                                    <c-case-location-details-l-w-c record-id={recordId}></c-case-location-details-l-w-c>
                                 </template>
                             </lightning-tab>
                             <lightning-tab label="Location Search" value="location_search" onactive={handleLocationSearchTab}>
                                 <template if:true={showLocationSearch}>
                                     <template if:true={isCaseNew}>
-                                        <c-location-asset-search record-id={recordId}></c-location-asset-search>
+                                        <c-location-asset-search-l-w-c record-id={recordId}></c-location-asset-search-l-w-c>
                                     </template>
                                 </template>
                             </lightning-tab>

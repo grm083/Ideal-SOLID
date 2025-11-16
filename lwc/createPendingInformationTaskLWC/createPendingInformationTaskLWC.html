@@ -125,29 +125,15 @@
 
                             <!-- Assigned To (User Lookup) -->
                             <div class="slds-col slds-size_6-of-12">
-                                <!--
-                                    NOTE: The UI_customLookup child component (c-ui-custom-lookup-l-w-c)
-                                    was referenced in the original Aura component but does not
-                                    exist in the codebase. This component will need to be created
-                                    or replaced with a standard lightning-input-field with search.
-
-                                    Expected usage:
-                                    <c-ui-custom-lookup-l-w-c
-                                        object-api-name="User"
-                                        icon-name="standard:avatar"
-                                        selected-record={selectedLookUpRecord}
-                                        case-id={caseId}
-                                        label="Assigned To"
-                                        onselectedrecord={handleSelectedRecordEvent}
-                                        onremoverecord={handleRecordRemove}>
-                                    </c-ui-custom-lookup-l-w-c>
-                                -->
-                                <div class="slds-form-element">
-                                    <label class="slds-form-element__label">Assigned To</label>
-                                    <div class="slds-text-body_small slds-text-color_weak">
-                                        User lookup component (c-ui-custom-lookup-l-w-c) needs to be implemented
-                                    </div>
-                                </div>
+                                <c-ui-custom-lookup-l-w-c
+                                    object-api-name="User"
+                                    icon-name="standard:avatar"
+                                    selected-record={selectedLookUpRecord}
+                                    case-id={caseId}
+                                    label="Assigned To"
+                                    onselectedrecord={handleSelectedRecordEvent}
+                                    onremoverecord={handleRecordRemove}>
+                                </c-ui-custom-lookup-l-w-c>
                             </div>
 
                             <div class="slds-col slds-size_6-of-12"></div>

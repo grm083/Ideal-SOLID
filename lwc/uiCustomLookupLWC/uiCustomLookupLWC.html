@@ -41,12 +41,12 @@
                         <!-- Search Results -->
                         <template if:true={hasRecords}>
                             <template for:each={listOfSearchRecords} for:item="record">
-                                <c-ui-custom-lookup-l-w-c-result
+                                <c-ui-custom-lookup-result-l-w-c
                                     key={record.Id}
                                     record={record}
                                     icon-name={iconName}
                                     onrecordselect={handleRecordSelect}>
-                                </c-ui-custom-lookup-l-w-c-result>
+                                </c-ui-custom-lookup-result-l-w-c>
                             </template>
                         </template>
                     </ul>
