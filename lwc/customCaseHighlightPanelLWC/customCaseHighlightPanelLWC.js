@@ -303,6 +303,7 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
         const recordType = caseRecord.Case_Record_Type__c;
         const caseType = caseRecord.Case_Type__c;
         const caseSubType = caseRecord.Case_Sub_Type__c;
+        const caseLocation = caseRecord.Location__c;
 
         // Reset flags
         this.isVendor = false;
@@ -325,6 +326,8 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
                 this.isClient = true;
                 return;
             }
+        } else if (caseLocation == null) {
+            return;
         }
 
         // Default to Location

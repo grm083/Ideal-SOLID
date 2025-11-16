@@ -1,0 +1,2351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>GeneratePdf</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>GeneratePdf</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>GeneratePdf</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>Action override updated by Lightning App Builder during activation.</comment>
+        <content>Work_Order_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <compactLayoutAssignment>Work_Order_Custom_Layout</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>Work_Order_Custom_Layout</fullName>
+        <fields>WorkOrderNumber</fields>
+        <fields>CaseId</fields>
+        <fields>Status</fields>
+        <fields>Acorn_WorkOrder_Number__c</fields>
+        <fields>Description__c</fields>
+        <fields>Service_Date__c</fields>
+        <fields>Vendor_Account_Id__c</fields>
+        <label>Work Order Custom Layout</label>
+    </compactLayouts>
+    <enableFeeds>true</enableFeeds>
+    <externalSharingModel>ReadWrite</externalSharingModel>
+    <fieldSets>
+        <fullName>HoverCard</fullName>
+        <description>It is used as hover card fields in Comment data</description>
+        <displayedFields>
+            <field>Description__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Acorn_WorkOrder_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Service_Date__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Status</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Send_Status__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Vendor_Account_Id__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>WorkOrderNumber</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <label>HoverCard</label>
+    </fieldSets>
+    <fields>
+        <fullName>Accept_Date__c</fullName>
+        <description>Acorn Acceptance Date information being populated on the Work Order</description>
+        <label>Accept Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Accept_User_Id__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>User who accepted a work order</description>
+        <label>Accept User Id</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Work_Orders</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Accept_User_name__c</fullName>
+        <externalId>false</externalId>
+        <label>Accept Username</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>AccountId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Account_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Account Number</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_Contact_Id__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>External Id referencing the Acorn Contact</description>
+        <label>Acorn Contact Id</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Work Orders</relationshipLabel>
+        <relationshipName>Work_Orders</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Acorn_Issue_Id__c</fullName>
+        <description>Field to capture acorn issue id information - back-end only</description>
+        <label>Acorn Issue Id</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Acorn_Location_ID__c</fullName>
+        <externalId>false</externalId>
+        <formula>Account.Acorn_Location_Id__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Acorn Location ID</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_Purchase_Order_Number__c</fullName>
+        <description>This field contains WO purchase number and populating PO number from Acorn.</description>
+        <externalId>false</externalId>
+        <label>Acorn Purchase Order Number</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_SID_Text__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT( Acorn_SID__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Acorn SID</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_SID__c</fullName>
+        <description>Acorn Service Header ID (SID)</description>
+        <externalId>false</externalId>
+        <label>Acorn SID</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_Update_Datetime__c</fullName>
+        <description>Last time record was updated in Acorn</description>
+        <label>Acorn Update Datetime</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Acorn_WO_No__c</fullName>
+        <externalId>false</externalId>
+        <formula>HYPERLINK(&quot;/&quot; &amp; Id, Acorn_WorkOrder_Number__c,&quot;_self&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Acorn Work Order Number</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_WorkOrder_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Acorn WorkOrder Id</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acorn_WorkOrder_Number__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <externalId>false</externalId>
+        <label>Acorn WorkOrder Number</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Actual_Service_Date__c</fullName>
+        <label>Actual Service Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Address</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>AssetId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>AssetMaterial__c</fullName>
+        <externalId>false</externalId>
+        <formula>Asset.Name + &quot; / &quot; + Asset_Material__c</formula>
+        <label>Asset / Material</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Asset_Material__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT(Asset.Material_Type__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Asset Material</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Asset_Position__c</fullName>
+        <externalId>false</externalId>
+        <formula>Asset.Container_Position__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Asset Position</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Back_Dated_WO__c</fullName>
+        <description>Boolean to find the Back Dated Workorder</description>
+        <externalId>false</externalId>
+        <formula>IF(DATEVALUE(CreatedDate)  &gt; Service_Date__c , 1, 0)</formula>
+        <label>Back Dated WO</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>BusinessHoursId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>CaseId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Case_Id__c</fullName>
+        <externalId>false</externalId>
+        <formula>Case.Id</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Case Id</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Origin__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT(Case.Origin)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Case Origin</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Reason__c</fullName>
+        <externalId>false</externalId>
+        <formula>Text(Case.Case_Reason__c)</formula>
+        <label>Case Reason</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Subtype__c</fullName>
+        <externalId>false</externalId>
+        <formula>Text(Case.Case_Sub_Type__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Case Subtype</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Type__c</fullName>
+        <externalId>false</externalId>
+        <formula>Text(Case.Case_Type__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Case Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Channel__c</fullName>
+        <label>Channel</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>1</fullName>
+                    <default>false</default>
+                    <label>1</label>
+                </value>
+                <value>
+                    <fullName>Email</fullName>
+                    <default>false</default>
+                    <label>Email</label>
+                </value>
+                <value>
+                    <fullName>External System</fullName>
+                    <default>false</default>
+                    <label>External System</label>
+                </value>
+                <value>
+                    <fullName>Fax</fullName>
+                    <default>false</default>
+                    <label>Fax</label>
+                </value>
+                <value>
+                    <fullName>Manual Delivery</fullName>
+                    <default>false</default>
+                    <label>Manual Delivery</label>
+                </value>
+                <value>
+                    <fullName>Phone</fullName>
+                    <default>false</default>
+                    <label>Phone</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Client_PO__c</fullName>
+        <externalId>false</externalId>
+        <formula>Case.PurchaseOrder_Number__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Client PO #</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Client__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <label>Client Name</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Work Orders (Client Name)</relationshipLabel>
+        <relationshipName>Work_Orders_Client</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Company_Category__c</fullName>
+        <externalId>false</externalId>
+        <formula>Asset.Category__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Company Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ContactId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Container_Position__c</fullName>
+        <externalId>false</externalId>
+        <formula>Asset.Container_Position__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Container Position</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Created_Date_Created_By__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT(MONTH(DATEVALUE(CreatedDate)))+ &quot;/&quot; + TEXT(DAY(DATEVALUE(CreatedDate)))+ &quot;/&quot; + TEXT(YEAR(DATEVALUE(CreatedDate))) + &quot; / &quot; + CreatedBy.FirstName + &quot; &quot; + CreatedBy.LastName</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Created Date / Created By</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CurrencyIsoCode</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Customer_Interaction_ID__c</fullName>
+        <description>The connection ID or interaction ID of the last customer call or email respectively</description>
+        <externalId>true</externalId>
+        <label>Customer Interaction ID</label>
+        <length>32</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Customer_Location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <label>Customer Location</label>
+        <lookupFilter>
+            <active>true</active>
+            <errorMessage>Value does not exist or does not match filter criteria. - Customer Location</errorMessage>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Location</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Work Orders (Customer Location)</relationshipLabel>
+        <relationshipName>Work_Orders1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Decline_Date__c</fullName>
+        <description>Work Order decline date</description>
+        <label>Decline Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Decline_User_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Decline Username</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Decline_User__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>User who declined the work order</description>
+        <label>Decline User</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Work_Orders1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Description</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(AND(CaseId != null , TEXT(Case.Case_Type__c) != null) ,   TEXT(Case.Case_Type__c) + &quot; - &quot; + TEXT(Case.Case_Sub_Type__c) , &quot;&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Description</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Discount</fullName>
+    </fields>
+    <fields>
+        <fullName>Dispatch_Email__c</fullName>
+        <externalId>false</externalId>
+        <label>Dispatch Email</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Cost_NOT_IN_USE__c</fullName>
+        <formula>Dry_Run_Cost__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Dry Run Cost NOT IN USE</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Cost__c</fullName>
+        <externalId>false</externalId>
+        <label>Dry Run Cost</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Cost_in_Currency__c</fullName>
+        <label>Dry Run Cost</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Description__c</fullName>
+        <label>Dry Run Description</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Price__c</fullName>
+        <externalId>false</externalId>
+        <label>Dry Run Price</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Price_in_Currency__c</fullName>
+        <label>Dry Run Price</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Dry_Run_Root_Cause__c</fullName>
+        <label>Dry Run Root Cause</label>
+        <length>60000</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Duration</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>DurationType</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Effective_Date__c</fullName>
+        <label>Effective Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>EndDate</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>EntitlementId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Exception_Description__c</fullName>
+        <label>Cancellation Description</label>
+        <length>500</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Exception_Reason__c</fullName>
+        <label>Cancellation Reason</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Blocked Can</fullName>
+                    <default>false</default>
+                    <label>Blocked Can</label>
+                </value>
+                <value>
+                    <fullName>Client&apos;s Request</fullName>
+                    <default>false</default>
+                    <label>Client&apos;s Request</label>
+                </value>
+                <value>
+                    <fullName>Contamination</fullName>
+                    <default>false</default>
+                    <label>Contamination</label>
+                </value>
+                <value>
+                    <fullName>Dry Run</fullName>
+                    <default>false</default>
+                    <label>Dry Run</label>
+                </value>
+                <value>
+                    <fullName>Duplicate Request</fullName>
+                    <default>false</default>
+                    <label>Duplicate Request</label>
+                </value>
+                <value>
+                    <fullName>Equipment Issues</fullName>
+                    <default>false</default>
+                    <label>Equipment Issues</label>
+                </value>
+                <value>
+                    <fullName>Schedule Change - Client</fullName>
+                    <default>false</default>
+                    <label>Schedule Change - Client</label>
+                </value>
+                <value>
+                    <fullName>Schedule Change - Vendor</fullName>
+                    <default>false</default>
+                    <label>Schedule Change - Vendor</label>
+                </value>
+                <value>
+                    <fullName>Weather Conditions</fullName>
+                    <default>false</default>
+                    <label>Weather Conditions</label>
+                </value>
+                <value>
+                    <fullName>Vendor did not perform service</fullName>
+                    <default>false</default>
+                    <label>Vendor did not perform service</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Service</fullName>
+                    <default>false</default>
+                    <label>Incorrect Service</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Service Date</fullName>
+                    <default>false</default>
+                    <label>Incorrect Service Date</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Hauler</fullName>
+                    <default>false</default>
+                    <label>Incorrect Hauler</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Work-Order Description</fullName>
+                    <default>false</default>
+                    <label>Incorrect Work-Order Description</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Amount</fullName>
+                    <default>false</default>
+                    <label>Incorrect Amount</label>
+                </value>
+                <value>
+                    <fullName>Work Order Cleanup</fullName>
+                    <default>false</default>
+                    <label>Work Order Cleanup</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Container Selected</fullName>
+                    <default>false</default>
+                    <label>Incorrect Container Selected</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Expected_Service_Date__c</fullName>
+        <label>Expected Service Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Fast_Lane_Ticket__c</fullName>
+        <label>Fast Lane Ticket</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>GrandTotal</fullName>
+    </fields>
+    <fields>
+        <fullName>IVR_Specific_Exception_Reason__c</fullName>
+        <description>S10_7602: This field is use to store IVR Exception reason.</description>
+        <externalId>false</externalId>
+        <label>IVR Specific Exception Reason</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Instructions__c</fullName>
+        <label>Work Order Instructions</label>
+        <length>1000</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Integration_Eligible__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>Integration Eligible</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Integration_Status__c</fullName>
+        <label>Integration Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Update</fullName>
+                    <default>false</default>
+                    <label>Update</label>
+                </value>
+                <value>
+                    <fullName>Resend</fullName>
+                    <default>false</default>
+                    <label>Resend</label>
+                </value>
+                <value>
+                    <fullName>Accept</fullName>
+                    <default>false</default>
+                    <label>Accept</label>
+                </value>
+                <value>
+                    <fullName>Cancel</fullName>
+                    <default>false</default>
+                    <label>Cancel</label>
+                </value>
+                <value>
+                    <fullName>Dry Run</fullName>
+                    <default>false</default>
+                    <label>Dry Run</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Interface_Triggered__c</fullName>
+        <externalId>false</externalId>
+        <label>Interface Triggered</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>IsClosed</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>IsStopped</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Is_Bypass__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>Is Bypass</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Is_Override_Duplicate__c</fullName>
+        <formula>OR(Case.Bypass_WO_Duplicate__c, AND( Case.Create_AM_and_PM_Pickups__c, $Profile.Name &lt;&gt; &quot;System Administrator&quot;))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Is Override Duplicate</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Latitude__c</fullName>
+        <description>latitude information from Acorn</description>
+        <externalId>false</externalId>
+        <label>Latitude</label>
+        <length>18</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>LineItemCount</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Local_Time__c</fullName>
+        <externalId>false</externalId>
+        <formula>Vendor_Account_Id__r.tz__Local_Time_Short__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Local Time</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>LocationId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Longitide__c</fullName>
+        <description>longitude information from Acorn</description>
+        <externalId>false</externalId>
+        <label>Longitide</label>
+        <length>18</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>MAS_Case__c</fullName>
+        <externalId>false</externalId>
+        <label>MAS Case</label>
+        <length>50</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>MAS_Ticket__c</fullName>
+        <externalId>false</externalId>
+        <label>MAS Ticket</label>
+        <length>50</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Manifest_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Manifest Number</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Marked_as_Dry_Run__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>Marked as Dry Run</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>MilestoneStatus</fullName>
+    </fields>
+    <fields>
+        <fullName>MilestoneStatusIcon</fullName>
+    </fields>
+    <fields>
+        <fullName>Negative_HOC__c</fullName>
+        <label>Vendor Image</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>No_Completion_Evidence__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>No Completion Evidence</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>No_Route_Evidence__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>No Route Evidence</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>No_Schedule_Evidence__c</fullName>
+        <defaultValue>false</defaultValue>
+        <label>No Schedule Evidence</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Onsite_Contact_Phone__c</fullName>
+        <externalId>false</externalId>
+        <formula>Case.Site_Contact_Phone__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Onsite Contact Phone</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Onsite_Contact__c</fullName>
+        <externalId>false</externalId>
+        <formula>Case.Site_Contact__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Onsite Contact</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Original_Expected_Date__c</fullName>
+        <label>Original Expected Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>OwnerId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>PSI_Bypass_Reason__c</fullName>
+        <externalId>false</externalId>
+        <formula>Text(Case.PSI_Override_Reason__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>PSI Bypass Reason</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>PSI__c</fullName>
+        <externalId>false</externalId>
+        <label>PSI</label>
+        <precision>14</precision>
+        <required>false</required>
+        <scale>4</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ParentWorkOrderId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Pickup_DateTime__c</fullName>
+        <label>Pickup DateTime</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Pricebook2Id</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Priority</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Profile_Description__c</fullName>
+        <label>Profile Description</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Profile_Generator__c</fullName>
+        <label>Profile Generator</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Profile_Number_Case__c</fullName>
+        <externalId>false</externalId>
+        <formula>Case.Profile_Number__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Profile Number</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Profile_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Profile Number</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Profile_Purchase_Order__c</fullName>
+        <description>this is the landfill ticket number issues by another corporation</description>
+        <externalId>false</externalId>
+        <label>Profile Purchase Order</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Quote_Order__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <label>Quote Order</label>
+        <referenceTo>Quote_Order__c</referenceTo>
+        <relationshipLabel>Work Orders</relationshipLabel>
+        <relationshipName>Work_Orders</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Rejection_Reason__c</fullName>
+        <description>Vendor will be using these to notify a a customer on why their work order was rejected.</description>
+        <label>Rejection Reason</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Rescheduled_Date__c</fullName>
+        <label>Rescheduled Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Return_DateTime__c</fullName>
+        <label>Return DateTime</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>RootWorkOrderId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SLA_Service_Date_Time__c</fullName>
+        <label>SLA Service Date/Time</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Send_Status__c</fullName>
+        <label>Send Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Sent</fullName>
+                    <default>false</default>
+                    <label>Sent</label>
+                </value>
+                <value>
+                    <fullName>Scheduled</fullName>
+                    <default>false</default>
+                    <label>Scheduled</label>
+                </value>
+                <value>
+                    <fullName>Sending</fullName>
+                    <default>false</default>
+                    <label>Sending</label>
+                </value>
+                <value>
+                    <fullName>Delivered</fullName>
+                    <default>false</default>
+                    <label>Delivered</label>
+                </value>
+                <value>
+                    <fullName>Failed (Send Manually)</fullName>
+                    <default>false</default>
+                    <label>Failed (Send Manually)</label>
+                </value>
+                <value>
+                    <fullName>Failed (System will Retry)</fullName>
+                    <default>false</default>
+                    <label>Failed (System will Retry)</label>
+                </value>
+                <value>
+                    <fullName>Cancelled</fullName>
+                    <default>false</default>
+                    <label>Cancelled</label>
+                </value>
+                <value>
+                    <fullName>OnHold</fullName>
+                    <default>false</default>
+                    <label>OnHold</label>
+                </value>
+                <value>
+                    <fullName>Accepted by MAS</fullName>
+                    <default>false</default>
+                    <label>Accepted by MAS</label>
+                </value>
+                <value>
+                    <fullName>Closed</fullName>
+                    <default>false</default>
+                    <label>Closed</label>
+                </value>
+                <value>
+                    <fullName>Confirmation Wait</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Confirmation Wait</label>
+                </value>
+                <value>
+                    <fullName>Failed Send</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Failed Send</label>
+                </value>
+                <value>
+                    <fullName>Failed Workorder</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Failed Workorder</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Send_Work_Order_to_Vendor__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>SDT-4728 - Used to store Send Work Order to Vendor value from the Work Order Flow</description>
+        <label>Send Work Order to Vendor</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Sent_Date_Time__c</fullName>
+        <label>Sent Date/Time</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Sent_To__c</fullName>
+        <externalId>false</externalId>
+        <label>Sent To</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ServiceAppointmentCount</fullName>
+    </fields>
+    <fields>
+        <fullName>ServiceContractId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Service_Date__c</fullName>
+        <label>Service Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Service_Exception_Received_Date_Time__c</fullName>
+        <description>S10_7602 : This field is use to store Service Exception Received Date and Time.</description>
+        <label>Service Exception Received Date/Time</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>SlaExitDate</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>SlaStartDate</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>StartDate</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Status</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>StatusCategory</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Status_Case_Subtype__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT(Status) + &quot; / &quot; + Case_Subtype__c</formula>
+        <label>Status / Case Subtype</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Status_Send_Status__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT(Status) + &quot; / &quot; + TEXT(Send_Status__c)</formula>
+        <label>Status / Send Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>StopStartDate</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Subject</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Subtotal</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Tax</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Tonnage__c</fullName>
+        <description>Quantity in Tons</description>
+        <externalId>false</externalId>
+        <label>Tonnage</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>3</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>TotalPrice</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Vehicle_Number__c</fullName>
+        <label>Vehicle Number</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Vendor_Account_Id__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <label>Vendor</label>
+        <lookupFilter>
+            <active>true</active>
+            <errorMessage>Value does not exist or does not match filter criteria. - Vendor Account</errorMessage>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Vendor</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Work Orders</relationshipLabel>
+        <relationshipName>Work_Orders</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Vendor_Exception_Reason__c</fullName>
+        <description>Acorn Work Order Status Event - WorkOrder Sub Status information</description>
+        <externalId>false</externalId>
+        <label>Vendor Exception Reason</label>
+        <length>80</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Vendor_ID__c</fullName>
+        <externalId>false</externalId>
+        <formula>Vendor_Account_Id__r.Vendor_ID__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Vendor ID</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Vendor_Service_Status__c</fullName>
+        <label>Vendor Service Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Verify_Service_Task__c</fullName>
+        <label>Verify Service Task</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>ATN</fullName>
+                    <default>false</default>
+                    <label>Account Number</label>
+                </value>
+                <value>
+                    <fullName>WGS</fullName>
+                    <default>false</default>
+                    <label>Wrong Service</label>
+                </value>
+                <value>
+                    <fullName>WTS</fullName>
+                    <default>false</default>
+                    <label>Waste Stream</label>
+                </value>
+                <value>
+                    <fullName>RES</fullName>
+                    <default>false</default>
+                    <label>Reschedule</label>
+                </value>
+                <value>
+                    <fullName>WRV</fullName>
+                    <default>false</default>
+                    <label>Wrong Vendor/Out of Service Area</label>
+                </value>
+                <value>
+                    <fullName>SRI</fullName>
+                    <default>false</default>
+                    <label>Service Interuption (Past Due Payments)</label>
+                </value>
+                <value>
+                    <fullName>WRC</fullName>
+                    <default>false</default>
+                    <label>Wrong Cost</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>WO_Accepted_Rejected_Comments__c</fullName>
+        <label>WO Accepted/Rejected Comments</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>WO_Quantity__c</fullName>
+        <description>Rollup Quantity</description>
+        <label>Work Order Quantity</label>
+        <summarizedField>WorkOrderLineItem.Quantity__c</summarizedField>
+        <summaryFilterItems>
+            <field>WorkOrderLineItem.Asset_Service_Type__c</field>
+            <operation>equals</operation>
+            <value>Disposal</value>
+        </summaryFilterItems>
+        <summaryForeignKey>WorkOrderLineItem.WorkOrderId</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <type>Summary</type>
+    </fields>
+    <listViews>
+        <fullName>All_WorkOrders_Mod</fullName>
+        <columns>Acorn_WO_No__c</columns>
+        <columns>Case_Subtype__c</columns>
+        <columns>AssetMaterial__c</columns>
+        <columns>Customer_Location__c</columns>
+        <columns>Container_Position__c</columns>
+        <columns>Vendor_Account_Id__c</columns>
+        <columns>Created_Date_Created_By__c</columns>
+        <columns>Service_Date__c</columns>
+        <columns>WO_Quantity__c</columns>
+        <columns>Status_Send_Status__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Work Orders</label>
+        <language>en_US</language>
+    </listViews>
+    <listViews>
+        <fullName>My_WorkOrder_Mod</fullName>
+        <columns>Acorn_WorkOrder_Number__c</columns>
+        <columns>Case_Subtype__c</columns>
+        <columns>AssetMaterial__c</columns>
+        <columns>Vendor_Account_Id__c</columns>
+        <columns>Container_Position__c</columns>
+        <columns>Acorn_SID__c</columns>
+        <columns>Service_Date__c</columns>
+        <columns>Created_Date_Created_By__c</columns>
+        <columns>Status_Send_Status__c</columns>
+        <columns>Name</columns>
+        <filterScope>Mine</filterScope>
+        <label>My Work Orders</label>
+        <language>en_US</language>
+    </listViews>
+    <recordTypeTrackFeedHistory>false</recordTypeTrackFeedHistory>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Back_Dated_Work_Order</fullName>
+        <active>true</active>
+        <description>To display certain fields as read only when the service date is back dated</description>
+        <label>Back Dated Work Order</label>
+        <picklistValues>
+            <picklist>Channel__c</picklist>
+            <values>
+                <fullName>1</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Email</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>External System</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Fax</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Manual Delivery</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Phone</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Exception_Reason__c</picklist>
+            <values>
+                <fullName>Blocked Can</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Client%27s Request</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Contamination</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dry Run</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Duplicate Request</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Equipment Issues</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Amount</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Container Selected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Hauler</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Service</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Service Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Work-Order Description</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Schedule Change - Client</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Schedule Change - Vendor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Vendor did not perform service</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Weather Conditions</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Work Order Cleanup</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Integration_Status__c</picklist>
+            <values>
+                <fullName>Accept</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cancel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dry Run</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Resend</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Update</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Priority</picklist>
+            <values>
+                <fullName>Critical</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>High</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Low</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Medium</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Send_Status__c</picklist>
+            <values>
+                <fullName>Accepted by MAS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cancelled</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Delivered</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Failed %28Send Manually%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Failed %28System will Retry%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>OnHold</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Scheduled</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sending</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sent</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status</picklist>
+            <values>
+                <fullName>Accepted</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cancelled</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Issued</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Pending%2FDraft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Released for Payment</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sending</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sent</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Work Complete</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Verify_Service_Task__c</picklist>
+            <values>
+                <fullName>ATN</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>RES</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SRI</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WGS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WRC</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WRV</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WTS</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Work_Order</fullName>
+        <active>true</active>
+        <label>Work Order</label>
+        <picklistValues>
+            <picklist>Channel__c</picklist>
+            <values>
+                <fullName>1</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Email</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>External System</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Fax</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Manual Delivery</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Phone</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Exception_Reason__c</picklist>
+            <values>
+                <fullName>Blocked Can</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Client%27s Request</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Contamination</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dry Run</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Duplicate Request</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Equipment Issues</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Amount</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Container Selected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Hauler</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Service</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Service Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Work-Order Description</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Schedule Change - Client</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Schedule Change - Vendor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Vendor did not perform service</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Weather Conditions</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Work Order Cleanup</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Integration_Status__c</picklist>
+            <values>
+                <fullName>Accept</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cancel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dry Run</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Resend</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Update</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Priority</picklist>
+            <values>
+                <fullName>Critical</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>High</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Low</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Medium</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Send_Status__c</picklist>
+            <values>
+                <fullName>Accepted by MAS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cancelled</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Delivered</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Failed %28Send Manually%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Failed %28System will Retry%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>OnHold</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Scheduled</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sending</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sent</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status</picklist>
+            <values>
+                <fullName>Accepted</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cancelled</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Issued</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Pending%2FDraft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Released for Payment</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sending</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sent</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Work Complete</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Verify_Service_Task__c</picklist>
+            <values>
+                <fullName>ATN</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>RES</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SRI</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WGS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WRC</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WRV</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>WTS</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <customTabListAdditionalFields>Subject</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Account</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Priority</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Status</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>Subject</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Account</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Priority</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Status</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Subject</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Account</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Priority</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Status</lookupPhoneDialogsAdditionalFields>
+        <searchResultsAdditionalFields>Acorn_WorkOrder_Number__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Case_Subtype__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>AssetMaterial__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Vendor_Account_Id__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Container_Position__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Acorn_SID_Text__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Service_Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Created_Date_Created_By__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Status_Send_Status__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>Service_Date_Validation</fullName>
+        <active>true</active>
+        <description>SDT- 4113
+Service Date can be changed only if WO Status IN (New, Pending/Draft, Issued, Sent)</description>
+        <errorConditionFormula>AND(ISCHANGED( Service_Date__c ),NOT(ISBLANK(TEXT(Status))),
+NOT(  
+OR(ISPICKVAL( Status , &quot;New&quot;),
+ISPICKVAL( Status , &quot;Pending/Draft&quot;),
+ISPICKVAL( Status , &quot;Issued&quot;),
+ISPICKVAL( Status , &quot;Sent&quot;),ISPICKVAL( Status , &quot;Rejected&quot;))),
+NOT($User.Bypass_Validation__c)
+)</errorConditionFormula>
+        <errorMessage>Service Date can be changed only if WO Status IN (New, Pending/Draft, Issued, Sent,Rejected)</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Update_Dates_Validation_Actual_Service</fullName>
+        <active>true</active>
+        <description>SDT 4113 story. Update date validation criteria.</description>
+        <errorConditionFormula>AND(DATEVALUE(Actual_Service_Date__c )&lt; Service_Date__c,
+NOT($User.Bypass_Validation__c))</errorConditionFormula>
+        <errorDisplayField>Actual_Service_Date__c</errorDisplayField>
+        <errorMessage>Actual Service Date/Time must be &gt;= Service Date</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Update_Dates_Validation_Return</fullName>
+        <active>true</active>
+        <description>SDT 4113 story. Update date validation criteria.</description>
+        <errorConditionFormula>AND(Return_DateTime__c &lt; Pickup_DateTime__c,
+NOT($User.Bypass_Validation__c))</errorConditionFormula>
+        <errorDisplayField>Return_DateTime__c</errorDisplayField>
+        <errorMessage>Return Date/Time must be &gt;= Pickup Date/Time</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Work_Order_Instructions</fullName>
+        <active>true</active>
+        <description>SDT-4113
+
+Work Order Instructions can be changed only if WO Status IN (New, Pending/Draft, Issued, Sent)</description>
+        <errorConditionFormula>AND(ISCHANGED( Instructions__c ),
+NOT(  
+OR(ISPICKVAL( Status , &quot;New&quot;) ,
+ISPICKVAL( Status , &quot;Pending/Draft&quot;),
+ISPICKVAL( Status , &quot;Issued&quot;),
+ISPICKVAL( Status , &quot;Sent&quot;))),NOT($User.Bypass_Validation__c))</errorConditionFormula>
+        <errorMessage>Work Order Instructions can be changed only if WO Status IN (New, Pending/Draft, Issued, Sent)</errorMessage>
+    </validationRules>
+</CustomObject>

@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>CS_Email__c</fullName>
+        <description>To hold customer service email address</description>
+        <externalId>false</externalId>
+        <label>Customer Service Email</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CS_Phone__c</fullName>
+        <description>To hold customer service phone</description>
+        <label>Customer Service Phone</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>CaseId__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>To identify if the data supplied relates to an existing case</description>
+        <label>CaseId</label>
+        <referenceTo>Case</referenceTo>
+        <relationshipLabel>Service Status</relationshipLabel>
+        <relationshipName>Service_Status</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Charge_Amount__c</fullName>
+        <description>To hold charge amount</description>
+        <externalId>false</externalId>
+        <label>Charge Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Charge_Type__c</fullName>
+        <description>Field to hold Charge type</description>
+        <label>Charge Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Charge</fullName>
+                    <default>false</default>
+                    <label>Charge</label>
+                </value>
+                <value>
+                    <fullName>No Charge</fullName>
+                    <default>false</default>
+                    <label>No Charge</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>External_Reference__c</fullName>
+        <description>External field for SSIS</description>
+        <externalId>false</externalId>
+        <label>External Reference</label>
+        <length>20</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Image_URL__c</fullName>
+        <description>To hold Image URL</description>
+        <label>Image URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Incident_Number__c</fullName>
+        <description>To hold INC number</description>
+        <externalId>false</externalId>
+        <label>Incident Number</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Is_Ready_For_Notification__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>To indicates the record which is ready for MC to pull
+
+This value will be updated by SFDC Trigger where applicable.</description>
+        <label>Is Ready For Notification</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>LOB__c</fullName>
+        <description>To hold Line of business</description>
+        <externalId>false</externalId>
+        <label>Line of Business</label>
+        <length>1</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Location__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <description>To identify the location associated to the data</description>
+        <label>Location</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Service Status</relationshipLabel>
+        <relationshipName>Service_Status</relationshipName>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Message_Status__c</fullName>
+        <description>Pending- Initial value once SSIS inserts the record
+Complete- Value set by SFDC trigger, once record is processed by trigger
+Processed by MC- Value set by MC once record gets processed.</description>
+        <label>Message Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Pending</fullName>
+                    <default>false</default>
+                    <label>Pending</label>
+                </value>
+                <value>
+                    <fullName>Complete</fullName>
+                    <default>false</default>
+                    <label>Complete</label>
+                </value>
+                <value>
+                    <fullName>Processed by MC</fullName>
+                    <default>false</default>
+                    <label>Processed by MC</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Message_Type__c</fullName>
+        <description>To notify to MC that which notification type to be sent</description>
+        <label>Message Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Notification_Type</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Portal_URL__c</fullName>
+        <defaultValue>if(ISBLANK($CustomMetadata.Integration_Request_URLs__mdt.Portal_Login_URL.End_Point__c 
+), &apos;&apos;,$CustomMetadata.Integration_Request_URLs__mdt.Portal_Login_URL.End_Point__c)</defaultValue>
+        <description>To hold Portal URL, Default value will be fetched from custom metadata for this field</description>
+        <label>Portal URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Service_City__c</fullName>
+        <description>To  hold the Service City  from OCS</description>
+        <externalId>false</externalId>
+        <label>Service City</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_Country__c</fullName>
+        <description>To  hold the Service Country from OCS</description>
+        <externalId>false</externalId>
+        <label>Service Country</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_Date__c</fullName>
+        <description>To hold  the date that the service should be performed</description>
+        <label>Service Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Service_Postalcode__c</fullName>
+        <description>To  hold the Service Postal Code from OCS</description>
+        <externalId>false</externalId>
+        <label>Service Postalcode</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_State__c</fullName>
+        <description>To  hold the Service State from OCS</description>
+        <externalId>false</externalId>
+        <label>Service State</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_Street__c</fullName>
+        <description>To  hold the Service address/street  from OCS</description>
+        <externalId>false</externalId>
+        <label>Service Street</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>WorkOrderId__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>To identify if the data supplied relates to an existing work order</description>
+        <label>WorkOrderId</label>
+        <referenceTo>WorkOrder</referenceTo>
+        <relationshipLabel>Service Status</relationshipLabel>
+        <relationshipName>Service_Status</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Service Status</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>SS-{0000000}</displayFormat>
+        <label>Service Status Name</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Service Status</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>MessageStatusValidRule</fullName>
+        <active>true</active>
+        <description>Validation rule to prevent message status changed back to previous state once it is moved forward</description>
+        <errorConditionFormula>AND( ISCHANGED( Message_Status__c) , 
+
+OR( ISPICKVAL(PRIORVALUE( Message_Status__c ),&quot;Processed by MC&quot;) ,
+AND(ISPICKVAL(PRIORVALUE( Message_Status__c ),&quot;Complete&quot;), OR(ISPICKVAL(Message_Status__c,&quot;Pending&quot;),ISPICKVAL(Message_Status__c,&quot;&quot;))
+)
+)
+)</errorConditionFormula>
+        <errorDisplayField>Message_Status__c</errorDisplayField>
+        <errorMessage>Message Status can not be changed at this stage</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

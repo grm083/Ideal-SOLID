@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This metadata is utilized to configure Availability combinations that aid in determining Pricing  and the STP process.</description>
+    <fields>
+        <fullName>Accessories_Requested__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Accessories Requested</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Availability_Flag__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Availability Flag</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>NON WM Availability Assumed - Service, Delivery</fullName>
+                    <default>false</default>
+                    <label>NON WM Availability Assumed - Service, Delivery</label>
+                </value>
+                <value>
+                    <fullName>NON WM Availability NOT Confirmed - Service, Delivery</fullName>
+                    <default>false</default>
+                    <label>NON WM Availability NOT Confirmed - Service, Delivery</label>
+                </value>
+                <value>
+                    <fullName>NON WM Availability NOT Confirmed - Service, Delivery, Accessories</fullName>
+                    <default>false</default>
+                    <label>NON WM Availability NOT Confirmed - Service, Delivery, Accessories</label>
+                </value>
+                <value>
+                    <fullName>WM Availability Assumed - Delivery</fullName>
+                    <default>false</default>
+                    <label>WM Availability Assumed - Delivery</label>
+                </value>
+                <value>
+                    <fullName>WM Availability Assumed - Delivery, Accessories</fullName>
+                    <default>false</default>
+                    <label>WM Availability Assumed - Delivery, Accessories</label>
+                </value>
+                <value>
+                    <fullName>WM Availability Assumed - Service, Delivery</fullName>
+                    <default>false</default>
+                    <label>WM Availability Assumed - Service, Delivery</label>
+                </value>
+                <value>
+                    <fullName>WM Availability Assumed - Service, Delivery, Accessories</fullName>
+                    <default>false</default>
+                    <label>WM Availability Assumed - Service, Delivery, Accessories</label>
+                </value>
+                <value>
+                    <fullName>WM Availability Confirmed</fullName>
+                    <default>true</default>
+                    <label>WM Availability Confirmed</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Accessories</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Accessories</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Delivery</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Delivery</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Delivery, Accessories</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Delivery, Accessories</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Service</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Service</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Service, Accessories</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Service, Accessories</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Service, Delivery</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Service, Delivery</label>
+                </value>
+                <value>
+                    <fullName>WM Availability NOT Confirmed - Service, Delivery, Accessories</fullName>
+                    <default>false</default>
+                    <label>WM Availability NOT Confirmed - Service, Delivery, Accessories</label>
+                </value>
+                <value>
+                    <fullName>Availability could not be confirmed as there is no response from the API</fullName>
+                    <default>false</default>
+                    <label>Availability could not be confirmed as there is no response from the API</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Delivery_Availability__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Delivery Availability</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Selected Delivery is as per WM Availability, selected date is within SLA days</fullName>
+                    <default>true</default>
+                    <label>Selected Delivery is as per WM Availability, selected date is within SLA days</label>
+                </value>
+                <value>
+                    <fullName>Selected Delivery is as per WM Availability, selected date is beyond SLA days but within 30 days</fullName>
+                    <default>false</default>
+                    <label>Selected Delivery is as per WM Availability, selected date is beyond SLA days but within 30 days</label>
+                </value>
+                <value>
+                    <fullName>Selected Delivery is NOT as per WM Availability, selected date is within SLA days</fullName>
+                    <default>false</default>
+                    <label>Selected Delivery is NOT as per WM Availability, selected date is within SLA days</label>
+                </value>
+                <value>
+                    <fullName>Selected Delivery is NOT as per WM Availability, selected date is beyond SLA days but within 30 days</fullName>
+                    <default>false</default>
+                    <label>Selected Delivery is NOT as per WM Availability, selected date is beyond SLA days but within 30 days</label>
+                </value>
+                <value>
+                    <fullName>Selected Delivery is NOT as per WM Availability, selected date is beyond 30 days</fullName>
+                    <default>false</default>
+                    <label>Selected Delivery is NOT as per WM Availability, selected date is beyond 30 days</label>
+                </value>
+                <value>
+                    <fullName>Selected Delivery is NOT as per WM Availability, as this is a back dated order</fullName>
+                    <default>false</default>
+                    <label>Selected Delivery is NOT as per WM Availability, as this is a back dated order</label>
+                </value>
+                <value>
+                    <fullName>WM NOT available to Deliver in the area, selected date is within SLA days</fullName>
+                    <default>false</default>
+                    <label>WM NOT available to Deliver in the area, selected date is within SLA days</label>
+                </value>
+                <value>
+                    <fullName>WM NOT available to Deliver in the area, selected date is beyond SLA days but within 30 days</fullName>
+                    <default>false</default>
+                    <label>WM NOT available to Deliver in the area, selected date is beyond SLA days but within 30 days</label>
+                </value>
+                <value>
+                    <fullName>WM NOT available to Deliver in the area, selected date is beyond 30 days</fullName>
+                    <default>false</default>
+                    <label>WM NOT available to Deliver in the area, selected date is beyond 30 days</label>
+                </value>
+                <value>
+                    <fullName>WM NOT available to Deliver in the area, as this is a back dated order</fullName>
+                    <default>false</default>
+                    <label>WM NOT available to Deliver in the area, as this is a back dated order</label>
+                </value>
+                <value>
+                    <fullName>Availability API Errored out</fullName>
+                    <default>false</default>
+                    <label>Availability API Errored out</label>
+                </value>
+                <value>
+                    <fullName>Availability could not be confirmed as there is no response from the API</fullName>
+                    <default>false</default>
+                    <label>Availability could not be confirmed as there is no response from the API</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Evaluate_STP__c</fullName>
+        <defaultValue>&quot;No&quot;</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Evaluate STP</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>No</fullName>
+                    <default>true</default>
+                    <label>No</label>
+                </value>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Manual_Procurement__c</fullName>
+        <defaultValue>&quot;Yes&quot;</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Manual Procurement</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>true</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Pricing__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Pricing</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Get Price</fullName>
+                    <default>true</default>
+                    <label>Get Price</label>
+                </value>
+                <value>
+                    <fullName>Don&apos;t Get Price</fullName>
+                    <default>false</default>
+                    <label>Don&apos;t Get Price</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Priority__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Priority</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>P1</fullName>
+                    <default>true</default>
+                    <label>P1</label>
+                </value>
+                <value>
+                    <fullName>P2</fullName>
+                    <default>false</default>
+                    <label>P2</label>
+                </value>
+                <value>
+                    <fullName>P3</fullName>
+                    <default>false</default>
+                    <label>P3</label>
+                </value>
+                <value>
+                    <fullName>P4</fullName>
+                    <default>false</default>
+                    <label>P4</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Service_Availability__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Service Availability</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Selected Service is as per WM Availability</fullName>
+                    <default>true</default>
+                    <label>Selected Service is as per WM Availability</label>
+                </value>
+                <value>
+                    <fullName>Selected Service is NOT as per WM Availability</fullName>
+                    <default>false</default>
+                    <label>Selected Service is NOT as per WM Availability</label>
+                </value>
+                <value>
+                    <fullName>WM NOT available to Service in the area</fullName>
+                    <default>false</default>
+                    <label>WM NOT available to Service in the area</label>
+                </value>
+                <value>
+                    <fullName>Availability API Errored out</fullName>
+                    <default>false</default>
+                    <label>Availability API Errored out</label>
+                </value>
+                <value>
+                    <fullName>Availability could not be confirmed as there is no response from the API</fullName>
+                    <default>false</default>
+                    <label>Availability could not be confirmed as there is no response from the API</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Availability Flag</label>
+    <pluralLabel>Availability Flags</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Contains field names of the objects whose updates are tracked in case activity timeline</description>
+    <fields>
+        <fullName>Fields__c</fullName>
+        <description>Contains fields whose updates will be tracked in the case activity timeline. Mention the field names in lower case seperated by commas</description>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Fields</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Case Hisory Tracking</label>
+    <pluralLabel>Case Hisory Trackings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

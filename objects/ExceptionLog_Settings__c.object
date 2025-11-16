@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Exception_Log_Email_DL__c</fullName>
+        <description>Field to store daily exception report email recipient DL.</description>
+        <externalId>false</externalId>
+        <label>Exception Log Email DL</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Exception_Log_Removal_Days__c</fullName>
+        <externalId>false</externalId>
+        <label>Exception Log Removal(Days)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Exception_Type_Limit__c</fullName>
+        <description>Exception type limit for sending daily email.</description>
+        <externalId>false</externalId>
+        <label>Exception Type Limit</label>
+        <precision>10</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Logging_Level__c</fullName>
+        <externalId>false</externalId>
+        <label>Logging Level</label>
+        <length>10</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>ExceptionLog Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

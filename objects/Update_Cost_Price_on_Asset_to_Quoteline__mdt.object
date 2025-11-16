@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>SDT-33285</description>
+    <fields>
+        <fullName>Expected_Result__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Expected Result</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Final_Frequency__c</fullName>
+        <defaultValue>false</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Final Frequency</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Occurrence_Type__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Occurrence Type</label>
+        <length>30</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Pricing_Call__c</fullName>
+        <defaultValue>false</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Pricing Call</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Product_Family__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Product Family</label>
+        <length>30</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Scenarios__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Scenarios</label>
+        <length>30</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Type__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Type</label>
+        <length>30</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Updated_Occurrence_Type__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Updated Occurrence Type</label>
+        <length>30</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Update Cost,Price on Asset to Quoteline</label>
+    <listViews>
+        <fullName>All_Records</fullName>
+        <columns>Type__c</columns>
+        <columns>Product_Family__c</columns>
+        <columns>Occurrence_Type__c</columns>
+        <columns>Updated_Occurrence_Type__c</columns>
+        <columns>Scenarios__c</columns>
+        <columns>Final_Frequency__c</columns>
+        <columns>Expected_Result__c</columns>
+        <columns>Pricing_Call__c</columns>
+        <columns>MasterLabel</columns>
+        <columns>DeveloperName</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Records</label>
+    </listViews>
+    <pluralLabel>Update Cost,Price on Asset to Quotelines</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

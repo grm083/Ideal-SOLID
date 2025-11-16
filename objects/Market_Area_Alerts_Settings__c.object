@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>List</customSettingsType>
+    <description>A list of various MAA project settings to control &quot;switches&quot; based on business feedback</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Allow_Filtering_by_Equipment_Type__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Allows filtering of the returned result by equipment type and equipment size</description>
+        <label>Allow Filtering by Equipment</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Allow_Filtering_by_LOB__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Allows the system to reduce the returned transaction count by LOB parameters</description>
+        <label>Allow Filtering by LOB</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Allow_Filtering_by_Material__c</fullName>
+        <defaultValue>true</defaultValue>
+        <label>Allow Filtering by Material</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Number_of_Alerts_Per_Page__c</fullName>
+        <externalId>false</externalId>
+        <label>Number of Alerts Per Page</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Number_of_Days_of_Alerts__c</fullName>
+        <defaultValue>14</defaultValue>
+        <externalId>false</externalId>
+        <label>Number of Days of Expired Alerts</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Records_Shown__c</fullName>
+        <description>Given a type of record (case, for example) declaratively control the page size from a custom setting rather than hard coded input.</description>
+        <externalId>false</externalId>
+        <label>Records Shown</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Market Area Alerts Settings</label>
+    <listViews>
+        <fullName>Custom_Setting_Fields</fullName>
+        <columns>NAME</columns>
+        <columns>Number_of_Days_of_Alerts__c</columns>
+        <columns>Allow_Filtering_by_Equipment_Type__c</columns>
+        <columns>Allow_Filtering_by_LOB__c</columns>
+        <columns>Allow_Filtering_by_Material__c</columns>
+        <columns>Records_Shown__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>Custom Setting Fields</label>
+    </listViews>
+    <visibility>Public</visibility>
+</CustomObject>

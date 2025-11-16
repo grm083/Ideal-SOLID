@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>The designations and teams responsible for working specific statuses of the Quote Lifecycle</description>
+    <fields>
+        <fullName>Customer_Group__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Customer Group</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Project Services</fullName>
+                    <default>true</default>
+                    <label>Project Services</label>
+                </value>
+                <value>
+                    <fullName>Core Customer</fullName>
+                    <default>false</default>
+                    <label>Core Customer</label>
+                </value>
+                <value>
+                    <fullName>Canada</fullName>
+                    <default>false</default>
+                    <label>Canada</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Priority__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Priority</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>P1</fullName>
+                    <default>false</default>
+                    <label>P1</label>
+                </value>
+                <value>
+                    <fullName>P2</fullName>
+                    <default>false</default>
+                    <label>P2</label>
+                </value>
+                <value>
+                    <fullName>P3</fullName>
+                    <default>false</default>
+                    <label>P3</label>
+                </value>
+                <value>
+                    <fullName>P4</fullName>
+                    <default>false</default>
+                    <label>P4</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Quote_Type__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Quote Type</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>New Quote</fullName>
+                    <default>true</default>
+                    <label>New Quote</label>
+                </value>
+                <value>
+                    <fullName>Amendment</fullName>
+                    <default>false</default>
+                    <label>Amendment</label>
+                </value>
+                <value>
+                    <fullName>Escalation</fullName>
+                    <default>false</default>
+                    <label>Escalation</label>
+                </value>
+                <value>
+                    <fullName>Correction</fullName>
+                    <default>false</default>
+                    <label>Correction</label>
+                </value>
+                <value>
+                    <fullName>Exception</fullName>
+                    <default>false</default>
+                    <label>Exception</label>
+                </value>
+                <value>
+                    <fullName>Amendment Quote</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Amendment Quote</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Status</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Draft</fullName>
+                    <default>true</default>
+                    <label>Draft</label>
+                </value>
+                <value>
+                    <fullName>Product Configured</fullName>
+                    <default>false</default>
+                    <label>Product Configured</label>
+                </value>
+                <value>
+                    <fullName>Cost Configured</fullName>
+                    <default>false</default>
+                    <label>Cost Configured</label>
+                </value>
+                <value>
+                    <fullName>Price Configured</fullName>
+                    <default>false</default>
+                    <label>Price Configured</label>
+                </value>
+                <value>
+                    <fullName>Quote Submitted</fullName>
+                    <default>false</default>
+                    <label>Quote Submitted</label>
+                </value>
+                <value>
+                    <fullName>Declined</fullName>
+                    <default>false</default>
+                    <label>Declined</label>
+                </value>
+                <value>
+                    <fullName>Approved</fullName>
+                    <default>false</default>
+                    <label>Approved</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Team_Name__c</fullName>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Team Name</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Customer Service</fullName>
+                    <default>true</default>
+                    <label>Customer Service</label>
+                </value>
+                <value>
+                    <fullName>SSM</fullName>
+                    <default>false</default>
+                    <label>SSM</label>
+                </value>
+                <value>
+                    <fullName>Project Services</fullName>
+                    <default>false</default>
+                    <label>Project Services</label>
+                </value>
+                <value>
+                    <fullName>VRM Procurement</fullName>
+                    <default>false</default>
+                    <label>VRM Procurement</label>
+                </value>
+                <value>
+                    <fullName>Sales</fullName>
+                    <default>false</default>
+                    <label>Sales</label>
+                </value>
+                <value>
+                    <fullName>Canada VRM</fullName>
+                    <default>false</default>
+                    <label>Canada VRM</label>
+                </value>
+                <value>
+                    <fullName>Internal Spec Corrections</fullName>
+                    <default>false</default>
+                    <label>Internal Spec Corrections</label>
+                </value>
+                <value>
+                    <fullName>Service Resolution</fullName>
+                    <default>false</default>
+                    <label>Service Resolution</label>
+                </value>
+                <value>
+                    <fullName>New Stores</fullName>
+                    <default>false</default>
+                    <label>New Stores</label>
+                </value>
+                <value>
+                    <fullName>Service Fulfillment - New Service</fullName>
+                    <default>false</default>
+                    <label>Service Fulfillment - New Service</label>
+                </value>
+                <value>
+                    <fullName>Service Fulfillment – Service Change</fullName>
+                    <default>false</default>
+                    <label>Service Fulfillment – Service Change</label>
+                </value>
+                <value>
+                    <fullName>Corrections</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Corrections</label>
+                </value>
+                <value>
+                    <fullName>Service Setup &amp; Maintenance</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Service Setup &amp; Maintenance</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Quote Teams Framework</label>
+    <listViews>
+        <fullName>Teams_Listview</fullName>
+        <columns>MasterLabel</columns>
+        <columns>Quote_Type__c</columns>
+        <columns>Customer_Group__c</columns>
+        <columns>Status__c</columns>
+        <columns>Priority__c</columns>
+        <columns>Team_Name__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>Teams Listview</label>
+    </listViews>
+    <pluralLabel>Quote Teams Frameworks</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

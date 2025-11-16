@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>AccountAccessLevel</fullName>
+    </fields>
+    <fields>
+        <fullName>AccountId</fullName>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>CaseAccessLevel</fullName>
+    </fields>
+    <fields>
+        <fullName>ContactAccessLevel</fullName>
+    </fields>
+    <fields>
+        <fullName>OpportunityAccessLevel</fullName>
+    </fields>
+    <fields>
+        <fullName>TeamMemberRole</fullName>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Team_Roles_Multi__c</fullName>
+        <label>Team Roles Multi</label>
+        <required>false</required>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>National Accounts Program Manager (PM)</fullName>
+                    <default>false</default>
+                    <label>National Accounts Program Manager (PM)</label>
+                </value>
+                <value>
+                    <fullName>Corporate Service Specialist (CSS)</fullName>
+                    <default>false</default>
+                    <label>Corporate Service Specialist (CSS)</label>
+                </value>
+                <value>
+                    <fullName>Program Manager Specialist (PS)</fullName>
+                    <default>false</default>
+                    <label>Program Manager Specialist (PS)</label>
+                </value>
+                <value>
+                    <fullName>Sales Program Manager (SPM)</fullName>
+                    <default>false</default>
+                    <label>Sales Program Manager (SPM)</label>
+                </value>
+                <value>
+                    <fullName>National Account Manager (NAM)</fullName>
+                    <default>false</default>
+                    <label>National Account Manager (NAM)</label>
+                </value>
+                <value>
+                    <fullName>Billing Manager (BM)</fullName>
+                    <default>false</default>
+                    <label>Billing Manager (BM)</label>
+                </value>
+                <value>
+                    <fullName>Receivable Account Manager (RAM)</fullName>
+                    <default>false</default>
+                    <label>Receivable Account Manager (RAM)</label>
+                </value>
+                <value>
+                    <fullName>Manager Strategic Accounts (MSA)</fullName>
+                    <default>false</default>
+                    <label>Manager Strategic Accounts (MSA)</label>
+                </value>
+                <value>
+                    <fullName>Program Manager Director (PMD)</fullName>
+                    <default>false</default>
+                    <label>Program Manager Director (PMD)</label>
+                </value>
+                <value>
+                    <fullName>Sales Director (SD)</fullName>
+                    <default>false</default>
+                    <label>Sales Director (SD)</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>UserId</fullName>
+        <type>Lookup</type>
+    </fields>
+</CustomObject>
