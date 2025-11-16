@@ -147,13 +147,24 @@
                                     <template if:true={contactId}>
                                         <template if:false={boolNewContact}>
                                             <div class="bigBoxVert selectContactEdit">
-                                                <lightning-record-form
-                                                    record-id={contactId}
-                                                    object-api-name="Contact"
-                                                    fields={contactDisplayFields}
-                                                    columns="2"
-                                                    mode={boolReadOnly ? 'readonly' : 'view'}>
-                                                </lightning-record-form>
+                                                <template if:true={boolReadOnly}>
+                                                    <lightning-record-form
+                                                        record-id={contactId}
+                                                        object-api-name="Contact"
+                                                        fields={contactDisplayFields}
+                                                        columns="2"
+                                                        mode='readonly'>
+                                                    </lightning-record-form>
+                                                </template>
+                                                <template if:false={boolReadOnly}>
+                                                    <lightning-record-form
+                                                        record-id={contactId}
+                                                        object-api-name="Contact"
+                                                        fields={contactDisplayFields}
+                                                        columns="2"
+                                                        mode='view'>
+                                                    </lightning-record-form>
+                                                </template>
                                             </div>
                                             <template if:true={boolReadOnly}>
                                                 <p class="slds-m-top_small slds-text-body_small">
