@@ -1,0 +1,26 @@
+/**
+ * Case Data Governor Component Styles
+ *
+ * This component is designed to be mostly invisible in production.
+ * Styles here are primarily for debugging and admin purposes.
+ */
+
+.governor-info {
+    /* Hide by default in production */
+    display: none;
+    padding: 0.5rem;
+    background-color: #f3f3f3;
+    border-radius: 0.25rem;
+    margin: 0.5rem;
+}
+
+/* Show info when in debug mode (add 'debug' class to component) */
+:host(.debug) .governor-info {
+    display: block;
+}
+
+/* Minimal footprint */
+:host {
+    display: block;
+    min-height: 1px;
+}

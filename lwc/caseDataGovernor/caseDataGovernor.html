@@ -1,0 +1,29 @@
+<template>
+    <!-- Data Governor Component - Invisible by default, loads and publishes data -->
+
+    <!-- Loading State -->
+    <template if:true={isLoading}>
+        <div class="slds-is-relative">
+            <lightning-spinner alternative-text="Loading case data..." size="small"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- Error State (visible for debugging) -->
+    <template if:true={hasError}>
+        <div class="slds-box slds-theme_error slds-m-around_small">
+            <div class="slds-text-heading_small">Error Loading Case Data</div>
+            <div class="slds-m-top_x-small">{error}</div>
+        </div>
+    </template>
+
+    <!-- Success State - Hidden in production, useful for debugging -->
+    <template if:true={hasData}>
+        <div class="governor-info" title="Case Data Governor - Active">
+            <!-- Hidden by default, can be shown for debugging -->
+            <div class="slds-text-body_small slds-text-color_weak">
+                <lightning-icon icon-name="utility:database" size="xx-small"></lightning-icon>
+                Data loaded at {loadedAt}
+            </div>
+        </div>
+    </template>
+</template>
