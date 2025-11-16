@@ -1,0 +1,22 @@
+.ridgedBorder {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.bigBoxVert {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.selectContactEdit {
+    padding: 1rem;
+}
+
+.bgHighlight {
+    background-color: lightgreen;
+}
+
+.noBgHighlight {
+    background-color: white;
+}

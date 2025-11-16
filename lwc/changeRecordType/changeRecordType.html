@@ -1,0 +1,102 @@
+<template>
+    <lightning-card title="Record Type Selector">
+        <div class="slds-grid slds-wrap">
+            <!-- Left Column: Vertical Navigation -->
+            <div class="slds-col slds-size_4-of-12 slds-p-around_small">
+                <lightning-vertical-navigation
+                    selected-item={selectedItem}
+                    onselect={handleRecordTypeSelect}
+                    compact
+                    shaded>
+                    <lightning-vertical-navigation-section label="Available Record Types">
+                        <template for:each={navigationItems} for:item="item">
+                            <lightning-vertical-navigation-item
+                                key={item.name}
+                                label={item.label}
+                                name={item.name}>
+                            </lightning-vertical-navigation-item>
+                        </template>
+                    </lightning-vertical-navigation-section>
+                </lightning-vertical-navigation>
+            </div>
+
+            <!-- Right Column: Actions and Form -->
+            <div class="slds-col slds-size_8-of-12 slds-p-around_small">
+                <!-- Quick Action Buttons -->
+                <div class="slds-align_absolute-center slds-m-bottom_large" style="height:5rem">
+                    <lightning-button
+                        variant="success"
+                        label="Pickup"
+                        onclick={handleQuickActionClick}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="success"
+                        label="New Service"
+                        onclick={handleQuickActionClick}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="success"
+                        label="SNP"
+                        onclick={handleQuickActionClick}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="success"
+                        label="ETA"
+                        onclick={handleQuickActionClick}>
+                    </lightning-button>
+                </div>
+
+                <!-- Record Type Form -->
+                <template if:true={showForm}>
+                    <p>You've selected: <strong>{selectedItem}</strong></p>
+                    <p class="slds-m-top_small">{itemDescription}</p>
+
+                    <!-- Error Message for Restricted Combinations -->
+                    <template if:true={errorCombination}>
+                        <div class="slds-m-top_small">
+                            <p class="slds-text-color_error slds-text-body_regular">
+                                {errorMsg}
+                            </p>
+                        </div>
+                    </template>
+
+                    <!-- Record Edit Form -->
+                    <lightning-record-edit-form
+                        record-id={recordId}
+                        record-type-id={newRecordTypeId}
+                        object-api-name="Case"
+                        onsuccess={handleSuccess}
+                        onerror={handleError}
+                        onsubmit={handleSubmit}
+                        class="slds-m-top_medium">
+
+                        <lightning-input-field
+                            field-name="Case_Type__c"
+                            onchange={handleFieldChange}>
+                        </lightning-input-field>
+
+                        <lightning-input-field
+                            field-name="Case_Sub_Type__c"
+                            onchange={handleFieldChange}>
+                        </lightning-input-field>
+
+                        <lightning-input-field
+                            field-name="Case_Reason__c"
+                            onchange={handleFieldChange}>
+                        </lightning-input-field>
+
+                        <lightning-button
+                            type="submit"
+                            label="Confirm Change"
+                            variant="brand"
+                            class="slds-m-top_medium slds-align_absolute-center">
+                        </lightning-button>
+                    </lightning-record-edit-form>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>
