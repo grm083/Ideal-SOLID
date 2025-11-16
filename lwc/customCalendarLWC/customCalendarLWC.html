@@ -1,8 +1,100 @@
 <template>
-    <lightning-card title="Component Stub">
-        <div class="slds-p-around_medium">
-            <p>This component is a stub and requires full conversion from Aura.</p>
-            <p>Record ID: {recordId}</p>
+    <template if:true={showModal}>
+        <div class="slds-is-relative">
+            <!-- Loading Spinner -->
+            <template if:true={loadingSpinner}>
+                <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+            </template>
+
+            <div class="slds-p-around_medium">
+                <!-- Date Selection Section -->
+                <div class="slds-m-bottom_medium">
+                    <label class="slds-form-element__label slds-align_absolute-center">
+                        Please select dates
+                    </label>
+
+                    <!-- Add New Date -->
+                    <div class="slds-grid slds-gutters slds-m-top_small slds-align_absolute-center">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="date"
+                                label="Select Date"
+                                value={newDate}
+                                onchange={handleNewDateChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-align-bottom">
+                            <lightning-button
+                                variant="brand"
+                                label="Add Date"
+                                icon-name="utility:add"
+                                onclick={handleAddDate}>
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                    <!-- Selected Dates List -->
+                    <template if:true={hasSelectedDates}>
+                        <div class="slds-m-top_medium">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Selected Dates:</h3>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <template for:each={selectedDatesWithIndex} for:item="dateItem">
+                                    <div key={dateItem.index} class="slds-col slds-size_1-of-2 slds-m-bottom_x-small">
+                                        <div class="slds-box slds-theme_shade slds-p-around_x-small">
+                                            <div class="slds-grid slds-grid_align-spread">
+                                                <div class="slds-col">
+                                                    <span>{dateItem.date}</span>
+                                                    <template if:true={dateItem.isServiceDate}>
+                                                        <lightning-badge label="Service Date" class="slds-m-left_x-small"></lightning-badge>
+                                                    </template>
+                                                </div>
+                                                <div class="slds-col slds-no-flex">
+                                                    <lightning-button-icon
+                                                        icon-name="utility:close"
+                                                        alternative-text="Remove"
+                                                        title="Remove"
+                                                        variant="bare"
+                                                        data-date={dateItem.date}
+                                                        onclick={handleRemoveDate}>
+                                                    </lightning-button-icon>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Checkboxes Section -->
+                <div class="slds-m-top_medium">
+                    <lightning-input
+                        type="checkbox"
+                        label="Empty and do not return"
+                        checked={notReturn}
+                        onchange={handleNotReturnChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Custom Footer -->
+                <div class="custom-footer slds-m-top_medium">
+                    <lightning-input
+                        type="checkbox"
+                        label="Create AM/PM Pickup"
+                        checked={createAMPMPickups}
+                        onchange={handleAMPMChange}>
+                    </lightning-input>
+
+                    <div class="slds-m-top_medium slds-align_absolute-center">
+                        <lightning-button
+                            variant="brand"
+                            label="Copy Case"
+                            onclick={handleCopyCase}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </lightning-card>
+    </template>
 </template>

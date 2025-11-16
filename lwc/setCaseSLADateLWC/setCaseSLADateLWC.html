@@ -1,8 +1,82 @@
 <template>
-    <lightning-card title="Component Stub">
-        <div class="slds-p-around_medium">
-            <p>This component is a stub and requires full conversion from Aura.</p>
-            <p>Record ID: {recordId}</p>
+    <template if:true={showForm}>
+        <div class="slds-m-around_medium">
+            <!-- Error Message Display -->
+            <template if:true={hasError}>
+                <div class="slds-notify_container slds-is-relative slds-m-bottom_medium">
+                    <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                        <div class="slds-notify__content">
+                            <h2 class="slds-text-heading_small">{errorMessage}</h2>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Record Edit Form -->
+            <lightning-record-edit-form
+                record-id={recordId}
+                record-type-id={recordTypeId}
+                object-api-name="Case"
+                onsubmit={handleSubmit}
+                onsuccess={handleSuccess}
+                onerror={handleError}>
+
+                <!-- Form Fields -->
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning-input-field
+                            field-name="SLA_Service_DateTime__c"
+                            variant="label-stacked">
+                        </lightning-input-field>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning-input-field
+                            field-name="Service_Date__c"
+                            variant="label-stacked"
+                            required>
+                        </lightning-input-field>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning-input-field
+                            field-name="SLA_Override_Reason__c"
+                            variant="label-stacked">
+                        </lightning-input-field>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning-input-field
+                            field-name="SLA_Override_Comment__c"
+                            variant="label-stacked">
+                        </lightning-input-field>
+                    </div>
+
+                    <!-- Hidden field for Availability_Checked__c -->
+                    <div class="slds-hidden">
+                        <lightning-input-field
+                            field-name="Availability_Checked__c">
+                        </lightning-input-field>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="slds-m-top_medium slds-align_absolute-center">
+                    <lightning-button
+                        type="submit"
+                        label="Save"
+                        variant="brand">
+                    </lightning-button>
+                </div>
+
+                <!-- Loading Spinner -->
+                <template if:true={loading}>
+                    <lightning-spinner
+                        alternative-text="Loading"
+                        size="medium">
+                    </lightning-spinner>
+                </template>
+            </lightning-record-edit-form>
         </div>
-    </lightning-card>
+    </template>
 </template>
