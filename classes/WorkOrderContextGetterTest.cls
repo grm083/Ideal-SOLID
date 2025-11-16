@@ -20,7 +20,7 @@ private class WorkOrderContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Account locationAccount = (Account)testData.get('locationAccount');
         Asset testAsset = (Asset)testData.get('asset');
 

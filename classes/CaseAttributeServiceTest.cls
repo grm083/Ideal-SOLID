@@ -12,13 +12,13 @@ private class CaseAttributeServiceTest {
 
     @testSetup
     static void setupTestData() {
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     @isTest
     static void testInitializeCase_Single() {
         // Given
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
 
         Test.startTest();
         // When
@@ -32,7 +32,7 @@ private class CaseAttributeServiceTest {
     @isTest
     static void testInitializeCases_Bulk() {
         // Given
-        List<Case> cases = TestDataFactory.createCases(5, 'Service_Request');
+        List<Case> cases = TestDataFactoryRefactored.createCases(5, 'Service_Request');
 
         Test.startTest();
         // When
@@ -46,7 +46,7 @@ private class CaseAttributeServiceTest {
     @isTest
     static void testInitializeCases_ClosedPickup() {
         // Given
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.Status = 'Closed';
         testCase.Case_type__c = 'Pickup';
 
@@ -84,11 +84,11 @@ private class CaseAttributeServiceTest {
     @isTest
     static void testUpdateCaseAttributes() {
         // Given
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Asset testAsset = (Asset)testData.get('asset');
         Account locationAccount = (Account)testData.get('locationAccount');
 
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.AssetId = testAsset.Id;
         testCase.Location__c = locationAccount.Id;
 

@@ -10,7 +10,7 @@ private class WorkOrderCreationTest {
 
     @testSetup
     static void setupTestData() {
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     @isTest

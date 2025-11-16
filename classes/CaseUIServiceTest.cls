@@ -20,7 +20,7 @@ private class CaseUIServiceTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
 
         // Create additional cases with various configurations
         Account clientAccount = (Account)testData.get('clientAccount');
@@ -32,7 +32,7 @@ private class CaseUIServiceTest {
         String refNumber = 'TEST_REF_' + System.now().getTime();
         List<Case> relatedCases = new List<Case>();
         for (Integer i = 0; i < 3; i++) {
-            Case c = TestDataFactory.createCaseWithRelationships(
+            Case c = TestDataFactoryRefactored.createCaseWithRelationships(
                 clientAccount.Id,
                 locationAccount.Id,
                 contact.Id,
@@ -46,7 +46,7 @@ private class CaseUIServiceTest {
         insert relatedCases;
 
         // Create a child case
-        Case childCase = TestDataFactory.createCaseWithRelationships(
+        Case childCase = TestDataFactoryRefactored.createCaseWithRelationships(
             clientAccount.Id,
             locationAccount.Id,
             contact.Id,
@@ -183,7 +183,7 @@ private class CaseUIServiceTest {
     @isTest
     static void testGetBusinessRule_CaseWithoutClient() {
         // Given: A case without client
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.Client__c = null;
         insert testCase;
 
@@ -229,7 +229,7 @@ private class CaseUIServiceTest {
     @isTest
     static void testGetEntitlement_CaseWithoutSubType() {
         // Given: A case without sub type
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.Case_Sub_type__c = null;
         insert testCase;
 
@@ -488,7 +488,7 @@ private class CaseUIServiceTest {
     @isTest
     static void testGetCaseAssetDetails_CaseWithoutAsset() {
         // Given: A case without asset
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.AssetId = null;
         insert testCase;
 

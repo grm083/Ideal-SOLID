@@ -20,11 +20,11 @@ private class ContactContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create accounts
-        Account clientAccount = TestDataFactory.createAccount('Client', 'Client');
+        Account clientAccount = TestDataFactoryRefactored.createAccount('Client', 'Client');
         insert clientAccount;
 
         // Create contacts
-        List<Contact> contacts = TestDataFactory.createContacts(5, clientAccount.Id);
+        List<Contact> contacts = TestDataFactoryRefactored.createContacts(5, clientAccount.Id);
         insert contacts;
 
         // Create Department records (custom object)

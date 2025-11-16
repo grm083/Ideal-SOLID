@@ -20,7 +20,7 @@ private class UniversalQueryUtilityTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     // ========================================================================
@@ -155,11 +155,11 @@ private class UniversalQueryUtilityTest {
     @isTest
     static void testUniversalQuery_Task_Success() {
         // Given: A task exists
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Case testCase = (Case)testData.get('case');
         Contact testContact = (Contact)testData.get('contact');
 
-        Task testTask = TestDataFactory.createTask(testCase.Id, testContact.Id);
+        Task testTask = TestDataFactoryRefactored.createTask(testCase.Id, testContact.Id);
         insert testTask;
 
         Set<Id> taskIds = new Set<Id>{testTask.Id};
@@ -210,11 +210,11 @@ private class UniversalQueryUtilityTest {
     @isTest
     static void testUniversalQuery_DifferentConstraint_WhatId() {
         // Given: A task with WhatId
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Case testCase = (Case)testData.get('case');
         Contact testContact = (Contact)testData.get('contact');
 
-        Task testTask = TestDataFactory.createTask(testCase.Id, testContact.Id);
+        Task testTask = TestDataFactoryRefactored.createTask(testCase.Id, testContact.Id);
         insert testTask;
 
         Set<Id> caseIds = new Set<Id>{testCase.Id};

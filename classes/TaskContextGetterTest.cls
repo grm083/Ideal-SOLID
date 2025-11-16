@@ -20,7 +20,7 @@ private class TaskContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
 
         // Create additional tasks for bulk testing
         Case testCase = (Case)testData.get('case');
@@ -28,7 +28,7 @@ private class TaskContextGetterTest {
 
         List<Task> additionalTasks = new List<Task>();
         for (Integer i = 0; i < 5; i++) {
-            Task t = TestDataFactory.createTask(testCase.Id, testContact.Id);
+            Task t = TestDataFactoryRefactored.createTask(testCase.Id, testContact.Id);
             t.Subject = 'Bulk Test Task ' + i;
             additionalTasks.add(t);
         }
@@ -195,11 +195,11 @@ private class TaskContextGetterTest {
     @isTest
     static void testGetTaskById_WithRelationships() {
         // Given: A task with case and contact relationships
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Case testCase = (Case)testData.get('case');
         Contact testContact = (Contact)testData.get('contact');
 
-        Task taskWithRelationships = TestDataFactory.createTask(testCase.Id, testContact.Id);
+        Task taskWithRelationships = TestDataFactoryRefactored.createTask(testCase.Id, testContact.Id);
         insert taskWithRelationships;
 
         Set<Id> taskIds = new Set<Id>{taskWithRelationships.Id};

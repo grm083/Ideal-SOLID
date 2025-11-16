@@ -20,20 +20,20 @@ private class AssetContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create account and product
-        Account locationAccount = TestDataFactory.createAccount('Location', 'Location');
+        Account locationAccount = TestDataFactoryRefactored.createAccount('Location', 'Location');
         insert locationAccount;
 
-        Product2 product = TestDataFactory.createProduct('Rolloff');
+        Product2 product = TestDataFactoryRefactored.createProduct('Rolloff');
         insert product;
 
         // Create parent assets (headers)
-        List<Asset> parentAssets = TestDataFactory.createAssets(3, locationAccount.Id, product.Id);
+        List<Asset> parentAssets = TestDataFactoryRefactored.createAssets(3, locationAccount.Id, product.Id);
         insert parentAssets;
 
         // Create child assets (details) under first parent
         List<Asset> childAssets = new List<Asset>();
         for (Integer i = 0; i < 5; i++) {
-            Asset child = TestDataFactory.createAsset(locationAccount.Id, product.Id);
+            Asset child = TestDataFactoryRefactored.createAsset(locationAccount.Id, product.Id);
             child.ParentId = parentAssets[0].Id;
             child.Name = 'Child Asset ' + i;
             childAssets.add(child);
@@ -43,7 +43,7 @@ private class AssetContextGetterTest {
         // Create child assets under second parent
         List<Asset> moreChildAssets = new List<Asset>();
         for (Integer i = 0; i < 3; i++) {
-            Asset child = TestDataFactory.createAsset(locationAccount.Id, product.Id);
+            Asset child = TestDataFactoryRefactored.createAsset(locationAccount.Id, product.Id);
             child.ParentId = parentAssets[1].Id;
             child.Name = 'Child Asset B ' + i;
             moreChildAssets.add(child);

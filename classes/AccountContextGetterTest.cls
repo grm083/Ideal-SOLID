@@ -20,18 +20,18 @@ private class AccountContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create client accounts
-        List<Account> clientAccounts = TestDataFactory.createAccounts(3, 'Client', 'Client');
+        List<Account> clientAccounts = TestDataFactoryRefactored.createAccounts(3, 'Client', 'Client');
         insert clientAccounts;
 
         // Create location accounts under first client
-        List<Account> locationAccounts = TestDataFactory.createAccounts(5, 'Location', 'Location');
+        List<Account> locationAccounts = TestDataFactoryRefactored.createAccounts(5, 'Location', 'Location');
         for (Account loc : locationAccounts) {
             loc.ParentId = clientAccounts[0].Id;
         }
         insert locationAccounts;
 
         // Create additional location accounts under second client
-        List<Account> moreLocations = TestDataFactory.createAccounts(3, 'Location', 'Location');
+        List<Account> moreLocations = TestDataFactoryRefactored.createAccounts(3, 'Location', 'Location');
         for (Account loc : moreLocations) {
             loc.ParentId = clientAccounts[1].Id;
         }
