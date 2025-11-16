@@ -21,7 +21,7 @@ const CASE_FIELDS = [CASE_ID, CASE_STATUS, CASE_LOCATION];
 export default class LocationContainerLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
 
     // Private properties
     showLocationDetails = true;

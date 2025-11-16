@@ -31,7 +31,7 @@ const CASE_FIELDS = [CASE_ID, CASE_RECORD_TYPE_ID, CASE_TYPE, CASE_SUB_TYPE, CAS
 export default class SetCaseCustomerInfoLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
 
     // Private properties
     @track companyCategoryOptions = [];

@@ -16,7 +16,7 @@ const CASE_FIELDS = [SLA_SERVICE_DATETIME_FIELD, SERVICE_DATE_FIELD];
 
 export default class SetCaseSLADateLWC extends LightningElement {
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
     @api parentId;
     @api isCapacityEligible = false;
     @api isAvailDate = false;

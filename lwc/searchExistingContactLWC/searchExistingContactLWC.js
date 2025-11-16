@@ -45,7 +45,7 @@ import saveUserToCase from '@salesforce/apex/ContactSearchandCreate.saveUserToCa
 export default class SearchExistingContactLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
     @api isVendor = false;
     @api isClient = false;
 

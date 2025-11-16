@@ -94,12 +94,13 @@
                 <template for:each={accountWrapperList} for:item="acc">
                     <tr key={acc.objAcc.Id}>
                         <td>
-                            <input
+                            <lightning-input
                                 type="radio"
                                 name="clientCheck"
                                 data-id={acc.objAcc.Id}
-                                checked={acc.objAcc.Id === selectedClientAccountId}
-                                onclick={handleAccountSelection} />
+                                checked={acc.isSelected}
+                                onchange={handleAccountSelection}>
+                            </lightning-input>
                         </td>
                         <td>
                             <div class="slds-truncate">{acc.objAcc.Customer_Code__c}</div>
