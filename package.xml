@@ -52,7 +52,7 @@
         <members>TaskContextGetter</members>
         <members>TaskContextGetterTest</members>
         <members>TaskPopUpMessageController</members>
-        <members>TestDataFactory</members>
+        <members>TestDataFactoryRefactored</members>
         <members>UI_customLookUpController</members>
         <members>UniversalQueryUtility</members>
         <members>UniversalQueryUtilityTest</members>

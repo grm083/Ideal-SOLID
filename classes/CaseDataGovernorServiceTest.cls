@@ -16,7 +16,7 @@ private class CaseDataGovernorServiceTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy with all relationships
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     // ========================================================================
@@ -304,7 +304,7 @@ private class CaseDataGovernorServiceTest {
         // Given: Cases with same reference number
         String refNumber = 'TEST_REF_' + System.now().getTime();
 
-        List<Case> relatedCases = TestDataFactory.createCases(3, 'Service_Request');
+        List<Case> relatedCases = TestDataFactoryRefactored.createCases(3, 'Service_Request');
         for (Case c : relatedCases) {
             c.Reference_Number__c = refNumber;
         }

@@ -20,14 +20,14 @@ private class QuoteContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy including quotes
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
 
         // Create additional quotes for bulk testing
         Opportunity testOpp = (Opportunity)testData.get('opportunity');
 
         List<Quote> additionalQuotes = new List<Quote>();
         for (Integer i = 0; i < 5; i++) {
-            Quote q = TestDataFactory.createQuote(testOpp.Id);
+            Quote q = TestDataFactoryRefactored.createQuote(testOpp.Id);
             q.Name = 'Bulk Test Quote ' + i;
             additionalQuotes.add(q);
         }
@@ -193,7 +193,7 @@ private class QuoteContextGetterTest {
     @isTest
     static void testGetQuoteById_WithOpportunity() {
         // Given: A quote with opportunity relationship
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Opportunity testOpp = (Opportunity)testData.get('opportunity');
         Quote testQuote = (Quote)testData.get('quote');
 

@@ -12,7 +12,7 @@ private class CaseDMLServiceTest {
 
     @testSetup
     static void setupTestData() {
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     @isTest
@@ -29,7 +29,7 @@ private class CaseDMLServiceTest {
     @isTest
     static void testInsertCase_Single() {
         // Given
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
 
         Test.startTest();
         // When
@@ -44,7 +44,7 @@ private class CaseDMLServiceTest {
     @isTest
     static void testInsertCases_Bulk() {
         // Given
-        List<Case> cases = TestDataFactory.createCases(5, 'Service_Request');
+        List<Case> cases = TestDataFactoryRefactored.createCases(5, 'Service_Request');
 
         Test.startTest();
         // When

@@ -688,7 +688,7 @@ public without sharing class CaseTriggerHandler {
      */
     private static void applyWorkflowMigrations(List<Case> cases) {
         if (Test.isRunningTest()) {
-            TestDataFactory.createProcessBuilderTOFlow();
+            TestDataFactoryRefactored.createProcessBuilderTOFlow();
         }
         
         Code_Switch__c codeSwitchSetting = Code_Switch__c.getValues('Process_Builder_to_Flow');

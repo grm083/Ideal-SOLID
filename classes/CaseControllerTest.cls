@@ -10,7 +10,7 @@ private class CaseControllerTest {
 
     @testSetup
     static void setupTestData() {
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     @isTest

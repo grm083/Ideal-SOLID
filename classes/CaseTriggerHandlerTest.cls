@@ -20,10 +20,10 @@ private class CaseTriggerHandlerTest {
     @testSetup
     static void setupTestData() {
         // Create Code Switch setting
-        TestDataFactory.createProcessBuilderTOFlow();
+        TestDataFactoryRefactored.createProcessBuilderTOFlow();
 
         // Create full test hierarchy
-        TestDataFactory.createFullTestHierarchy();
+        TestDataFactoryRefactored.createFullTestHierarchy();
     }
 
     // ========================================================================
@@ -41,7 +41,7 @@ private class CaseTriggerHandlerTest {
         Test.startTest();
 
         // When: Inserting a new case
-        Case testCase = TestDataFactory.createCaseWithRelationships(
+        Case testCase = TestDataFactoryRefactored.createCaseWithRelationships(
             clientAccount.Id,
             locationAccount.Id,
             testContact.Id,
@@ -67,7 +67,7 @@ private class CaseTriggerHandlerTest {
         Test.startTest();
 
         // When: Inserting a closed pickup case
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.Status = 'Closed';
         testCase.Case_type__c = 'Pickup';
         testCase.Location__c = locationAccount.Id;
@@ -134,7 +134,7 @@ private class CaseTriggerHandlerTest {
         Test.startTest();
 
         // When: Creating a new case
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.Client__c = clientAccount.Id;
         testCase.Location__c = locationAccount.Id;
         testCase.Chargeable__c = 'Yes';
@@ -234,7 +234,7 @@ private class CaseTriggerHandlerTest {
 
         List<Case> casesToInsert = new List<Case>();
         for (Integer i = 0; i < 10; i++) {
-            Case c = TestDataFactory.createCase('Service_Request');
+            Case c = TestDataFactoryRefactored.createCase('Service_Request');
             c.Client__c = clientAccount.Id;
             c.Location__c = locationAccount.Id;
             c.Subject = 'Bulk Test Case ' + i;

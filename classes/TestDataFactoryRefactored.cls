@@ -1,9 +1,12 @@
 /**
- * @description TestDataFactory - Centralized test data creation for all test classes
+ * @description TestDataFactoryRefactored - Centralized test data creation for all test classes
  *
- * This factory class provides methods to create test data for all custom and standard
+ * This refactored factory class provides methods to create test data for all custom and standard
  * objects used in the application. It ensures consistent test data across all test classes
  * and reduces code duplication.
+ *
+ * This is a refactored version created to support the new service-oriented architecture
+ * while maintaining compatibility with existing TestDataFactory in the org.
  *
  * Design Principles:
  * - All methods return SObjects that are NOT inserted by default
@@ -17,7 +20,7 @@
  * @group Test Utilities
  */
 @isTest
-public class TestDataFactory {
+public class TestDataFactoryRefactored {
 
     // ========================================================================
     // ACCOUNT CREATION METHODS

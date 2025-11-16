@@ -20,7 +20,7 @@ private class CaseBusinessRuleServiceTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
 
         // Create additional cases for testing various scenarios
         Account clientAccount = (Account)testData.get('clientAccount');
@@ -29,7 +29,7 @@ private class CaseBusinessRuleServiceTest {
         Asset asset = (Asset)testData.get('asset');
 
         // Case for work order validation tests
-        Case woTestCase = TestDataFactory.createCaseWithRelationships(
+        Case woTestCase = TestDataFactoryRefactored.createCaseWithRelationships(
             clientAccount.Id,
             locationAccount.Id,
             contact.Id,
@@ -42,7 +42,7 @@ private class CaseBusinessRuleServiceTest {
         insert woTestCase;
 
         // Closed case for testing auto-close logic
-        Case closedCase = TestDataFactory.createCase('Service_Request');
+        Case closedCase = TestDataFactoryRefactored.createCase('Service_Request');
         closedCase.Status = 'Closed';
         closedCase.Case_Sub_Status__c = 'Service Confirmed';
         closedCase.Close_Irrelevant_Case__c = false;
@@ -146,7 +146,7 @@ private class CaseBusinessRuleServiceTest {
     @isTest
     static void testValidateCaseReadyForWorkOrder_MissingContact() {
         // Given: A case without contact
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.ContactId = null;
         testCase.Status = 'New';
         insert testCase;
@@ -188,7 +188,7 @@ private class CaseBusinessRuleServiceTest {
     @isTest
     static void testShouldBypassWorkOrderCreation_ValidCase() {
         // Given: A case with type and subtype
-        Case testCase = TestDataFactory.createCase('Service_Request');
+        Case testCase = TestDataFactoryRefactored.createCase('Service_Request');
         testCase.Case_Type__c = 'Service Request';
         testCase.Case_Sub_type__c = 'Delivery';
         insert testCase;
@@ -521,7 +521,7 @@ private class CaseBusinessRuleServiceTest {
     @isTest
     static void testDeclineAssociatedQuotes_CaseClosed() {
         // Given: A closed case with associated opportunity and quote
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Case testCase = (Case)testData.get('case');
         Opportunity testOpp = (Opportunity)testData.get('opportunity');
 
@@ -548,7 +548,7 @@ private class CaseBusinessRuleServiceTest {
     @isTest
     static void testAddWorkOrderStatusComments_ServiceConfirmed() {
         // Given: Cases with various work order statuses
-        Case confirmedCase = TestDataFactory.createCase('Service_Request');
+        Case confirmedCase = TestDataFactoryRefactored.createCase('Service_Request');
         confirmedCase.Status = 'Closed';
         confirmedCase.Case_Sub_Status__c = 'Service Confirmed';
         insert confirmedCase;
@@ -580,7 +580,7 @@ private class CaseBusinessRuleServiceTest {
     @isTest
     static void testCopyAcornComments_ValidParentCase() {
         // Given: A parent case with Acorn comments
-        Case parentCase = TestDataFactory.createCase('Service_Request');
+        Case parentCase = TestDataFactoryRefactored.createCase('Service_Request');
         insert parentCase;
 
         CaseComment acornComment = new CaseComment(
@@ -590,7 +590,7 @@ private class CaseBusinessRuleServiceTest {
         );
         insert acornComment;
 
-        Case childCase = TestDataFactory.createCase('Service_Request');
+        Case childCase = TestDataFactoryRefactored.createCase('Service_Request');
         childCase.ParentId = parentCase.Id;
         insert childCase;
 

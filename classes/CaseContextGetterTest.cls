@@ -20,7 +20,7 @@ private class CaseContextGetterTest {
     @testSetup
     static void setupTestData() {
         // Create full test hierarchy
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
 
         // Create additional cases for bulk testing
         Account clientAccount = (Account)testData.get('clientAccount');
@@ -30,7 +30,7 @@ private class CaseContextGetterTest {
 
         List<Case> additionalCases = new List<Case>();
         for (Integer i = 0; i < 5; i++) {
-            Case c = TestDataFactory.createCaseWithRelationships(
+            Case c = TestDataFactoryRefactored.createCaseWithRelationships(
                 clientAccount.Id,
                 locationAccount.Id,
                 contact.Id,
@@ -303,7 +303,7 @@ private class CaseContextGetterTest {
         // Given: A parent case and child case
         Case parentCase = [SELECT Id FROM Case LIMIT 1];
 
-        Case childCase = TestDataFactory.createCase('Service_Request');
+        Case childCase = TestDataFactoryRefactored.createCase('Service_Request');
         childCase.ParentId = parentCase.Id;
         insert childCase;
 
@@ -374,7 +374,7 @@ private class CaseContextGetterTest {
     @isTest
     static void testGetCaseWithAllRelationships_Success() {
         // Given: A case with all relationships populated
-        Map<String, Object> testData = TestDataFactory.createFullTestHierarchy();
+        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Case testCase = (Case)testData.get('case');
 
         Test.startTest();
