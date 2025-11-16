@@ -1,0 +1,39 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="vendor-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open slds-modal_small"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="vendor-modal-heading" class="slds-text-heading_medium">Vendor</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-tabset class="slds-p-left_xx-large" active-tab-value="vendor_search">
+                        <lightning-tab label="Vendor Search" value="vendor_search" onactive={handleVendorSearchTab}>
+                            <template if:true={showVendorSearch}>
+                                <template if:true={isCaseNew}>
+                                    <c-vendor-search record-id={recordId}></c-vendor-search>
+                                </template>
+                            </template>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+</template>

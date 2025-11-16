@@ -1,0 +1,323 @@
+<template>
+    <!-- Asset Display Mode -->
+    <template if:true={isAssetMode}>
+        <div class="slds-m-top_none slds-m-bottom_none">
+            <table class="slds-box spacing">
+                <!-- Asset Header -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th colspan="5" class="heading">
+                            {assetName} - {assetMaterialType}
+                        </th>
+                    </tr>
+                </thead>
+
+                <!-- Asset Details Row 1 -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-6">SID</th>
+                        <th scope="col" class="head slds-size_1-of-6">Duration</th>
+                        <th scope="col" class="head slds-size_1-of-6">Occurrence</th>
+                        <th scope="col" class="head slds-size_1-of-6">Schedule</th>
+                        <th scope="col" class="head slds-size_1-of-6">Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-5">{assetSID}</td>
+                        <td class="slds-size_1-of-5">{assetDuration}</td>
+                        <td class="slds-size_1-of-5">{assetOccurrence}</td>
+                        <td class="slds-size_1-of-5">{assetSchedule}</td>
+                        <td class="slds-size_1-of-5">{assetQuantity}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Vendor Details -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-5">Vendor</th>
+                        <th scope="col" class="head slds-size_1-of-5">Vendor ID</th>
+                        <th scope="col" class="head slds-size_1-of-5">S-Code</th>
+                        <th scope="col" class="head slds-size_1-of-5">Has XPU</th>
+                        <th scope="col" class="head slds-size_1-of-5">Equip Ownership</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-5">{vendorName}</td>
+                        <td class="slds-size_1-of-5">
+                            <a data-id={vendorId} onclick={handleNavigateToVendor}>{vendorIdDisplay}</a>
+                        </td>
+                        <td class="slds-size_1-of-5">{assetSensitivityCode}</td>
+                        <td class="slds-size_1-of-5">{hasExtraPickup}</td>
+                        <td class="slds-size_1-of-5">{equipmentOwner}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Pricing Information -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-5">Start Date</th>
+                        <th scope="col" class="head slds-size_1-of-5">
+                            Pickup <span class="red">Price</span>
+                        </th>
+                        <th scope="col" class="head slds-size_1-of-5">
+                            Extra Pickup <span class="red">Price</span>
+                        </th>
+                        <th scope="col" class="head slds-size_1-of-5">
+                            Haul <span class="red">Price</span>
+                        </th>
+                        <th scope="col" class="head slds-size_1-of-5">
+                            Disposal <span class="red">Price</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-5">
+                            <lightning-formatted-date-time value={assetStartDate}></lightning-formatted-date-time>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasPickUpPrice}>
+                                <lightning-formatted-number value={pickUpPrice} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasPickUpPrice}>N/A</template>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasExtraPickUpPrice}>
+                                <lightning-formatted-number value={extraPickUpPrice} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasExtraPickUpPrice}>N/A</template>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasHaulPrice}>
+                                <lightning-formatted-number value={haulPrice} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasHaulPrice}>N/A</template>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasDisposalPrice}>
+                                <lightning-formatted-number value={disposalPrice} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasDisposalPrice}>N/A</template>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <!-- Cost Information -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class={endDateHeaderClass} >
+                            <template if:true={hasEndDate}>
+                                <span class="red">End Date</span>
+                            </template>
+                            <template if:false={hasEndDate}>End Date</template>
+                        </th>
+                        <th scope="col" class="head slds-size_1-of-5">Pickup Cost</th>
+                        <th scope="col" class="head slds-size_1-of-5">Extra Pickup Cost</th>
+                        <th scope="col" class="head slds-size_1-of-5">Haul Cost</th>
+                        <th scope="col" class="head slds-size_1-of-5">Disposal Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class={endDateCellClass}>
+                            <lightning-formatted-date-time value={assetEndDate}></lightning-formatted-date-time>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasPickUpCost}>
+                                <lightning-formatted-number value={pickUpCost} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasPickUpCost}>N/A</template>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasExtraPickUpCost}>
+                                <lightning-formatted-number value={extraPickUpCost} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasExtraPickUpCost}>N/A</template>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasHaulCost}>
+                                <lightning-formatted-number value={haulCost} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasHaulCost}>N/A</template>
+                        </td>
+                        <td class="slds-size_1-of-5">
+                            <template if:true={hasDisposalCost}>
+                                <lightning-formatted-number value={disposalCost} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:false={hasDisposalCost}>N/A</template>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <!-- Additional Information -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th colspan="3" scope="col" class="head slds-size_1-of-5">Container Position</th>
+                        <th colspan="2" scope="col" class="head slds-size_1-of-5">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3">{assetContainerPosition}</td>
+                        <td colspan="2">{assetCategory}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Account Information -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-5">Vendor Account #</th>
+                        <th scope="col" class="head slds-size_1-of-5">MAS Unique #</th>
+                        <th scope="col" class="head slds-size_1-of-5">Company/Account</th>
+                        <th scope="col" class="head slds-size_1-of-5">MAS Library</th>
+                        <th scope="col" class="head slds-size_1-of-5">Project Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-5">{vendorAccountNumber}</td>
+                        <td class="slds-size_1-of-5">{masUniqueId}</td>
+                        <td class="slds-size_1-of-5">{masCompanyAccount}</td>
+                        <td class="slds-size_1-of-5">{masLibrary}</td>
+                        <td class="slds-size_1-of-5">{projectCodeId}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+    <!-- Location Display Mode -->
+    <template if:true={isLocationMode}>
+        <div class="slds-m-top_none slds-m-bottom_none">
+            <table class="slds-box spacing">
+                <!-- Location Header -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th colspan="2" class="location">{clientName}</th>
+                        <th class="location">{locationCode}</th>
+                    </tr>
+                </thead>
+
+                <!-- Location Details Row 1 -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-3">Address</th>
+                        <th scope="col" class="head slds-size_1-of-3">Phone</th>
+                        <th scope="col" class="head slds-size_1-of-3">Segment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-3 locationleft">{locationStreet}</td>
+                        <td class="slds-size_1-of-3">
+                            <lightning-formatted-phone value={locationPhone}></lightning-formatted-phone>
+                        </td>
+                        <td class="slds-size_1-of-3">{locationSegment}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Location Details Row 2 -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <td scope="col" class="head slds-size_1-of-3 locationleft">
+                            {locationCityStateZip}
+                        </td>
+                        <th scope="col" class="head slds-size_1-of-3">Local Time</th>
+                        <th scope="col" class="head slds-size_1-of-3">Location Customer Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-3 locationleft">{locationCountry}</td>
+                        <td class="slds-size_1-of-3">{locationLocalTime}</td>
+                        <td class="slds-size_1-of-3">{locationCustomerCode}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Portal Information -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-3">Is Portal Customer</th>
+                        <th scope="col" class="head slds-size_1-of-3">Portal Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-3">{isPortalCustomer}</td>
+                        <td class="slds-size_1-of-3">{portalName}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+    <!-- Contact Display Mode -->
+    <template if:true={isContactMode}>
+        <div>
+            <table class="slds-box spacing">
+                <!-- Contact Header -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th colspan="2" class="heading">Contact</th>
+                    </tr>
+                </thead>
+
+                <!-- Contact Name and Title -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-2">Name</th>
+                        <th scope="col" class="head slds-size_1-of-2">Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-2"><span class="textWrapCls">{contactName}</span></td>
+                        <td class="slds-size_1-of-2">{contactTitle}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Contact Phone and Preferred Method -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-2">Phone</th>
+                        <th scope="col" class="head slds-size_1-of-2">Preferred Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="slds-size_1-of-2">{contactPhone}</td>
+                        <td class="slds-size_1-of-2">{contactPreferredMethod}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Contact Email -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th colspan="2" scope="col" class="head slds-size_1-of-2">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2" class="slds-size_1-of-2">{contactEmail}</td>
+                    </tr>
+                </tbody>
+
+                <!-- Email Validated -->
+                <thead>
+                    <tr class="slds-table slds-table_bordered slds-table_striped">
+                        <th scope="col" class="head slds-size_1-of-2">Email Validated</th>
+                        <td scope="col" class="slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                checked={emailValidated}
+                                disabled
+                            ></lightning-input>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </template>
+</template>
