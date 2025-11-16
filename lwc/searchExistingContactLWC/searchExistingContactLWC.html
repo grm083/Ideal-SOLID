@@ -205,10 +205,16 @@
                                                 options={accountTitles}
                                                 required>
                                             </lightning-combobox>
-                                            <!--
-                                                NOTE: "Add New Title" button requires c-create-new-account-title child component
-                                                Original Aura: <c:createNewAccountTitle accountId={caseAccount} />
-                                            -->
+
+                                            <!-- New Title Button -->
+                                            <lightning-button
+                                                variant="neutral"
+                                                label="New Title"
+                                                icon-name="utility:add"
+                                                onclick={handleOpenNewTitle}
+                                                class="slds-m-top_small slds-m-bottom_small">
+                                            </lightning-button>
+
                                             <lightning-combobox
                                                 label="Department (if available)"
                                                 value={selDept}
@@ -401,5 +407,14 @@
             </div>
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- New Title Modal -->
+    <template if:true={showNewTitleModal}>
+        <c-create-new-account-title-l-w-c
+            account-id={caseAccount}
+            onsave={handleNewTitleSave}
+            onclose={handleCloseNewTitle}>
+        </c-create-new-account-title-l-w-c>
     </template>
 </template>

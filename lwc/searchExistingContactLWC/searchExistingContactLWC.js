@@ -64,6 +64,7 @@ export default class SearchExistingContactLWC extends LightningElement {
     @track boolShowUser = false;
     @track boolReadOnly = false;
     @track isOpen = false; // Duplicate modal
+    @track showNewTitleModal = false; // New Title modal
 
     // Case-derived data
     @track caseAccount = '';
@@ -593,5 +594,41 @@ export default class SearchExistingContactLWC extends LightningElement {
             mode: 'dismissible'
         });
         this.dispatchEvent(event);
+    }
+
+    // ========================================================================
+    // NEW TITLE MODAL HANDLERS
+    // ========================================================================
+
+    handleOpenNewTitle() {
+        this.showNewTitleModal = true;
+    }
+
+    handleCloseNewTitle() {
+        this.showNewTitleModal = false;
+    }
+
+    async handleNewTitleSave(event) {
+        // New title was created - refresh the titles list
+        const newTitleId = event.detail.titleId;
+        const newTitleName = event.detail.titleName;
+
+        // Reload titles from server
+        try {
+            const titles = await getAccountTitles({ acct: this.caseAccount });
+            this.accountTitles = titles || [];
+
+            // Set the newly created title as selected
+            if (newTitleId) {
+                this.title = newTitleId;
+            }
+
+            this.showToast('Success', `Title "${newTitleName}" created successfully`, 'success');
+        } catch (error) {
+            console.error('Error reloading titles:', error);
+        }
+
+        // Close the modal
+        this.showNewTitleModal = false;
     }
 }
