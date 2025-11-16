@@ -1,0 +1,136 @@
+<template>
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+
+    <div class="slds-m-around_medium">
+        <!-- Search Controls -->
+        <lightning-layout>
+            <lightning-layout-item size="3" padding="around-small">
+                <lightning-input
+                    type="checkbox"
+                    label="All Active and Inactive Accounts"
+                    checked={selectedAccountFilter}
+                    onchange={handleFilterChange}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" padding="around-small">
+                <lightning-input
+                    label="Vendor Account"
+                    value={searchKeyword}
+                    placeholder="search Accounts.."
+                    required
+                    data-id="searchField"
+                    onchange={handleSearchKeywordChange}
+                    onkeypress={handleSearchKeyPress}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" padding="around-small">
+                <div class="slds-m-top_large">
+                    <lightning-button
+                        variant="brand"
+                        label="Search"
+                        icon-name="utility:search"
+                        onclick={handleSearch}>
+                    </lightning-button>
+
+                    <template if:true={showSaveButton}>
+                        <lightning-button
+                            variant="brand"
+                            label="Save"
+                            icon-name="utility:save"
+                            disabled={saveEnabled}
+                            onclick={handleSave}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                    </template>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <!-- Error Message -->
+        <template if:true={showMessage}>
+            <div class="slds-notify_container slds-is-relative">
+                <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small">No Records Found...</h2>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Page Size Selector -->
+        <div class="slds-float_right">
+            <lightning-combobox
+                name="pageSize"
+                label="Display Records Per Page:"
+                value={pageSize}
+                options={pageSizeOptions}
+                onchange={handlePageSizeChange}>
+            </lightning-combobox>
+        </div>
+
+        <!-- Results Table -->
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        <div class="slds-truncate" title="Action">Action</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Vendor Id">Vendor Id</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Vendor Name">Vendor Name</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template if:true={hasResults}>
+                    <template for:each={accountWrapperList} for:item="acc">
+                        <tr key={acc.objAcc.Id}>
+                            <td>
+                                <input
+                                    type="radio"
+                                    name="vendorCheck"
+                                    data-record-id={acc.objAcc.Id}
+                                    onclick={handleRadioClick} />
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{acc.objAcc.Vendor_ID__c}</div>
+                            </td>
+                            <td>
+                                <div class="wrapText">{acc.objAcc.Name}</div>
+                            </td>
+                        </tr>
+                    </template>
+                </template>
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="slds-clearfix">
+            <div class="slds-page-header" role="banner">
+                <div class="slds-float_right">
+                    <lightning-button
+                        variant="brand"
+                        label="Prev"
+                        disabled={isPrevDisabled}
+                        onclick={handlePrev}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Next"
+                        disabled={isNextDisabled}
+                        onclick={handleNext}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+                <p class="slds-page-header__title">{paginationText}</p>
+            </div>
+        </div>
+    </div>
+</template>
