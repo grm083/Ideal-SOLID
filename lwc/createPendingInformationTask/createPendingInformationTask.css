@@ -1,0 +1,17 @@
+.slds-modal__content {
+    overflow: scroll !important;
+}
+
+.slds-modal__header {
+    margin-top: 120px;
+}
+
+.slds-spinner_container {
+    z-index: 10000;
+    position: fixed;
+}
+
+.disableDiv {
+    pointer-events: none;
+    opacity: 0.4;
+}
