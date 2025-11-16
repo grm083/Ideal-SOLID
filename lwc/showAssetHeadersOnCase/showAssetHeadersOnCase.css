@@ -1,0 +1,16 @@
+.nohighlight {
+    background-color: white;
+}
+
+.highlight {
+    background-color: lightgreen;
+}
+
+.highlightBold {
+    font-weight: bold;
+    color: red;
+}
+
+.leftPadding {
+    padding-left: 8px;
+}

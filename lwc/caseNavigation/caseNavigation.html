@@ -1,0 +1,111 @@
+<template>
+    <lightning-card>
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <!-- Related Cases Table -->
+        <template if:true={hasCases}>
+            <div class="slds-p-around_small">
+                <div class="slds-m-bottom_small">
+                    <lightning-icon icon-name="action:new_case" alternative-text="Related Cases" size="xx-small"></lightning-icon>
+                    <strong> Related Cases</strong>
+                </div>
+
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Case Number">
+                                    <strong>Case Number</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Tracking #">
+                                    <strong>Tracking #</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Case Type">
+                                    <strong>Case Type</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Case Subtype">
+                                    <strong>Case Subtype</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Asset">
+                                    <strong>Asset</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Material">
+                                    <strong>Material</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Service Date">
+                                    <strong>Service Date</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="Status">
+                                    <strong>Status</strong>
+                                </div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-9">
+                                <div class="slds-truncate" title="WorkOrder #">
+                                    <strong>WorkOrder #</strong>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={caseLst} for:item="case">
+                            <tr key={case.Id}>
+                                <td class="slds-size_1-of-9">
+                                    <a href="#" data-id={case.Id} onclick={handleNavigateToCase}>
+                                        {case.CaseNumber}
+                                    </a>
+                                </td>
+                                <td class="slds-size_1-of-9">{case.Tracking_Number__c}</td>
+                                <td class="slds-size_1-of-9">{case.Case_Type__c}</td>
+                                <td class="slds-size_1-of-9">{case.Case_Sub_Type__c}</td>
+                                <td class="slds-size_1-of-9">
+                                    <template if:true={case.Asset}>
+                                        {case.Asset.Name}
+                                    </template>
+                                </td>
+                                <td class="slds-size_1-of-9">{case.Asset_Material__c}</td>
+                                <td class="slds-size_1-of-9">{case.Service_Date_Text__c}</td>
+                                <td class="slds-size_1-of-9">{case.Status}</td>
+                                <td class="slds-size_1-of-9">
+                                    <template if:true={case.Work_Order__r}>
+                                        {case.Work_Order__r.WorkOrderNumber}
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <!-- No Records Message -->
+        <template if:true={showNoRecordsMessage}>
+            <div class="slds-text-heading_medium slds-text-color_error slds-text-align_center slds-p-around_large">
+                <strong>There are no additional cases related to this reference number.</strong>
+            </div>
+        </template>
+
+        <!-- Error Message -->
+        <template if:true={error}>
+            <div class="slds-text-color_error slds-text-align_center slds-p-around_medium">
+                Error loading related cases: {error.body.message}
+            </div>
+        </template>
+    </lightning-card>
+</template>
