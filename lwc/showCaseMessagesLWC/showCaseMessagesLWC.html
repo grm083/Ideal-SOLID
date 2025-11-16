@@ -144,9 +144,9 @@
                     <template if:false={isCaseClosed}>
                         <li>
                             <div class="slds-m-right_medium">
-                                <c-create-pending-information-task
+                                <c-create-pending-information-task-l-w-c
                                     case-id={recordId}
-                                ></c-create-pending-information-task>
+                                ></c-create-pending-information-task-l-w-c>
                             </div>
                         </li>
                     </template>
@@ -379,10 +379,10 @@
 
     <!-- Quote Modals -->
     <template if:true={showModal}>
-        <c-case-quote-modal record-id={recordId}></c-case-quote-modal>
+        <c-case-quote-modal-l-w-c record-id={recordId}></c-case-quote-modal-l-w-c>
     </template>
     <template if:true={showQuoteModal}>
-        <c-existing-quote-modal record-id={recordId}></c-existing-quote-modal>
+        <c-existing-quote-modal-l-w-c record-id={recordId}></c-existing-quote-modal-l-w-c>
     </template>
     <template if:true={showFavoriteModal}>
         <c-add-favorite-containers-l-w-c show-form={showFavoriteModal} case-id={recordId}></c-add-favorite-containers-l-w-c>
