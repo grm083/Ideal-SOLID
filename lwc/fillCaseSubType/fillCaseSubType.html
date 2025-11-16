@@ -1,0 +1,81 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="fill-subtype-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="fill-subtype-modal-heading" class="slds-text-heading_medium">Fill in Sub-Type</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Error Messages -->
+                    <template if:true={showErrorMessage}>
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small">
+                                <lightning-icon icon-name="utility:error" alternative-text="error" size="x-small" variant="inverse"></lightning-icon>
+                            </span>
+                            <h2>{errorMessage}</h2>
+                        </div>
+                    </template>
+
+                    <lightning-record-edit-form
+                        record-id={recordId}
+                        object-api-name="Case"
+                        onsuccess={handleSuccess}
+                        onerror={handleError}
+                        onsubmit={handleSubmit}>
+
+                        <lightning-messages></lightning-messages>
+
+                        <!-- Case Type -->
+                        <lightning-input-field
+                            field-name="Case_Type__c"
+                            value={caseType}
+                            onchange={handleFieldChange}>
+                        </lightning-input-field>
+
+                        <!-- Case Sub-Type -->
+                        <lightning-input-field
+                            field-name="Case_Sub_Type__c"
+                            value={caseSubType}
+                            onchange={handleFieldChange}>
+                        </lightning-input-field>
+
+                        <!-- Case Reason -->
+                        <lightning-input-field
+                            field-name="Case_Reason__c"
+                            value={caseReason}
+                            class={caseReasonFieldClass}
+                            onchange={handleFieldChange}>
+                        </lightning-input-field>
+
+                        <!-- Submit Button -->
+                        <div class="slds-align_absolute-center slds-m-top_medium">
+                            <lightning-button
+                                type="submit"
+                                label="Save"
+                                variant="brand">
+                            </lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+</template>

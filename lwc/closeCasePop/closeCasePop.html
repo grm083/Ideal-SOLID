@@ -1,0 +1,67 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="close-case-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="close-case-modal-heading" class="slds-text-heading_medium">Close Case</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-record-edit-form
+                        record-id={recordId}
+                        object-api-name="Case"
+                        onsuccess={handleSuccess}>
+
+                        <lightning-messages></lightning-messages>
+
+                        <!-- Close Irrelevant Case Checkbox -->
+                        <lightning-input-field
+                            field-name="Close_Irrelevant_Case__c">
+                        </lightning-input-field>
+
+                        <!-- Close Case Reason Picklist -->
+                        <lightning-input-field
+                            field-name="Close_Case_Reason__c"
+                            value={closeCaseReason}
+                            onchange={handleCloseReasonChange}
+                            required>
+                        </lightning-input-field>
+
+                        <!-- Additional Field (conditionally shown) -->
+                        <template if:true={showAdditionalField}>
+                            <lightning-input-field
+                                field-name="Case_Close_Reason__c"
+                                required>
+                            </lightning-input-field>
+                        </template>
+
+                        <!-- Submit Button -->
+                        <div class="slds-align_absolute-center slds-m-top_medium">
+                            <lightning-button
+                                type="submit"
+                                label="Save"
+                                variant="brand">
+                            </lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+</template>

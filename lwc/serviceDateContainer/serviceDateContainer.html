@@ -1,0 +1,85 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="service-date-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open slds-modal_small"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Loading Spinner -->
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading" size="small" variant="brand"></lightning-spinner>
+                </template>
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="service-date-modal-heading" class="slds-text-heading_medium">Service Date Selection</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Button Group -->
+                    <div class="slds-align_absolute-center slds-m-bottom_medium">
+                        <!-- Service Date Button -->
+                        <lightning-button
+                            label="Service Date"
+                            variant={serviceDateButtonVariant}
+                            icon-name={serviceDateButtonIcon}
+                            onclick={handleServiceDateClick}
+                            class="slds-m-right_small">
+                        </lightning-button>
+
+                        <!-- Multi Dates Button (conditionally shown) -->
+                        <template if:true={showMultiDatesButton}>
+                            <lightning-button
+                                label="Multi Dates"
+                                variant={multiDatesButtonVariant}
+                                icon-name={multiDatesButtonIcon}
+                                onclick={handleMultiDatesClick}>
+                            </lightning-button>
+                        </template>
+                    </div>
+
+                    <!-- Service Date Component (SetCaseSLADate or WMCapacity) -->
+                    <template if:true={isModalOpenServiceDate}>
+                        <template if:true={isOpenWMCapacityComp}>
+                            <c-wm-capacity
+                                record-id={recordId}
+                                parent-id={parentId}>
+                            </c-wm-capacity>
+                        </template>
+
+                        <template if:true={isOpenSetCaseDateComp}>
+                            <c-set-case-s-l-a-date
+                                record-id={recordId}
+                                parent-id={parentId}
+                                is-capacity-eligible={isCapacityEligible}
+                                is-avail-date={isAvailDate}
+                                is-date-not-listed-cl={isDateNotListedCl}>
+                            </c-set-case-s-l-a-date>
+                        </template>
+                    </template>
+
+                    <!-- Multi Dates Component (CustomCalendar) -->
+                    <template if:true={isOpenMultiDateComp}>
+                        <c-custom-calendar
+                            record-id={recordId}
+                            service-date={serviceDate}
+                            show-modal={isOpenMultiDateComp}>
+                        </c-custom-calendar>
+                    </template>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+</template>

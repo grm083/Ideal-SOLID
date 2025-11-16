@@ -1,0 +1,160 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="customer-info-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="customer-info-modal-heading" class="slds-text-heading_medium">Required Actions</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-record-edit-form
+                        record-id={recordId}
+                        object-api-name="Case"
+                        onsuccess={handleSuccess}
+                        onsubmit={handleSubmit}>
+
+                        <lightning-messages></lightning-messages>
+
+                        <div class="slds-grid slds-wrap">
+                            <!-- Purchase Order Number -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="PurchaseOrder_Number__c"></lightning-input-field>
+                            </div>
+
+                            <!-- Override PO Create Task -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="Override_PO_Create_Task__c"></lightning-input-field>
+                            </div>
+
+                            <!-- Company Category (using combobox instead of custom dropdown) -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-combobox
+                                    name="companyCategory"
+                                    label="Company Category"
+                                    value={selectedCompanyCategoryValue}
+                                    placeholder="Select Company Category"
+                                    options={companyCategoryOptions}
+                                    onchange={handleCompanyCategoryChange}>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Override Company Category Create Task -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="Override_Company_Category_Create_Task__c"></lightning-input-field>
+                            </div>
+
+                            <!-- Haul Away Service (conditionally shown) -->
+                            <template if:false={isHaulAwayUIEnabled}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field
+                                        field-name="Is_Haul_Away_Service__c"
+                                        onchange={handleHaulAwayChange}>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+
+                            <!-- Haul Away Vendor (conditionally shown and required) -->
+                            <template if:false={isHaulAwayUIEnabled}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field
+                                        field-name="Haul_Away_Vendor__c"
+                                        required={isHaulAwayChecked}
+                                        onchange={handleHaulAwayVendorChange}>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+
+                            <!-- Chargeable -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field
+                                    field-name="Chargeable__c"
+                                    required={isHaulAwayChecked}>
+                                </lightning-input-field>
+                            </div>
+
+                            <!-- Vendor Service ID (conditionally shown and required) -->
+                            <template if:false={isHaulAwayUIEnabled}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field
+                                        field-name="Vendor_Service_Id__c"
+                                        required={vendorIdRequired}>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+
+                            <!-- Haul Away Service Booked (conditionally shown and required) -->
+                            <template if:false={isHaulAwayUIEnabled}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field
+                                        field-name="Haul_Away_Service_Booked__c"
+                                        required={haulAwayBookedRequired}>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+
+                            <!-- PSI Override Reason -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="PSI_Override_Reason__c"></lightning-input-field>
+                            </div>
+
+                            <!-- PSI -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="PSI__c"></lightning-input-field>
+                            </div>
+
+                            <!-- PSI Comments -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="PSI_Comments__c"></lightning-input-field>
+                            </div>
+
+                            <!-- Invoice Number (for Billing/Invoice Charge Dispute) -->
+                            <template if:true={isBillingInvoiceChargeDispute}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field
+                                        field-name="Invoice_Number__c"
+                                        required>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+
+                            <!-- Disputed Amount (for Billing/Invoice Charge Dispute) -->
+                            <template if:true={isBillingInvoiceChargeDispute}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field
+                                        field-name="Disputed_Amount__c"
+                                        required>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="slds-align_absolute-center slds-m-top_medium">
+                            <lightning-button
+                                type="submit"
+                                label="Save"
+                                variant="brand">
+                            </lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+</template>
