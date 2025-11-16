@@ -314,6 +314,13 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
      */
     processCaseDataFromGovernor(message) {
         try {
+            // Guard: Check if pageData exists before attempting to parse
+            // Some messages (like refresh requests) don't include pageData
+            if (!message.pageData) {
+                console.log('ShowCaseMessagesLWC: Received message without pageData, ignoring:', message.eventType);
+                return;
+            }
+
             const pageData = JSON.parse(message.pageData);
 
             // Mark that we've received data from governor
