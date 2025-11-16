@@ -1,8 +1,142 @@
 <template>
-    <lightning-card title="Component Stub">
-        <div class="slds-p-around_medium">
-            <p>This component is a stub and requires full conversion from Aura.</p>
-            <p>Record ID: {recordId}</p>
+    <template if:true={existingQuoteModal}>
+        <div class="slds-m-around_xx-large slds-is-relative">
+            <!-- Modal -->
+            <section role="dialog" tabindex="-1" aria-modal="true"
+                     class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            onclick={handleCloseExistingQuotes}
+                            alternative-text="Close"
+                            variant="bare"
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Existing Quote(s)</h2>
+                    </header>
+
+                    <!-- Modal Content -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- Loading Spinner -->
+                        <template if:true={showSpinner}>
+                            <lightning-spinner alternative-text="Loading" size="large" variant="brand"></lightning-spinner>
+                        </template>
+
+                        <!-- Quotes Table -->
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Quote Number">Quote Number</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Case Type">Case Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Status">Status</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Duration">Duration</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Size">Size</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Material">Material</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Product</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Primary Contact">Primary Contact</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Start Date">Start Date</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={allProducts} for:item="quote">
+                                    <tr key={quote.quoteID} class="slds-hint-parent">
+                                        <th data-label="Quote Number" scope="row">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);"
+                                                   data-value={quote.quoteID}
+                                                   onclick={handleNavigate}>{quote.quoteName}</a>
+                                            </div>
+                                        </th>
+                                        <td data-label="CaseType">
+                                            <div class="slds-truncate">{quote.caseType}</div>
+                                        </td>
+                                        <td data-label="Status">
+                                            <div class="slds-truncate">{quote.quoteStatus}</div>
+                                        </td>
+                                        <td data-label="Duration">
+                                            <div class="slds-truncate">{quote.duration}</div>
+                                        </td>
+                                        <td data-label="Size">
+                                            <div class="slds-truncate">{quote.equipmentSize}</div>
+                                        </td>
+                                        <td data-label="Material">
+                                            <div class="slds-truncate">{quote.materialType}</div>
+                                        </td>
+                                        <td data-label="Product">
+                                            <div class="slds-truncate">{quote.equipmentType}</div>
+                                        </td>
+                                        <td data-label="Primary Contact">
+                                            <div class="slds-truncate">{quote.primaryContact}</div>
+                                        </td>
+                                        <td data-label="Start Date">
+                                            <div class="slds-truncate">{quote.startDate}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <div class="slds-grid slds-grid_align-spread">
+                            <lightning-button
+                                variant="success"
+                                label="Add Quote"
+                                title="Add Quote"
+                                onclick={handleAddQuote}>
+                            </lightning-button>
+
+                            <div class="slds-grid slds-gutters">
+                                <lightning-button
+                                    variant="destructive"
+                                    label="Close Case"
+                                    title="Close Case"
+                                    onclick={handleCloseCase}>
+                                </lightning-button>
+
+                                <lightning-button
+                                    variant="neutral"
+                                    label="Close"
+                                    title="Close"
+                                    onclick={handleCloseExistingQuotes}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </section>
+
+            <!-- Backdrop -->
+            <div class="slds-backdrop slds-backdrop_open"></div>
         </div>
-    </lightning-card>
+    </template>
+
+    <!-- Add Favorite Container Modal -->
+    <template if:true={addFavoriteContainerModal}>
+        <c-add-favorite-containers-l-w-c
+            record-id={recordId}
+            show-form={addFavoriteContainerModal}>
+        </c-add-favorite-containers-l-w-c>
+    </template>
 </template>

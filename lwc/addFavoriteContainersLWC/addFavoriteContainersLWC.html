@@ -1,8 +1,100 @@
 <template>
-    <lightning-card title="Component Stub">
-        <div class="slds-p-around_medium">
-            <p>This component is a stub and requires full conversion from Aura.</p>
-            <p>Record ID: {recordId}</p>
+    <template if:true={showForm}>
+        <div class="slds-m-around_xx-large slds-is-relative">
+            <!-- Modal -->
+            <section role="dialog" tabindex="-1" aria-modal="true"
+                     class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            onclick={handleCloseFavoriteContainerModal}
+                            alternative-text="Close"
+                            variant="bare"
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Common Products</h2>
+                    </header>
+
+                    <!-- Modal Content -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- 2-Column Grid -->
+                        <div class="slds-grid slds-gutters" style="border: 1px solid #e0dedd;">
+                            <!-- Left Column - Product List -->
+                            <div class="slds-col slds-size_1-of-2" style="padding: 0; border: 1px solid #e0dedd;">
+                                <template if:true={hasContainerList}>
+                                    <template for:each={quotesWrapper.ContainerList} for:item="item">
+                                        <div key={item.productName}>
+                                            <lightning-button
+                                                variant="neutral"
+                                                label={item.productName}
+                                                title={item.productName}
+                                                class="slds-button_stretch"
+                                                style="border-radius: 0;"
+                                                data-item={item}
+                                                onclick={handleSelectProduct}>
+                                            </lightning-button>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+
+                            <!-- Right Column - Container Details -->
+                            <div class="slds-col slds-size_1-of-2" style="padding: 0; border: 1px solid #e0dedd;">
+                                <template if:false={isProductSelected}>
+                                    <div class="slds-p-around_small">{selectedProduct}</div>
+                                </template>
+
+                                <template if:true={isProductSelected}>
+                                    <div class="slds-p-around_small">{selectedProduct} Records</div>
+                                    <template if:true={hasContainerDetails}>
+                                        <lightning-datatable
+                                            columns={columns}
+                                            data={containerDetailsList}
+                                            key-field="FavoriteID"
+                                            max-row-selection="1"
+                                            onrowselection={handleRowSelection}>
+                                        </lightning-datatable>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <template if:true={showSpinner}>
+                            <lightning-spinner alternative-text="Loading" size="large" variant="brand"></lightning-spinner>
+                        </template>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-float_left">
+                                    <lightning-button
+                                        variant="destructive"
+                                        label="Product Not Listed"
+                                        title="Product Not Listed"
+                                        onclick={handleAddProductNotListed}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-button
+                                    variant="success"
+                                    label="Select Product"
+                                    title="Select Product"
+                                    onclick={handleAddFavoriteProductToQuote}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </section>
+
+            <!-- Backdrop -->
+            <div class="slds-backdrop slds-backdrop_open"></div>
         </div>
-    </lightning-card>
+    </template>
 </template>

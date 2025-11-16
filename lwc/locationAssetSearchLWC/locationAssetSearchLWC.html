@@ -1,8 +1,221 @@
 <template>
-    <lightning-card title="Component Stub">
-        <div class="slds-p-around_medium">
-            <p>This component is a stub and requires full conversion from Aura.</p>
-            <p>Record ID: {recordId}</p>
+    <!-- Loading Spinner -->
+    <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large" variant="brand"></lightning-spinner>
+    </template>
+
+    <div class="slds-m-around_medium">
+        <!-- Search Controls -->
+        <lightning-layout>
+            <lightning-layout-item size="3" padding="around-small">
+                <lightning-input
+                    type="checkbox"
+                    label="All Active and Inactive Accounts"
+                    checked={selectedAccountFilter}
+                    onchange={handleFilterChange}>
+                </lightning-input>
+
+                <lightning-input
+                    type="checkbox"
+                    label="All Active and Inactive Assets"
+                    checked={inactiveAssets}
+                    onchange={handleInactiveAssetsChange}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" padding="around-small">
+                <lightning-input
+                    label="Location Account"
+                    value={searchKeyword}
+                    placeholder="search Accounts.."
+                    required
+                    data-id="searchField"
+                    onchange={handleSearchKeywordChange}
+                    onkeypress={handleSearchKeyPress}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" padding="around-small">
+                <div class="slds-m-top_large">
+                    <lightning-button
+                        variant="brand"
+                        label="Search"
+                        icon-name="utility:search"
+                        onclick={handleSearch}>
+                    </lightning-button>
+
+                    <template if:true={showSaveButton}>
+                        <lightning-button
+                            variant="brand"
+                            label="Save"
+                            icon-name="utility:save"
+                            onclick={handleSaveSelection}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                    </template>
+                </div>
+            </lightning-layout-item>
+
+            <template if:true={selectionDetails}>
+                <lightning-layout-item size="12" padding="around-small">
+                    <p>{selectionText}</p>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+
+        <!-- Error Message -->
+        <template if:true={showMessage}>
+            <div class="slds-notify_container slds-is-relative">
+                <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small">No Records Found...</h2>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Page Size Selector -->
+        <div class="slds-float_right">
+            <lightning-combobox
+                name="pageSize"
+                label="Display Records Per Page:"
+                value={pageSize}
+                options={pageSizeOptions}
+                onchange={handlePageSizeChange}>
+            </lightning-combobox>
         </div>
-    </lightning-card>
+
+        <!-- Results Table -->
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="table-layout:fixed !important">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th><div class="slds-truncate">Action</div></th>
+                    <th><div class="slds-truncate">Location Code</div></th>
+                    <th><div class="slds-truncate">Location Name</div></th>
+                    <th><div class="slds-truncate">Street</div></th>
+                    <th><div class="slds-truncate">City</div></th>
+                    <th><div class="slds-truncate">State</div></th>
+                    <th><div class="slds-truncate">Zip Code</div></th>
+                    <th><div class="slds-truncate">Country</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <template if:true={hasResults}>
+                    <template for:each={accountAssetWrapperList} for:item="acc" for:index="ind">
+                        <tr key={acc.objAcc.Id}>
+                            <td>
+                                <div data-record-id={acc.objAcc.Id} data-index={ind} onclick={handleToggleRow} style="cursor: pointer;">
+                                    <template if:false={acc.isExpanded}>
+                                        <lightning-icon icon-name="utility:chevrondown" size="small"></lightning-icon>
+                                    </template>
+                                    <template if:true={acc.isExpanded}>
+                                        <lightning-icon icon-name="utility:chevronup" size="small"></lightning-icon>
+                                    </template>
+                                </div>
+                            </td>
+                            <td><div class="slds-truncate">{acc.objAcc.Location_Code__c}</div></td>
+                            <td><div class="wrapText">{acc.objAcc.Customer_Location_Code__c}</div></td>
+                            <td><div class="wrapText">{acc.objAcc.ShippingStreet}</div></td>
+                            <td><div class="slds-truncate">{acc.objAcc.ShippingCity}</div></td>
+                            <td><div class="slds-truncate">{acc.objAcc.ShippingState}</div></td>
+                            <td><div class="slds-truncate">{acc.objAcc.ShippingPostalCode}</div></td>
+                            <td><div class="slds-truncate">{acc.objAcc.ShippingCountry}</div></td>
+                        </tr>
+
+                        <!-- Nested Asset Table (Expandable) -->
+                        <template if:true={acc.isExpanded}>
+                            <tr key={acc.objAcc.Id + '-assets'}>
+                                <td colspan="8" style="padding: 0 !important;">
+                                    <div class="slds-scrollable">
+                                        <table class="slds-table slds-table_bordered" style="width: 100% !important;">
+                                            <thead>
+                                                <tr class="slds-text-title_caps">
+                                                    <th><div></div></th>
+                                                    <th><div>ASSET NAME</div></th>
+                                                    <th><div>SID</div></th>
+                                                    <th><div>MATERIAL TYPE</div></th>
+                                                    <th><div>DURATION</div></th>
+                                                    <th><div>OCCURRENCE TYPE</div></th>
+                                                    <th><div>SCHEDULE</div></th>
+                                                    <th><div>QUANTITY</div></th>
+                                                    <th><div>CATEGORY</div></th>
+                                                    <th><div>CONTAINER POSITION</div></th>
+                                                    <th><div>HAS XPU</div></th>
+                                                    <th><div>ACCOUNT NAME</div></th>
+                                                    <th><div>VENDOR ID</div></th>
+                                                    <th><div>S-CODE</div></th>
+                                                    <th><div>VENDOR ACCOUNT NUMBER</div></th>
+                                                    <th><div>MAS COMPANY # - ACCOUNT #</div></th>
+                                                    <th><div>MAS UNIQUE #</div></th>
+                                                    <th><div>MAS LIBRARY</div></th>
+                                                    <th><div>Start Date</div></th>
+                                                    <th><div>END DATE</div></th>
+                                                    <th><div>EQUIPMENT OWNER</div></th>
+                                                    <th><div>Project</div></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={acc.assetList} for:item="asst">
+                                                    <tr key={asst.Id}>
+                                                        <td>
+                                                            <input type="checkbox"
+                                                                   data-asset-id={asst.Id}
+                                                                   onchange={handleAssetSelection} />
+                                                        </td>
+                                                        <td><div class="wrapText">{asst.Name}</div></td>
+                                                        <td><div class="wrapText">{asst.Acorn_SID__c}</div></td>
+                                                        <td><div class="wrapText">{asst.Material_Type__c}</div></td>
+                                                        <td><div>{asst.Duration__c}</div></td>
+                                                        <td><div>{asst.Occurrence_Type__c}</div></td>
+                                                        <td><div>{asst.Schedule__c}</div></td>
+                                                        <td><div>{asst.Quantity__c}</div></td>
+                                                        <td><div>{asst.Category__c}</div></td>
+                                                        <td><div>{asst.Container_Position__c}</div></td>
+                                                        <td><div class="wrapText">{asst.Has_Extra_Pickup__c}</div></td>
+                                                        <td><div class="wrapText">{asst.Supplier__r.Name}</div></td>
+                                                        <td><div>{asst.Vendor_ID__c}</div></td>
+                                                        <td><div>{asst.Sensitivity_Code__c}</div></td>
+                                                        <td><div>{asst.Vendor_Account_Number__c}</div></td>
+                                                        <td><div class="wrapText">{asst.MAS_Company_Account_Number__c}</div></td>
+                                                        <td><div>{asst.MAS_Customer_Unique_Id__c}</div></td>
+                                                        <td><div>{asst.MAS_Library__c}</div></td>
+                                                        <td><div>{asst.Start_Date__c}</div></td>
+                                                        <td><div>{asst.End_Date__c}</div></td>
+                                                        <td><div>{asst.Equipment_Owner__c}</div></td>
+                                                        <td><div>{asst.Active__c}</div></td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </template>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="slds-clearfix">
+            <div class="slds-page-header" role="banner">
+                <div class="slds-float_right">
+                    <lightning-button
+                        variant="brand"
+                        label="Prev"
+                        disabled={isPrevDisabled}
+                        onclick={handlePrev}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Next"
+                        disabled={isNextDisabled}
+                        onclick={handleNext}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+                <p class="slds-page-header__title">{paginationText}</p>
+            </div>
+        </div>
+    </div>
 </template>

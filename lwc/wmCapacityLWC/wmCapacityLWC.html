@@ -1,8 +1,95 @@
 <template>
-    <lightning-card title="Component Stub">
-        <div class="slds-p-around_medium">
-            <p>This component is a stub and requires full conversion from Aura.</p>
-            <p>Record ID: {recordId}</p>
-        </div>
-    </lightning-card>
+    <div class="slds-is-relative">
+        <!-- Main Loading Spinner -->
+        <template if:true={loadingSpinner}>
+            <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <lightning-card>
+            <!-- Card Title with Icon -->
+            <span slot="title">
+                <lightning-icon icon-name="standard:channel_programs" size="medium"></lightning-icon>
+                WM Capacity Planner
+            </span>
+
+            <!-- Card Footer - Date Not Listed Button -->
+            <div slot="footer">
+                <lightning-button
+                    variant="destructive"
+                    label="Date Not Listed"
+                    title="Date Not Listed"
+                    onclick={handleDateNotListed}>
+                </lightning-button>
+            </div>
+
+            <!-- Initial Loading Spinner -->
+            <template if:true={showLoadingSpinner}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner alternative-text="Performing Operation" size="large"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Available Dates Display -->
+            <template if:true={showAvailableDates}>
+                <div class="slds-p-around_medium">
+                    <lightning-layout multiple-rows>
+                        <!-- SLA Date Information -->
+                        <lightning-layout-item size="12" padding="around-small">
+                            <p>
+                                This customer's entitled SLA date is <strong>{formattedSLADate}</strong>.
+                            </p>
+                        </lightning-layout-item>
+
+                        <!-- Instructions -->
+                        <lightning-layout-item size="12" padding="around-small">
+                            <p>
+                                Using the below, please select the customer's requested service date.
+                                If the customer is requesting service more than 10 business days out or
+                                if one of the dates are not available, please select "Date Not Listed" and
+                                enter your service date manually on the case detail page.
+                            </p>
+                        </lightning-layout-item>
+
+                        <!-- Available Date Buttons -->
+                        <template for:each={availDates} for:item="date">
+                            <lightning-layout-item key={date} size="3" class="slds-p-around_xxx-small">
+                                <div class="slds-align_absolute-center">
+                                    <lightning-button
+                                        label={date}
+                                        icon-name="utility:threedots_vertical"
+                                        variant="brand"
+                                        data-date={date}
+                                        onclick={handleDateSelection}>
+                                    </lightning-button>
+                                </div>
+                            </lightning-layout-item>
+                        </template>
+
+                        <!-- Additional Instructions -->
+                        <lightning-layout-item size="12" padding="around-small">
+                            <p>
+                                If your date isn't listed or the requested service date is prior to the SLA date, you will
+                                need to check Green Pages or contact the local branch of WM to confirm the availability.
+                            </p>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </template>
+
+            <!-- No Availability Message -->
+            <template if:true={showNoAvailabilityMessage}>
+                <div class="slds-p-around_medium">
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12" padding="around-small">
+                            <p>
+                                WM Capacity could not be systemically confirmed at this time.
+                                Please use Green Pages to confirm availability, or contact the
+                                local WM Dispatch to confirm availability manually.
+                            </p>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </template>
+        </lightning-card>
+    </div>
 </template>
