@@ -1,0 +1,215 @@
+<template>
+    <!--
+        NOTE: This is a simplified version of the CustomCaseHighlightPanel.
+        The original Aura component is 352 lines with complex conditional rendering,
+        two-table layout, and integration with 10+ child modal components.
+
+        Full implementation requires:
+        - All child LWC components to be available
+        - Complex conditional column rendering logic
+        - Hover card implementation with HoverOverCards component
+        - Lightning Message Service integration for cross-component communication
+    -->
+
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </template>
+
+    <template if:false={isLoading}>
+        <!-- First Table: Main Case Details -->
+        <table class="slds-table slds-table_bordered slds-table_striped">
+            <thead>
+                <tr>
+                    <!-- Location/Vendor/Client Column -->
+                    <template if:true={isLocation}>
+                        <th class="slds-text-title_caps">
+                            <a class="actionColor" onclick={handleOpenLocation}>Location Name</a>
+                        </th>
+                    </template>
+                    <template if:true={isVendor}>
+                        <th class="slds-text-title_caps">
+                            <a class="actionColor" onclick={handleOpenVendor}>Vendor Name</a>
+                        </th>
+                    </template>
+                    <template if:true={isClient}>
+                        <th class="slds-text-title_caps">
+                            <a class="actionColor" onclick={handleOpenClient}>Client Name</a>
+                        </th>
+                    </template>
+
+                    <!-- Asset -->
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenAsset}>Asset</a>
+                    </th>
+
+                    <!-- Contact -->
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenContact}>Contact</a>
+                    </th>
+
+                    <!-- SLA -->
+                    <th class="slds-text-title_caps">SLA</th>
+
+                    <!-- Record Type -->
+                    <template if:true={isNew}>
+                        <th class="slds-text-title_caps">
+                            <a class="actionColor" onclick={handleOpenRecordType}>Record Type</a>
+                        </th>
+                    </template>
+                    <template if:false={isNew}>
+                        <th class="slds-text-title_caps">Record Type</th>
+                    </template>
+
+                    <!-- Case Type -->
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenCaseType}>Case Type</a>
+                    </th>
+
+                    <!-- Case Sub-Type -->
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenCaseType}>Case Sub-Type</a>
+                    </th>
+
+                    <!-- Case Reason -->
+                    <th class="slds-text-title_caps">Case Reason</th>
+
+                    <!-- WorkOrder -->
+                    <th class="slds-text-title_caps">WorkOrder</th>
+
+                    <!-- Status -->
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenCloseCasePop}>Status</a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <!-- Location/Vendor/Client Data -->
+                    <template if:true={isLocation}>
+                        <td>
+                            <a data-value={caseDetails.Location__c} onclick={handleNavigate}>
+                                {caseDetails.Location__r.Name}
+                            </a>
+                        </td>
+                    </template>
+                    <template if:true={isVendor}>
+                        <td>{caseDetails.Supplier__r.Name}</td>
+                    </template>
+                    <template if:true={isClient}>
+                        <td>{caseDetails.Client__r.Name}</td>
+                    </template>
+
+                    <td>
+                        <a data-value={caseDetails.AssetId} onclick={handleNavigate}>
+                            {caseDetails.Asset.Name}
+                        </a>
+                    </td>
+                    <td>
+                        <a data-value={caseDetails.ContactId} onclick={handleNavigate}>
+                            {caseDetails.Contact.Name}
+                        </a>
+                    </td>
+                    <td>{caseDetails.SLA_Service_DateTime__c}</td>
+                    <td>{caseDetails.Case_Record_Type__c}</td>
+                    <td>{caseDetails.Case_Type__c}</td>
+                    <td>{caseDetails.Case_Sub_Type__c}</td>
+                    <td>{caseDetails.Case_Reason__c}</td>
+                    <td>
+                        <a data-value={caseDetails.Work_Order__c} onclick={handleNavigate}>
+                            {caseDetails.Acorn_Work_order__c}
+                        </a>
+                    </td>
+                    <td class={caseDetails.Status_Color_Class}>{caseDetails.Status}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Second Table: Additional Details -->
+        <table class="slds-table slds-table_bordered slds-table_striped slds-m-top_small">
+            <thead>
+                <tr>
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenRelatedCases}>Reference#</a>
+                    </th>
+                    <th class="slds-text-title_caps">Material</th>
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenCustomerInfo}>Required Information</a>
+                    </th>
+                    <th class="slds-text-title_caps">
+                        <a class="actionColor" onclick={handleOpenServiceDate}>Service Date</a>
+                    </th>
+                    <th class="slds-text-title_caps">
+                        <a onclick={handleShowQueue}>Queue</a>
+                    </th>
+                    <th class="slds-text-title_caps"></th>
+                    <th class="slds-text-title_caps"></th>
+                    <th class="slds-text-title_caps"></th>
+                    <th class="slds-text-title_caps">Tracking Number</th>
+                    <th class="slds-text-title_caps">Sub-Status</th>
+                    <th class="slds-text-title_caps"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>{caseDetails.Reference_Number__c}</strong></td>
+                    <td>{caseDetails.Asset_Material__c}</td>
+                    <td>{poValue}/{chargeableValue}/{psiValue}/{ccValue}</td>
+                    <td>{caseDetails.Service_Date_Text__c}</td>
+                    <td>{queueName}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{caseDetails.Tracking_Number__c}</td>
+                    <td>{caseDetails.Case_Sub_Status__c}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+    <!-- Modal Containers (Simplified) -->
+    <!--
+        NOTE: In the full implementation, each modal would use dynamic component creation
+        or conditional rendering to show the appropriate child component:
+        - LocationContainer/VendorContainer/ClientContainer
+        - ShowAssetHeadersOnCase
+        - SearchExistingContact
+        - ServiceDateContainer
+        - FillCaseSubType
+        - SetCaseCustomerInfo
+        - CloseCasePop
+        - CaseNavigation
+        - changeRecordType
+
+        Example structure:
+        <template if:true={isModalOpenServiceDate}>
+            <c-service-date-container-l-w-c
+                record-id={recordId}
+                show-form
+                onrefresh={handleRefresh}>
+            </c-service-date-container-l-w-c>
+        </template>
+    -->
+
+    <!-- Generic Modal Container -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        onclick={handleCloseModal}
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close">
+                    </lightning-button-icon>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Child components would be rendered here based on modal state -->
+                    <p>Modal content placeholder</p>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
