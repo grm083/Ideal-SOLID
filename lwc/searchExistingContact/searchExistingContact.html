@@ -1,0 +1,405 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="contact-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open slds-modal_medium"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="contact-modal-heading" class="slds-text-heading_medium">Contact</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Warning Messages for Missing Prerequisites -->
+                    <template if:true={isClient}>
+                        <template if:false={caseAccount}>
+                            <template if:false={caseObj.Case_Sub_Type__c}>
+                                <div class="slds-text-body_regular slds-m-bottom_medium">
+                                    Prior to selecting a contact you must select your Client. Please navigate to the "Client Search" tab.
+                                </div>
+                            </template>
+                        </template>
+                    </template>
+
+                    <!-- Contact Type Selection -->
+                    <template if:true={showContactInterface}>
+                        <div class="slds-grid slds-wrap slds-grid_align-center slds-m-bottom_medium ridgedBorder slds-p-around_medium">
+                            <div class="slds-col slds-size_3-of-12">
+                                <strong>Contact type:</strong>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <lightning-button
+                                    label="Customer"
+                                    variant={boolCustomer ? 'brand' : 'neutral'}
+                                    icon-name={boolCustomer ? 'utility:check' : 'utility:add'}
+                                    onclick={handleCustomerClick}>
+                                </lightning-button>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <lightning-button
+                                    label="Vendor"
+                                    variant={boolVendor ? 'brand' : 'neutral'}
+                                    icon-name={boolVendor ? 'utility:check' : 'utility:add'}
+                                    onclick={handleVendorClick}>
+                                </lightning-button>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <lightning-button
+                                    label="Internal"
+                                    variant={boolInternal ? 'brand' : 'neutral'}
+                                    icon-name={boolInternal ? 'utility:check' : 'utility:add'}
+                                    onclick={handleInternalClick}>
+                                </lightning-button>
+                            </div>
+                        </div>
+
+                        <!-- Customer/Vendor Contact Interface -->
+                        <template if:true={boolCustomer}>
+                            <div class="slds-grid slds-wrap">
+                                <!-- Left Column: Search and Results -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-right_small ridgedBorder">
+                                    <p class="slds-m-bottom_small">
+                                        Search for contacts by first name, last name, email address, or phone number.
+                                    </p>
+
+                                    <!-- Customer Search Fields -->
+                                    <lightning-input
+                                        label="First Name"
+                                        value={searchFirstName}
+                                        onchange={handleContactSearch}>
+                                    </lightning-input>
+                                    <lightning-input
+                                        label="Last Name"
+                                        value={searchLastName}
+                                        onchange={handleContactSearch}>
+                                    </lightning-input>
+                                    <lightning-input
+                                        type="email"
+                                        label="Email Address"
+                                        value={searchEmail}
+                                        onblur={handleContactSearch}>
+                                    </lightning-input>
+                                    <lightning-input
+                                        type="tel"
+                                        label="Phone Number"
+                                        value={searchPhone}
+                                        pattern="[0-9]{10}"
+                                        onblur={handleContactSearch}>
+                                    </lightning-input>
+                                    <lightning-input
+                                        type="tel"
+                                        label="Mobile Number"
+                                        value={searchMobile}
+                                        pattern="[0-9]{10}"
+                                        onblur={handleContactSearch}>
+                                    </lightning-input>
+
+                                    <!-- Search Results Table -->
+                                    <div class="slds-m-top_medium bigBoxVert">
+                                        <lightning-datatable
+                                            key-field="ContactId"
+                                            data={soslContacts}
+                                            columns={soslColumns}
+                                            onrowselection={handleContactRowSelection}
+                                            max-row-selection="1">
+                                        </lightning-datatable>
+                                    </div>
+
+                                    <!-- New Button -->
+                                    <template if:true={boolShowNew}>
+                                        <lightning-button
+                                            variant="brand"
+                                            label="New"
+                                            icon-name="utility:new"
+                                            onclick={handleNewContact}
+                                            class="slds-m-top_small">
+                                        </lightning-button>
+                                    </template>
+                                </div>
+
+                                <!-- Right Column: Selected Contact or New Contact Form -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-left_small ridgedBorder">
+                                    <!-- Existing Contact Display -->
+                                    <template if:true={contactId}>
+                                        <template if:false={boolNewContact}>
+                                            <div class="bigBoxVert selectContactEdit">
+                                                <lightning-record-form
+                                                    record-id={contactId}
+                                                    object-api-name="Contact"
+                                                    fields={contactDisplayFields}
+                                                    columns="2"
+                                                    mode={boolReadOnly ? 'readonly' : 'view'}>
+                                                </lightning-record-form>
+                                            </div>
+                                            <template if:true={boolReadOnly}>
+                                                <p class="slds-m-top_small slds-text-body_small">
+                                                    This is an issue contact for this vendor account.
+                                                    Contact Vendor Client Code team for changes.
+                                                </p>
+                                            </template>
+                                            <lightning-button
+                                                variant="brand"
+                                                label="Select Contact"
+                                                icon-name="utility:contact_request"
+                                                onclick={handleSaveExistingContact}
+                                                class="slds-m-top_medium">
+                                            </lightning-button>
+                                        </template>
+                                    </template>
+
+                                    <!-- New Contact Form -->
+                                    <template if:true={boolNewContact}>
+                                        <lightning-input
+                                            label="First Name"
+                                            value={firstName}
+                                            required>
+                                        </lightning-input>
+                                        <lightning-input
+                                            label="Last Name"
+                                            value={lastName}
+                                            required>
+                                        </lightning-input>
+                                        <lightning-input
+                                            type="email"
+                                            label="Email Address"
+                                            value={email}>
+                                        </lightning-input>
+                                        <lightning-input
+                                            type="tel"
+                                            label="Preferred Phone Number"
+                                            value={phone}
+                                            pattern="[0-9]{10}">
+                                        </lightning-input>
+                                        <lightning-input
+                                            label="Phone Number Extension"
+                                            value={extension}
+                                            max-length="6">
+                                        </lightning-input>
+                                        <lightning-combobox
+                                            label="Preferred Contact Method"
+                                            value={preferred}
+                                            options={preferredOptions}
+                                            required>
+                                        </lightning-combobox>
+
+                                        <!-- Customer-specific fields -->
+                                        <template if:true={boolCustomer}>
+                                            <p class="slds-m-vertical_small">
+                                                Select the contact's role or title within their organization.
+                                            </p>
+                                            <lightning-combobox
+                                                label="Title"
+                                                value={title}
+                                                options={accountTitles}
+                                                required>
+                                            </lightning-combobox>
+                                            <!--
+                                                NOTE: "Add New Title" button requires c-create-new-account-title child component
+                                                Original Aura: <c:createNewAccountTitle accountId={caseAccount} />
+                                            -->
+                                            <lightning-combobox
+                                                label="Department (if available)"
+                                                value={selDept}
+                                                options={accountDepts}>
+                                            </lightning-combobox>
+                                        </template>
+
+                                        <lightning-button
+                                            variant="brand"
+                                            label="Save Contact"
+                                            icon-name="utility:save"
+                                            onclick={handleSaveNewContact}
+                                            class="slds-m-top_medium">
+                                        </lightning-button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Vendor Contact Interface (simplified - similar to customer) -->
+                        <template if:true={boolVendor}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-right_small ridgedBorder">
+                                    <p class="slds-m-bottom_small">
+                                        Select a vendor to see associated contacts.
+                                    </p>
+                                    <lightning-input
+                                        type="search"
+                                        label="Search for vendors"
+                                        value={searchString}>
+                                    </lightning-input>
+
+                                    <div class="bigBoxVert slds-m-top_medium">
+                                        <lightning-datatable
+                                            key-field="AccountId"
+                                            data={vendorAccts}
+                                            columns={vendorColumns}
+                                            onrowselection={handleVendorRowSelection}
+                                            max-row-selection="1">
+                                        </lightning-datatable>
+                                    </div>
+
+                                    <!-- Vendor Contacts Table (after vendor selection) -->
+                                    <template if:true={showSearch}>
+                                        <div class="bigBoxVert slds-m-top_medium">
+                                            <lightning-datatable
+                                                key-field="ContactId"
+                                                data={soslContacts}
+                                                columns={soslColumns}
+                                                onrowselection={handleContactRowSelection}
+                                                max-row-selection="1">
+                                            </lightning-datatable>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Right Column: Similar to customer -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-left_small ridgedBorder">
+                                    <template if:true={contactId}>
+                                        <!-- Contact details (same as customer) -->
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Internal User Interface -->
+                        <template if:true={boolInternal}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-right_small ridgedBorder">
+                                    <p class="slds-m-bottom_small">
+                                        Search for internal WM users below.
+                                    </p>
+                                    <lightning-input
+                                        type="search"
+                                        label="Search for user"
+                                        value={userString}
+                                        onchange={handleUserSearch}>
+                                    </lightning-input>
+
+                                    <div class="bigBoxVert slds-m-top_medium">
+                                        <lightning-datatable
+                                            key-field="ContactId"
+                                            data={soslContacts}
+                                            columns={soslColumns}
+                                            onrowselection={handleUserRowSelection}
+                                            max-row-selection="1">
+                                        </lightning-datatable>
+                                    </div>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2 slds-p-left_small ridgedBorder">
+                                    <template if:true={userId}>
+                                        <div class="bigBoxVert">
+                                            <lightning-record-form
+                                                record-id={userId}
+                                                object-api-name="User"
+                                                fields={userDisplayFields}
+                                                columns="2"
+                                                mode="readonly">
+                                            </lightning-record-form>
+                                        </div>
+                                        <lightning-button
+                                            variant="brand"
+                                            label="Select User"
+                                            icon-name="utility:adduser"
+                                            onclick={handleSaveUser}
+                                            class="slds-m-top_medium">
+                                        </lightning-button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+
+                    <!-- Existing Contact Display (when not editing) -->
+                    <template if:false={showContactInterface}>
+                        <template if:true={caseContact}>
+                            <p class="slds-m-bottom_small">
+                                Below is the contact associated to this case.
+                            </p>
+                            <template if:true={boolShowUser}>
+                                <lightning-record-form
+                                    record-id={caseUser}
+                                    object-api-name="User"
+                                    fields={userDisplayFields}
+                                    columns="2"
+                                    mode="readonly">
+                                </lightning-record-form>
+                            </template>
+                            <template if:false={boolShowUser}>
+                                <lightning-record-form
+                                    record-id={caseContact}
+                                    object-api-name="Contact"
+                                    fields={contactDisplayFields}
+                                    columns="2"
+                                    mode="readonly">
+                                </lightning-record-form>
+                            </template>
+                            <template if:true={caseStatus === 'New'}>
+                                <lightning-button
+                                    variant="brand"
+                                    label="Change Contact"
+                                    icon-name="utility:change_owner"
+                                    onclick={handleChangeContact}
+                                    class="slds-m-top_medium">
+                                </lightning-button>
+                            </template>
+                        </template>
+                    </template>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+
+    <!-- Duplicate Contact Modal -->
+    <template if:true={isOpen}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="duplicate-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseDuplicateModal}>
+                    </lightning-button-icon>
+                    <h2 id="duplicate-modal-heading" class="slds-text-heading_medium">Potential Duplicate Contacts</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-datatable
+                        key-field="ContactId"
+                        data={dupContacts}
+                        columns={dupColumns}
+                        onrowselection={handleContactRowSelection}
+                        max-row-selection="1">
+                    </lightning-datatable>
+                    <lightning-button
+                        variant="brand"
+                        label="Continue"
+                        onclick={handleCloseDuplicateModal}
+                        class="slds-m-top_medium">
+                    </lightning-button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

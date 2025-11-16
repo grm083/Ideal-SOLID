@@ -1,0 +1,32 @@
+.actionColor {
+    color: #0070d2;
+    cursor: pointer;
+}
+
+.actionColor:hover {
+    text-decoration: underline;
+}
+
+.blankColor {
+    color: #c23934;
+    cursor: pointer;
+}
+
+.capacityColor {
+    color: #04844b;
+    cursor: pointer;
+}
+
+.tdColor {
+    color: #c23934;
+    font-weight: bold;
+}
+
+.queueDisabled {
+    color: #706e6b;
+    cursor: not-allowed;
+}
+
+.wrapTextCls {
+    word-wrap: break-word;
+}

@@ -1,0 +1,243 @@
+<template>
+    <!-- Task Creation Buttons -->
+    <template if:true={showTaskButtons}>
+        <lightning-button
+            label="Pending Information"
+            variant="brand"
+            onclick={handlePendingInfoTask}>
+        </lightning-button>
+        <lightning-button
+            label="Initiate Task"
+            variant="brand"
+            onclick={handleInitateTask}
+            class="slds-m-left_small">
+        </lightning-button>
+    </template>
+
+    <!-- Task Creation Modal -->
+    <template if:true={showTaskCreatePopUpPI}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container slds-m-top_x-large">
+                <!-- Modal Header -->
+                <header class="slds-modal__header slds-m-top_x-large">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        onclick={handleCloseModal}
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close">
+                    </lightning-button-icon>
+                    <h1 class="slds-modal__title slds-hyphenate">{headerMessage}</h1>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <!-- Loading Spinner -->
+                    <template if:true={showSpinner}>
+                        <div class="slds-spinner_container">
+                            <div class="slds-spinner slds-spinner--brand slds-spinner--large slds-is-relative" role="alert">
+                                <span class="slds-assistive-text">Loading...</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- ========== PENDING INFORMATION TASK LAYOUT ========== -->
+                    <template if:true={showPendingInfoTask}>
+                        <div class="slds-grid slds-wrap">
+                            <!-- Task Type -->
+                            <div class="slds-col slds-size_12-of-12 slds-m-around_xxx-small">
+                                <lightning-combobox
+                                    name="taskType"
+                                    label="Task Type"
+                                    placeholder="-- None --"
+                                    value={task.Subject}
+                                    options={taskTypeOptions}
+                                    onchange={handleTaskTypeChange}
+                                    data-field="required"
+                                    required>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Due Date Time -->
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning-input
+                                    type="datetime"
+                                    name="dueDateTime"
+                                    label="Due Date Time"
+                                    value={task.Due_Date_Time__c}
+                                    onchange={handleDueDateChange}
+                                    data-field="required"
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- Follow Up Reasons -->
+                            <div class="slds-col slds-size_6-of-12 slds-p-left_medium slds-p-top_medium">
+                                <lightning-combobox
+                                    name="followUpReasons"
+                                    label="Follow Up Reasons"
+                                    placeholder="-- None --"
+                                    value={task.Follow_Up_Reasons__c}
+                                    options={followUpReasonOptions}
+                                    onchange={handleFollowUpChange}
+                                    data-field="required"
+                                    required>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Comment -->
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning-textarea
+                                    name="Comment"
+                                    label="Comment"
+                                    value={task.Description}
+                                    onchange={handleCommentChange}
+                                    data-field="required"
+                                    required>
+                                </lightning-textarea>
+                            </div>
+                        </div>
+                        <div style="margin-top: 240px;"></div>
+                    </template>
+
+                    <!-- ========== OBTAIN INTERNAL RESPONSE TASK LAYOUT ========== -->
+                    <template if:true={showInternalResponseTask}>
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <!-- Task Type -->
+                            <div class="slds-col slds-size_12-of-12 slds-m-around_xxx-small">
+                                <lightning-combobox
+                                    name="taskType"
+                                    label="Task Type"
+                                    placeholder="-- None --"
+                                    value={task.Subject}
+                                    options={taskTypeOptions}
+                                    onchange={handleTaskTypeChange}
+                                    required>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Assigned To (User Lookup) -->
+                            <div class={userLookupClass} class="slds-col slds-size_6-of-12">
+                                <!--
+                                    NOTE: The UI_customLookup child component (c-ui-custom-lookup)
+                                    was referenced in the original Aura component but does not
+                                    exist in the codebase. This component will need to be created
+                                    or replaced with a standard lightning-input-field with search.
+
+                                    Expected usage:
+                                    <c-ui-custom-lookup
+                                        object-api-name="User"
+                                        icon-name="standard:avatar"
+                                        selected-record={selectedLookUpRecord}
+                                        case-id={caseId}
+                                        label="Assigned To"
+                                        onselectedrecord={handleSelectedRecordEvent}
+                                        onremoverecord={handleRecordRemove}>
+                                    </c-ui-custom-lookup>
+                                -->
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">Assigned To</label>
+                                    <div class="slds-text-body_small slds-text-color_weak">
+                                        User lookup component (c-ui-custom-lookup) needs to be implemented
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_6-of-12"></div>
+
+                            <!-- Sfdc Team -->
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning-combobox
+                                    name="salesforceTeam"
+                                    label="Sfdc Team"
+                                    placeholder="-- None --"
+                                    value={sfdcTeamValue}
+                                    options={sfdcTeamOptions}
+                                    onchange={handleSfdcTeamChange}
+                                    disabled={disabledSfdcTeam}>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Sfdc Team User -->
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning-combobox
+                                    name="sfdcTeamUser"
+                                    label="Sfdc Team User"
+                                    placeholder="-- None --"
+                                    value={salesforceTeamUserValue}
+                                    options={sfdcTeamUserOptions}
+                                    onchange={handleSfdcTeamUserChange}
+                                    disabled={disabledTeamUser}>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Acorn Team (only if case has tracking number) -->
+                            <template if:true={caseTrackingNumber}>
+                                <div class="slds-col slds-size_6-of-12">
+                                    <lightning-combobox
+                                        name="acornTeamName"
+                                        label="Acorn Team"
+                                        placeholder="-- None --"
+                                        value={task.Task_Team_Name__c}
+                                        options={acornTeamOptions}
+                                        onchange={handleAcornTeamChange}
+                                        disabled={disabledAcornTeam}>
+                                    </lightning-combobox>
+                                </div>
+
+                                <!-- Acorn Team Queue -->
+                                <div class="slds-col slds-size_6-of-12">
+                                    <lightning-combobox
+                                        name="teamQueue"
+                                        label="Acorn Team Queue"
+                                        placeholder="-- None --"
+                                        value={task.Task_Team_Queue__c}
+                                        options={teamQueueOptions}
+                                        onchange={handleTeamQueueChange}
+                                        disabled={disabledTeamQ}>
+                                    </lightning-combobox>
+                                </div>
+                            </template>
+
+                            <!-- Comment -->
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning-textarea
+                                    name="Comment"
+                                    label="Comment"
+                                    value={task.Description}
+                                    onchange={handleCommentChange}
+                                    required>
+                                </lightning-textarea>
+                            </div>
+
+                            <div style="margin-top: 500px;"></div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <button
+                        class="slds-button slds-button_neutral"
+                        aria-label="Cancel and close"
+                        onclick={handleCloseModal}>
+                        Cancel
+                    </button>
+                    <button
+                        class="slds-button slds-button_brand"
+                        onclick={handleSaveTask}>
+                        Save
+                    </button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

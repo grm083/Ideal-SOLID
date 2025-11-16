@@ -1,0 +1,65 @@
+<template>
+    <template if:true={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-labelledby="location-modal-heading"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open slds-modal_small"
+            style="position:fixed !important; padding-top:10rem;">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseModal}>
+                    </lightning-button-icon>
+                    <h2 id="location-modal-heading" class="slds-text-heading_medium">Location</h2>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- When Location is NOT set, start with Location Search tab -->
+                    <template if:false={hasLocation}>
+                        <lightning-tabset class="slds-p-left_xx-large" active-tab-value="location_search">
+                            <lightning-tab label="Location Details" value="location_details" onactive={handleLocationDetailsTab}>
+                                <template if:true={showLocationDetails}>
+                                    <c-case-location-details record-id={recordId}></c-case-location-details>
+                                </template>
+                            </lightning-tab>
+                            <lightning-tab label="Location Search" value="location_search" onactive={handleLocationSearchTab}>
+                                <template if:true={showLocationSearch}>
+                                    <template if:true={isCaseNew}>
+                                        <c-location-asset-search record-id={recordId}></c-location-asset-search>
+                                    </template>
+                                </template>
+                            </lightning-tab>
+                        </lightning-tabset>
+                    </template>
+
+                    <!-- When Location IS set, start with Location Details tab -->
+                    <template if:true={hasLocation}>
+                        <lightning-tabset class="slds-p-left_xx-large" active-tab-value="location_details">
+                            <lightning-tab label="Location Details" value="location_details" onactive={handleLocationDetailsTab}>
+                                <template if:true={showLocationDetails}>
+                                    <c-case-location-details record-id={recordId}></c-case-location-details>
+                                </template>
+                            </lightning-tab>
+                            <lightning-tab label="Location Search" value="location_search" onactive={handleLocationSearchTab}>
+                                <template if:true={showLocationSearch}>
+                                    <template if:true={isCaseNew}>
+                                        <c-location-asset-search record-id={recordId}></c-location-asset-search>
+                                    </template>
+                                </template>
+                            </lightning-tab>
+                        </lightning-tabset>
+                    </template>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="position:fixed !important;"></div>
+    </template>
+</template>

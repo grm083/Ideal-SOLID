@@ -1,0 +1,8 @@
+.slds-truncate {
+    white-space: normal;
+}
+
+.newline {
+    white-space: pre-line !important;
+    font-size: medium;
+}

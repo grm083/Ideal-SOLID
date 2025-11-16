@@ -1,0 +1,192 @@
+<template>
+    <div class="slds-is-relative">
+        <!-- Loading Spinner -->
+        <template if:true={loadingSpinner}>
+            <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <!-- Active Asset Header Section -->
+        <div class={activeAssetHeaderSectionClass}>
+            <h3 class="slds-section__title">
+                <button
+                    class="slds-button slds-section__title-action"
+                    aria-controls="activeAssetHeaderList"
+                    onclick={handleToggleActiveSection}>
+                    <lightning-icon
+                        icon-name="utility:switch"
+                        size="x-small"
+                        class="slds-section__title-action-icon slds-button__icon_left"
+                        alternative-text="button icon">
+                    </lightning-icon>
+                    <span class="slds-truncate" title="Active Asset Headers">Active Asset Headers</span>
+                </button>
+            </h3>
+            <div class="slds-section__content" id="activeAssetHeaderList">
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_bordered slds-no-row-hover slds-text-title_caps">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Select</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Asset Header</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Material</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Duration</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Occurrence</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Schedule</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>QTY</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>SID</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>CATEGORY</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>CONTAINER POSITION</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>HAS XPU</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>ACCOUNT NAME</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>VENDOR ID</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>S-CODE</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>VENDOR ACCOUNT NUMBER</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>MAS COMPANY # - ACCOUNT #</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>MAS UNIQUE #</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>MAS LIBRARY</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Start Date</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>END DATE</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>EQUIPMENT OWNER</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>PROJECT</strong></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={activeAssetHeaders} for:item="asset">
+                                <tr key={asset.assetId} class={asset.rowClass}>
+                                    <td class="cell">
+                                        <lightning-input
+                                            type="checkbox"
+                                            data-id={asset.assetId}
+                                            checked={asset.isSelected}
+                                            disabled={asset.isDisabled}
+                                            onchange={handleSelectAsset}
+                                            variant="label-hidden">
+                                        </lightning-input>
+                                    </td>
+                                    <td class={asset.assetNameClass}>{asset.assetName}</td>
+                                    <td>{asset.Material_Type}</td>
+                                    <td>{asset.Duration}</td>
+                                    <td>{asset.Occurrence_Type}</td>
+                                    <td>{asset.Schedule}</td>
+                                    <td>{asset.Quantity}</td>
+                                    <td>{asset.Acorn_SID}</td>
+                                    <td>{asset.Category}</td>
+                                    <td>{asset.Container_Position}</td>
+                                    <td>{asset.Has_Extra_Pickup}</td>
+                                    <td>{asset.Supplier_Name}</td>
+                                    <td>{asset.Vendor_ID}</td>
+                                    <td>{asset.Sensitivity_Code}</td>
+                                    <td>{asset.Vendor_Account_Number}</td>
+                                    <td>{asset.MAS_Company_Account_Number}</td>
+                                    <td>{asset.MAS_Customer_Unique_Id}</td>
+                                    <td>{asset.MAS_Library}</td>
+                                    <td>{asset.Start_Date}</td>
+                                    <td>{asset.End_Date}</td>
+                                    <td>{asset.Equipment_Owner}</td>
+                                    <td>{asset.isProjectActive}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inactive Asset Header Section -->
+        <div class={inactiveAssetHeaderSectionClass}>
+            <h3 class="slds-section__title">
+                <button
+                    class="slds-button slds-section__title-action"
+                    aria-controls="inactiveAssetHeaderList"
+                    onclick={handleToggleInactiveSection}>
+                    <lightning-icon
+                        icon-name="utility:switch"
+                        size="x-small"
+                        class="slds-section__title-action-icon slds-button__icon_left"
+                        alternative-text="button icon">
+                    </lightning-icon>
+                    <span class="slds-truncate" title="InActive Asset Headers">InActive Asset Headers</span>
+                </button>
+            </h3>
+            <div class="slds-section__content" id="inactiveAssetHeaderList">
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_bordered slds-text-title_caps">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Select</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Asset Header</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Material</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Duration</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Occurrence</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Schedule</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>QTY</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>SID</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>CATEGORY</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>CONTAINER POSITION</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>HAS XPU</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>ACCOUNT NAME</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>VENDOR ID</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>S-CODE</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>VENDOR ACCOUNT NUMBER</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>MAS COMPANY # - ACCOUNT #</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>MAS UNIQUE #</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>MAS LIBRARY</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>Start Date</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>END DATE</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>EQUIPMENT OWNER</strong></span></th>
+                                <th scope="col" class="slds-size_1-of-19"><span class="slds-truncate"><strong>PROJECT</strong></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={inactiveAssetHeaders} for:item="asset">
+                                <tr key={asset.assetId} class={asset.rowClass}>
+                                    <td class="cell">
+                                        <lightning-input
+                                            type="checkbox"
+                                            data-id={asset.assetId}
+                                            checked={asset.isSelected}
+                                            disabled={asset.isDisabled}
+                                            onchange={handleSelectAsset}
+                                            variant="label-hidden">
+                                        </lightning-input>
+                                    </td>
+                                    <td>{asset.assetName}</td>
+                                    <td>{asset.Material_Type}</td>
+                                    <td>{asset.Duration}</td>
+                                    <td>{asset.Occurrence_Type}</td>
+                                    <td>{asset.Schedule}</td>
+                                    <td>{asset.Quantity}</td>
+                                    <td>{asset.Acorn_SID}</td>
+                                    <td>{asset.Category}</td>
+                                    <td>{asset.Container_Position}</td>
+                                    <td>{asset.Has_Extra_Pickup}</td>
+                                    <td>{asset.Supplier_Name}</td>
+                                    <td>{asset.Vendor_ID}</td>
+                                    <td>{asset.Sensitivity_Code}</td>
+                                    <td>{asset.Vendor_Account_Number}</td>
+                                    <td>{asset.MAS_Company_Account_Number}</td>
+                                    <td>{asset.MAS_Customer_Unique_Id}</td>
+                                    <td>{asset.MAS_Library}</td>
+                                    <td>{asset.Start_Date}</td>
+                                    <td>{asset.End_Date}</td>
+                                    <td>{asset.Equipment_Owner}</td>
+                                    <td>{asset.isProjectActive}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="slds-m-vertical_xx-small slds-align_absolute-center">
+            <lightning-button
+                variant="brand"
+                label="Save"
+                onclick={handleSaveAsset}
+                disabled={saveEnabled}>
+            </lightning-button>
+        </div>
+    </div>
+</template>
