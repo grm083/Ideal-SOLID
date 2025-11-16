@@ -219,6 +219,13 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
      */
     processGovernorData(message) {
         try {
+            // Guard: Check if pageData exists before attempting to parse
+            // Some messages (like refresh requests) don't include pageData
+            if (!message.pageData) {
+                console.log('CustomCaseHighlightPanelLWC: Received message without pageData, ignoring:', message.eventType);
+                return;
+            }
+
             const pageData = JSON.parse(message.pageData);
 
             if (!pageData || !pageData.caseRecord) {
