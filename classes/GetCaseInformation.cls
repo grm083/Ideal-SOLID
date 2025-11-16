@@ -1,20 +1,20 @@
 /**
- * @author Accenture
- * @date 3/1/2019
- * @description Apex class GetCaseInformation - REFACTORED
- * 
- * REFACTORING COMPLETE: This class has been refactored to use the service layer architecture.
- * All business logic delegated to CaseBusinessRuleService, data retrieval to CaseContextGetter,
- * and UI-specific logic to CaseUIService.
- * 
- * This class now serves as a thin delegation layer maintaining backward compatibility
- * while routing to appropriate service classes.
- * 
- * @see CaseUIService
- * @see CaseContextGetter
- * @see CaseBusinessRuleService
- * @see CaseAssetValidator
- */
+* @author Accenture
+* @date 3/1/2019
+* @description Apex class GetCaseInformation - REFACTORED
+* 
+* REFACTORING COMPLETE: This class has been refactored to use the service layer architecture.
+* All business logic delegated to CaseBusinessRuleService, data retrieval to CaseContextGetter,
+* and UI-specific logic to CaseUIService.
+* 
+* This class now serves as a thin delegation layer maintaining backward compatibility
+* while routing to appropriate service classes.
+* 
+* @see CaseUIService
+* @see CaseContextGetter
+* @see CaseBusinessRuleService
+* @see CaseAssetValidator
+*/
 public with sharing class GetCaseInformation {
     
     // ========================================================================
@@ -29,11 +29,11 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Get case messages with all validations and business rules
-     * @deprecated Use CaseUIService.getCaseMessages() instead
-     * @param caseId Case ID
-     * @return Wrapper with comprehensive case information
-     */
+* @description Get case messages with all validations and business rules
+* @deprecated Use CaseUIService.getCaseMessages() instead
+* @param caseId Case ID
+* @return Wrapper with comprehensive case information
+*/
     @AuraEnabled
     public static Wrapper getMessage(Id caseId){
         try {
@@ -41,18 +41,18 @@ public with sharing class GetCaseInformation {
             return convertToLegacyWrapper(uiWrapper);
         } catch(Exception ex){
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new Wrapper();
         }
     }
     
     /**
-     * @description Get business rule channel requirements and special instructions
-     * @deprecated Use CaseUIService.getBusinessRule() instead
-     * @param caseId Case ID
-     * @return Wrapper with business rule information
-     */
+* @description Get business rule channel requirements and special instructions
+* @deprecated Use CaseUIService.getBusinessRule() instead
+* @param caseId Case ID
+* @return Wrapper with business rule information
+*/
     @AuraEnabled
     public static Wrapper getBusinessRule(Id caseId) {
         Wrapper wrapper = new Wrapper();
@@ -63,18 +63,18 @@ public with sharing class GetCaseInformation {
             wrapper.specialInstructions = brWrapper.specialInstructions;
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
         }
         return wrapper;
     }
     
     /**
-     * @description Get SLA instructions from entitlement
-     * @deprecated Use CaseUIService.getEntitlement() instead
-     * @param caseId Case ID
-     * @return Wrapper with SLA information
-     */
+* @description Get SLA instructions from entitlement
+* @deprecated Use CaseUIService.getEntitlement() instead
+* @param caseId Case ID
+* @return Wrapper with SLA information
+*/
     @AuraEnabled
     public static Wrapper getEntitlement(Id caseId){
         Wrapper wrapper = new Wrapper();
@@ -83,17 +83,17 @@ public with sharing class GetCaseInformation {
             wrapper.slaInstrctuions = slaWrapper.slaInstructions;
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
         }
         return wrapper;
     }
     
     /**
-     * @description Get comprehensive case messages (alternate method name)
-     * @param caseId Case ID
-     * @return Wrapper with complete case information
-     */
+* @description Get comprehensive case messages (alternate method name)
+* @param caseId Case ID
+* @return Wrapper with complete case information
+*/
     @AuraEnabled
     public static Wrapper getCaseMessages(Id caseId) {
         return getMessage(caseId);
@@ -104,30 +104,30 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Get case summary for related cases
-     * @deprecated Use CaseUIService.getCaseSummary() instead
-     * @param caseId Case ID
-     * @param referenceNo Reference number
-     * @param parentId Parent case ID
-     * @return List of related cases
-     */
+* @description Get case summary for related cases
+* @deprecated Use CaseUIService.getCaseSummary() instead
+* @param caseId Case ID
+* @param referenceNo Reference number
+* @param parentId Parent case ID
+* @return List of related cases
+*/
     @AuraEnabled
     public static List<Case> getCaseSummary(String caseId, String referenceNo, String parentId){
         try {
             return CaseUIService.getCaseSummary(caseId, referenceNo, parentId);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new List<Case>();
         }
     }
     
     /**
-     * @description Get related cases by case ID
-     * @param caseId Case ID
-     * @return List of related cases
-     */
+* @description Get related cases by case ID
+* @param caseId Case ID
+* @return List of related cases
+*/
     @AuraEnabled
     public static List<Case> getRelatedCase(String caseId){
         try {
@@ -137,7 +137,7 @@ public with sharing class GetCaseInformation {
             }
             return [
                 SELECT Id, Reference_Number__c, CaseNumber, isWorkOrderCreated__c, 
-                       Status, Case_Sub_Status__c
+                Status, Case_Sub_Status__c
                 FROM Case
                 WHERE Reference_Number__c = :caseObj.Reference_Number__c
                 AND Status = :Constant_Util.STATUS_NEW
@@ -145,8 +145,8 @@ public with sharing class GetCaseInformation {
             ];
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new List<Case>();
         }
     }
@@ -156,89 +156,89 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Get list of case record types
-     * @deprecated Use CaseUIService.getCaseRecordTypeList() instead
-     * @return List of record type names
-     */
+* @description Get list of case record types
+* @deprecated Use CaseUIService.getCaseRecordTypeList() instead
+* @return List of record type names
+*/
     @AuraEnabled
     public static List<String> getCaseRecordTypeList(){
         try {
             return CaseUIService.getCaseRecordTypeList();
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new List<String>();
         }
     }
     
     /**
-     * @description Get record type ID for case
-     * @deprecated Use CaseUIService.getRecordTypeId() instead
-     * @param caseId Case ID
-     * @return Record type ID
-     */
+* @description Get record type ID for case
+* @deprecated Use CaseUIService.getRecordTypeId() instead
+* @param caseId Case ID
+* @return Record type ID
+*/
     @AuraEnabled
     public static String getRecordTypeId(Id caseId){
         try {
             return CaseUIService.getRecordTypeId(caseId);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return null;
         }
     }
     
     /**
-     * @description Get case record details
-     * @deprecated Use CaseUIService.getCaseRecordDetails() instead
-     * @param caseId Case ID
-     * @return List of case details
-     */
+* @description Get case record details
+* @deprecated Use CaseUIService.getCaseRecordDetails() instead
+* @param caseId Case ID
+* @return List of case details
+*/
     @AuraEnabled
     public static List<String> getCaseRecordDetails(Id caseId){
         try {
             return CaseUIService.getCaseRecordDetails(caseId);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new List<String>();
         }
     }
     
     /**
-     * @description Get case asset details
-     * @deprecated Use CaseUIService.getCaseAssetDetails() instead
-     * @param caseId Case ID
-     * @return List of cases with asset details
-     */
+* @description Get case asset details
+* @deprecated Use CaseUIService.getCaseAssetDetails() instead
+* @param caseId Case ID
+* @return List of cases with asset details
+*/
     @AuraEnabled(cacheable=true)
     public static List<Case> getcaseAssetDetails(String caseId){
         try {
             return CaseUIService.getCaseAssetDetails(caseId);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new List<Case>();
         }
     }
     
     /**
-     * @description Get case details (basic info)
-     * @param caseRecId Case ID
-     * @return Case record
-     */
+* @description Get case details (basic info)
+* @param caseRecId Case ID
+* @return Case record
+*/
     @AuraEnabled
     public static Case getCaseDetails(String caseRecId){  
         try {
             return CaseContextGetter.getCaseById(caseRecId);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return null;
         }
     }
@@ -248,35 +248,35 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Get asset validation details for pickup cases
-     * @deprecated Use CaseAssetValidator.validatePickupAssets() instead
-     * @param assetParam Map of Asset ID to Service Date
-     * @return Map of Asset ID to validation message
-     */
+* @description Get asset validation details for pickup cases
+* @deprecated Use CaseAssetValidator.validatePickupAssets() instead
+* @param assetParam Map of Asset ID to Service Date
+* @return Map of Asset ID to validation message
+*/
     public static Map<Id, String> getAssetDetail(Map<Id, Date> assetParam){
         try {
             return CaseAssetValidator.validatePickupAssets(assetParam);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new Map<Id, String>();
         }
     }
     
     /**
-     * @description Get asset validation details for non-pickup cases
-     * @deprecated Use CaseAssetValidator.validateNonPickupAssets() instead
-     * @param assetParam Map of Asset ID to Service Date
-     * @return Map of Asset ID to validation message
-     */
+* @description Get asset validation details for non-pickup cases
+* @deprecated Use CaseAssetValidator.validateNonPickupAssets() instead
+* @param assetParam Map of Asset ID to Service Date
+* @return Map of Asset ID to validation message
+*/
     public static Map<Id, String> getAssetDetailNonPickup(Map<Id, Date> assetParam){
         try {
             return CaseAssetValidator.validateNonPickupAssets(assetParam);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return new Map<Id, String>();
         }
     }
@@ -286,29 +286,29 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Initiate work order creation for cases
-     * @param caseId Primary case ID
-     * @param caseIdList List of case IDs to create work orders for
-     * @return SUCCESS or FAILURE status
-     */
+* @description Initiate work order creation for cases
+* @param caseId Primary case ID
+* @param caseIdList List of case IDs to create work orders for
+* @return SUCCESS or FAILURE status
+*/
     @AuraEnabled
     public static String initiateWorkOrder(String caseId, List<String> caseIdList){
         try {
             return CaseBusinessRuleService.initiateWorkOrderCreation(caseId, caseIdList);
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return Constant_Util.Failure;
         }
     }
     
     /**
-     * @description Add work order details to cases
-     * @param caseWoFields Case with WO field values
-     * @param caseIdList List of case IDs to update
-     * @return SUCCESS or FAILURE status
-     */
+* @description Add work order details to cases
+* @param caseWoFields Case with WO field values
+* @param caseIdList List of case IDs to update
+* @return SUCCESS or FAILURE status
+*/
     @AuraEnabled
     public static String addWorkOrderDetails(Case caseWoFields, List<String> caseIdList){
         String status = null;
@@ -342,8 +342,8 @@ public with sharing class GetCaseInformation {
             
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             status = Constant_Util.Failure;
         }
         
@@ -355,10 +355,10 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Check if user has CPQ license and permissions
-     * @deprecated Use CaseUIService.hasCPQAccess() instead
-     * @return True if user has CPQ access
-     */
+* @description Check if user has CPQ license and permissions
+* @deprecated Use CaseUIService.hasCPQAccess() instead
+* @return True if user has CPQ access
+*/
     public static Boolean getUserDetail() { 
         try {
             User u = [SELECT Id, CPQ_Active_User__c,Profile.Name FROM User WHERE Id =: UserInfo.getUserId()];
@@ -366,24 +366,24 @@ public with sharing class GetCaseInformation {
             return CaseUIService.hasCPQAccess();
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return false;
         }
     }
-
+    
     /**
-     * @description Check if user can update active assets
-     * @deprecated Use CaseUIService.hasUpdateAssetAccess() instead
-     * @return True if user has update asset permissions
-     */
+* @description Check if user can update active assets
+* @deprecated Use CaseUIService.hasUpdateAssetAccess() instead
+* @return True if user has update asset permissions
+*/
     public static Boolean getActiveAssetUserDetail() {
         try {
             return CaseUIService.hasUpdateAssetAccess();
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
             return false;
         }
     }
@@ -393,18 +393,18 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Copy Acorn comments from parent to child case
-     * @deprecated Use CaseBusinessRuleService.copyAcornComments() instead
-     * @param recordId Parent case ID
-     * @param caseObj Child case object
-     */
+* @description Copy Acorn comments from parent to child case
+* @deprecated Use CaseBusinessRuleService.copyAcornComments() instead
+* @param recordId Parent case ID
+* @param caseObj Child case object
+*/
     public static void copyAcornCommentsToChildCase(String recordId, Case caseObj){
         try {
             CaseBusinessRuleService.copyAcornComments(recordId, caseObj);
         } catch (Exception e) {
             UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(), 
-                                                   UTIL_ErrorConstants.ERROR_APPLICATION, 
-                                                   LoggingLevel.ERROR);
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+                                                    LoggingLevel.ERROR);
         }
     }
     
@@ -414,7 +414,54 @@ public with sharing class GetCaseInformation {
         isWMcapacityVisible=ServiceDateContainerController.IsWMCapacityPlannerVisible(caseRecId);
         return isWMcapacityVisible;
     }
-	    
+    
+    // ============================================
+    // Legacy methods needed for backwards compatibility
+    // ============================================
+    
+    @AuraEnabled
+    public static Boolean launchCPQQuoteValidation(String CaseId) {
+        //Call the validation flow for CPQ via Apex for the ShowCaseMessages aura bundle
+        
+        Boolean eligibility = false;
+        
+        Map<String, Object> flowParams = new Map<String, Object>();
+        flowParams.put('caseRecordId', CaseId);
+        Flow.Interview.Validation_Add_Change_Scope_Evaluation validationFlow = new Flow.Interview.Validation_Add_Change_Scope_Evaluation(flowParams);
+        validationFlow.start();
+        
+        eligibility = (Boolean)validationFlow.getvariableValue('OutputQuoteEligible');
+        
+        return eligibility;
+    }
+    
+    /**
+* @author WM
+* @date 10/28/2021
+* @description : Apex method SaveAdditionalTemplate to save Workorder Details on Case
+**/
+    @AuraEnabled
+    public static String saveAdditionalTemplate(String emailTempDesc,List<String> caseId){
+        String Status = null;
+        //System.debug('======='+caseId);
+        try{
+            if(caseId !=null){
+                Case c = new Case();
+                c.Id = caseId[0] ;
+                c.EmailTemplateAdditionalComments__c =emailTempDesc ;
+                database.update(c);            
+                status = Constant_Util.SUCCESS;
+            }
+            
+        }Catch(Exception ex){
+            status = Constant_Util.Failure;            
+            System.debug('New Error:'+ ex.getMessage());
+            throw new AuraHandledException(ex.getMessage());
+        }
+        return status;
+        
+    } 
+    
     @AuraEnabled    
     public static String createOppQuote(String CaseId) {
         
@@ -470,11 +517,11 @@ public with sharing class GetCaseInformation {
         q.SBQQ__Account__c = loc.Id;
         q.SBQQ__Primary__c = true;
         /* if (loc.Primary_Segment__c == Constant_Util.Broker){
-        q.SBQQ__ExpirationDate__c = date.today() + 30;
-        }
-        else {
-        q.SBQQ__ExpirationDate__c = date.today() + 60;
-        } */
+q.SBQQ__ExpirationDate__c = date.today() + 30;
+}
+else {
+q.SBQQ__ExpirationDate__c = date.today() + 60;
+} */
         q.SBQQ__StartDate__c = c.Service_Date__c;
         q.SBQQ__ShippingStreet__c = loc.ShippingStreet;
         q.SBQQ__ShippingCity__c = loc.ShippingCity;
@@ -577,15 +624,172 @@ public with sharing class GetCaseInformation {
         return q.Id;  
     }
     
+    @AuraEnabled
+    public static List<QuoteProcurementController.ProductsWrapper> ShowExistingQuotes(String CaseId) {
+        List<QuoteProcurementController.ProductsWrapper> pwList = new List<QuoteProcurementController.ProductsWrapper>();
+        pwList = QuoteProcurementController.getDuplicates(CaseId);
+        return pwList;
+    }
+    
+    @AuraEnabled
+    public static Boolean updateThisCaseToClose(String CaseId){
+        try{ 
+            Case c = [Select Id,Close_Irrelevant_Case__c,Close_Case_Reason__c, Status from Case where Id =: caseId];
+            c.Close_Irrelevant_Case__c = true;
+            c.Close_Case_Reason__c  = 'Duplicate';
+            c.Case_Close_Reason__c = 'As Location already has active Quotes, this case is not required.';
+            if(c != null) {
+                update c;
+            }
+        }
+        Catch(Exception ex){
+            System.debug('Exception::::'+ex.getStackTraceString());
+            return null; 
+        }
+        return true;
+    }
+    
+    @AuraEnabled
+    public static Boolean IsTemplateVisible(string caseRecId){
+        Set<Id> contactIdSet = new Set<Id>();
+        Set<Id> containerIdSet = new Set<Id>();
+        Set<Id> locationIdSet = new Set<Id>();
+        set<Id> accountIdset = new set<Id>();
+        set<Id> recordTypeIdSet = new set<Id>();
+        set<string> requestTypeSet = new Set<string>();
+        set<string> ServiceTypeSet = new Set<string>();
+        
+        Map<Id,Asset> casewithContainerMap = new Map<Id,Asset>();
+        Map<Id,Account> casewithLocationMap = new Map<Id,Account>();
+        List<Case> processCaseSubtypeList = new List<Case>();
+        Id pickupRcdType = Schema.getGlobalDescribe().get(Constant_Util.KEYWORD_CASE).getDescribe().getRecordTypeInfosByName().get(Constant_Util.PICKUP).getRecordTypeId();
+        Id newServiceRcdType = Schema.getGlobalDescribe().get(Constant_Util.KEYWORD_CASE).getDescribe().getRecordTypeInfosByName().get(Constant_Util.New_Service_Case).getRecordTypeId();
+        Id IntegrationRcdType = Schema.getGlobalDescribe().get(Constant_Util.KEYWORD_CASE).getDescribe().getRecordTypeInfosByName().get(Constant_Util.Integration_Case).getRecordTypeId();
+        Id approvalRecTypeId = Schema.SObjectType.Business_Rule__c.getRecordTypeInfosByName().get(Constant_Util.APPROVAL).getRecordTypeId();
+        Id reqInfoRecTypeId = Schema.SObjectType.Business_Rule__c.getRecordTypeInfosByName().get(Constant_Util.REQUIRED_INFORMATION).getRecordTypeId();
+        recordTypeIdSet.add(approvalRecTypeId);
+        recordTypeIdSet.add(reqInfoRecTypeId);
+        
+        for(Case caseRecord : [select id,contactId,RecordTypeId,Case_type__c,Is_Multivendor__c,AssetId,Case_Sub_Type__c,
+                               Location__c,Client__c,Case_Sub_Status__c,Status,Case_Reason__c from case where id =: caseRecId]){
+                                   
+                                   if(caseRecord.RecordTypeId == newServiceRcdType || caseRecord.RecordTypeId == pickupRcdType || ((caseRecord.RecordTypeId == newServiceRcdType ||
+                                                                                                                                    caseRecord.RecordTypeId != IntegrationRcdType  ||
+                                                                                                                                    (caseRecord.RecordTypeId != IntegrationRcdType && (String.isNotBlank(caseRecord.Case_type__c) && 
+                                                                                                                                                                                       sla_calculation__c.getValues(caseRecord.Case_type__c) != null  && 
+                                                                                                                                                                                       sla_calculation__c.getValues(caseRecord.Case_type__c).Enabled__c))) && !caseRecord.Is_Multivendor__c && String.isBlank(caseRecord.Case_Sub_Type__c))){
+                                                                                                                                                                                           
+                                                                                                                                                                                           //System.debug('caseRecord.AssetId====='+caseRecord.AssetId+'====='+caseRecord.Location__c);          
+                                                                                                                                                                                           if(String.isNotBlank(caseRecord.AssetId)){
+                                                                                                                                                                                               containerIdSet.add(caseRecord.AssetId);   
+                                                                                                                                                                                           }
+                                                                                                                                                                                           if(String.isNotBlank(caseRecord.Location__c)){       
+                                                                                                                                                                                               locationIdSet.add(caseRecord.Location__c); 
+                                                                                                                                                                                           }
+                                                                                                                                                                                           if(String.isNotBlank(caseRecord.contactId)){       
+                                                                                                                                                                                               contactIdSet.add(caseRecord.contactId); 
+                                                                                                                                                                                           }
+                                                                                                                                                                                           
+                                                                                                                                                                                           
+                                                                                                                                                                                           
+                                                                                                                                                                                           processCaseSubtypeList.add(caseRecord); 
+                                                                                                                                                                                           
+                                                                                                                                                                                       }
+                                   if(!String.ISBlank(caseRecord.Case_Sub_type__c)){// 
+                                       
+                                       accountIdset.add(caseRecord.Client__c); 
+                                       requestTypeSet.add(caseRecord.Case_Type__c);
+                                       ServiceTypeSet.add(caseRecord.Case_Sub_type__c);
+                                   }                       
+                                   
+                               }
+        
+        if(containerIdSet != null && !containerIdSet.isEmpty()){
+            casewithContainerMap = CaseTriggerHandler.getAssetRecordValue(containerIdSet,true);
+            //system.debug('casewithContainerMap===='+casewithContainerMap);
+        } 
+        if(locationIdSet != null && !locationIdSet.isEmpty()){
+            casewithLocationMap = CaseTriggerHandler.getLocationRecordValue(locationIdSet);
+            //system.debug('casewithLocationMap===='+casewithLocationMap);
+        }
+        
+        Boolean isTemplateVisible=false ;
+        List<BusinessRuleHelper.BusinessRulewrapper> businessRulewrapperlst = new List<BusinessRuleHelper.BusinessRulewrapper>();
+        if((processCaseSubtypeList != null && !processCaseSubtypeList .isEmpty()) && (casewithLocationMap != null && !casewithLocationMap.isEmpty())){
+            //businessRulewrapperlst = BusinessRuleHelper.businessRuleSelection(processCaseSubtypeList,recordTypeIdSet,accountIdset,requestTypeSet,ServiceTypeSet,casewithContainerMap,casewithLocationMap);
+            for (Case c : processCaseSubtypeList) {
+                businessRulewrapperlst = BusinessRuleHelper.businessRuleSelection(c.Id,recordTypeIdSet);
+            }
+            
+            //System.debug('&&&&'+businessRulewrapperlst);
+            
+            if(businessRulewrapperlst != null && businessRulewrapperlst.size() > 0){
+                
+                isTemplateVisible =true ;
+                set<Id> businessruleIDSet = new Set<Id>();
+                for(BusinessRuleHelper.BusinessRulewrapper businessWrap :businessRulewrapperlst){
+                    businessruleIDSet.add(businessWrap.bRule.Id) ;
+                    
+                }
+                for(Business_Rule__c rule : [select id,No_Approval_Required__c,Active__c,Is_Auto_Email__c from Business_Rule__c where Active__c =true AND id IN:businessruleIDSet]){
+                    
+                    if(rule.No_Approval_Required__c || !rule.Is_Auto_Email__c){
+                        isTemplateVisible =false ;
+                    }
+                }
+                for(Service_Approver__c serApprover : [Select id,Business_Rule__c,Email__c,Approver_Contact__c from Service_Approver__c where Business_Rule__c IN:businessruleIDSet and Approver_Contact__c IN :contactIdSet and Active__c=true]){
+                    isTemplateVisible =false ;
+                }
+                
+                
+            }
+        }         
+        
+        return isTemplateVisible;
+    }
+    
+    @AuraEnabled
+    public static String createAcornComment(String comment, String caseId) {
+        //System.debug('Case Id: ' + caseId);
+        if (!caseId.startsWith('500')) {
+            return 'Invalid Case Id.  You need to be viewing a Case when creating an Acorn Note.';
+        } else{}
+        
+        Id recordTypeId = Schema.getGlobalDescribe().get('Comment__c').getDescribe().getRecordTypeInfosByDeveloperName().get('Acorn_Ticket_Comment').getRecordTypeId();
+        Case curCase = [select CaseNumber, Tracking_Number__c from Case where Id =: caseId limit 1];
+        
+        Decimal acornUserId = [select Acorn_SUser_ID__c from User where ID =: System.UserInfo.getUserId()].Acorn_SUser_ID__c;
+        //System.debug('Acorn User Id: ' + acornUserId);
+        
+        Comment__c note = new Comment__c();
+        note.Case__c = caseId;
+        note.Comment__c = 'Case Close Reason-'+comment;
+        note.Communication_Log_Type_Name__c = 'Internal';
+        note.Case_Number__c = curCase.CaseNumber;
+        note.recordTypeId = recordTypeId;
+        if (String.isNotEmpty(curCase.Tracking_Number__c)) note.Acorn_Tracking_Number__c = curCase.Tracking_Number__c;
+        note.Workflow_Action__c = '';
+        note.Workflow_TeamUser__c = System.UserInfo.getName();
+        note.Acorn_SUser_ID__c = acornUserId;
+        note.Type__c = Constant_Util.OBJECT_CASE;
+        
+        // Modified for SDT-33453 Start
+        if(note != null){
+            insert note;
+        }
+        // Modified for SDT-33453 End
+        return 'ok';
+    }
+    
     // ========================================================================
     // HELPER METHODS - CONVERSION
     // ========================================================================
     
     /**
-     * @description Convert CaseUIWrapper to legacy Wrapper format for backward compatibility
-     * @param uiWrapper Modern CaseUIWrapper from CaseUIService
-     * @return Legacy Wrapper object
-     */
+* @description Convert CaseUIWrapper to legacy Wrapper format for backward compatibility
+* @param uiWrapper Modern CaseUIWrapper from CaseUIService
+* @return Legacy Wrapper object
+*/
     private static Wrapper convertToLegacyWrapper(CaseUIService.CaseUIWrapper uiWrapper) {
         Wrapper wrapper = new Wrapper();
         
@@ -630,9 +834,9 @@ public with sharing class GetCaseInformation {
     // ========================================================================
     
     /**
-     * @description Legacy wrapper class for Case UI data
-     * @deprecated Use CaseUIService.CaseUIWrapper instead
-     */
+* @description Legacy wrapper class for Case UI data
+* @deprecated Use CaseUIService.CaseUIWrapper instead
+*/
     public with sharing class Wrapper {
         @AuraEnabled public List<String> caseRecordTypeList {get;set;}
         @AuraEnabled public Id CPQProduct {get;set;}
