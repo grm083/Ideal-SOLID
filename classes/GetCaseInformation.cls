@@ -780,7 +780,7 @@ q.SBQQ__ExpirationDate__c = date.today() + 60;
         // Modified for SDT-33453 End
         return 'ok';
     }
-
+    
     @AuraEnabled
     public static void insertPlannerComment(Id caseId,String selectedDate,Boolean isAvailDates,Boolean isDateNotListed)
     {
@@ -803,6 +803,46 @@ q.SBQQ__ExpirationDate__c = date.today() + 60;
         catch(Exception ex)
         {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), UTIL_ErrorConstants.ERROR_APPLICATION,LoggingLevel.ERROR);    
+        }
+    }
+    
+    @AuraEnabled
+    public static List<Map<String, String>> getCompanyCategory(string caseId) {
+		List<Map<String, String>> companyList = new List<Map<String, String>>();
+        try{
+            Case caseObj = [SELECT Id, Client__r.AccountNumber FROM Case WHERE Id =: caseId];
+            Map<String, String> companyCategoriesMap = AcornCompanyDetails.getAcornCCMap(caseObj.Client__r.AccountNumber);
+            List<sortingWrapper> sortedList = new List<sortingWrapper>();
+    
+            if(companyCategoriesMap != null && !companyCategoriesMap.isEmpty()) {
+                for(string sobjName : companyCategoriesMap.keyset()) {
+                    Map<String, String> sObjMap = new Map<String, String>();
+                        sObjMap.put('label', companyCategoriesMap.get(sobjName));
+                        sObjMap.put('value', sobjName);
+                        sortedList.add(new sortingWrapper(sObjMap));
+                }
+            }
+    
+            sortedList.sort();
+            for(sortingWrapper sortObjMap : sortedList) {
+                companyList.add(sortObjMap.sObjFldsMap);
+            }
+        } catch(Exception ex)
+        {
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), UTIL_ErrorConstants.ERROR_APPLICATION,LoggingLevel.ERROR);    
+        }
+        return companyList;
+    }
+    
+    public class sortingWrapper implements Comparable {
+        public Map<String, String> sObjFldsMap;
+
+        public sortingWrapper(Map<String, String> sObjFldsMap) {
+            this.sObjFldsMap = sObjFldsMap;
+        }
+
+        public Integer compareTo(Object compareTo) {
+            return sObjFldsMap.get('label').compareTo(((sortingWrapper)compareTo).sObjFldsMap.get('label'));
         }
     }
     
