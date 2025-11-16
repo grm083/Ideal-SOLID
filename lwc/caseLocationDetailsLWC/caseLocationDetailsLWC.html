@@ -1,0 +1,21 @@
+<template>
+    <template if:true={hasLocation}>
+        <lightning-card title="Location Details" icon-name="standard:account">
+            <div class="slds-p-around_medium">
+                <lightning-record-form
+                    record-id={locationId}
+                    object-api-name="Account"
+                    fields={fields}
+                    columns="2"
+                    mode="readonly">
+                </lightning-record-form>
+            </div>
+        </lightning-card>
+    </template>
+
+    <template if:false={hasLocation}>
+        <div class="slds-p-around_medium">
+            {noLocationMessage}
+        </div>
+    </template>
+</template>

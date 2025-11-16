@@ -1,0 +1,8 @@
+.wrapText {
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.slds-table {
+    table-layout: fixed !important;
+}
