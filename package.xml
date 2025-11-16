@@ -2,39 +2,65 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <!-- Apex Classes -->
-        <members>CaseController</members>
-        <members>CaseDataGovernorService</members>
-        <members>UI_customLookUpController</members>
-        <members>CaseUIService</members>
-        <members>CaseBusinessRuleService</members>
-        <members>CaseContextGetter</members>
         <members>AccountContextGetter</members>
-        <members>ContactContextGetter</members>
+        <members>AccountContextGetterTest</members>
         <members>AssetContextGetter</members>
-        <members>QuoteContextGetter</members>
-        <members>TaskContextGetter</members>
-        <members>WorkOrderContextGetter</members>
-        <members>GetCaseInformation</members>
-        <members>ContactSearchandCreate</members>
-        <members>CustomCaseHighlightPanelCntrl</members>
-        <members>CreatePendingInformationTask</members>
-        <members>ServiceDateContainerController</members>
+        <members>AssetContextGetterTest</members>
         <members>AssetHeadersForCaseController</members>
-        <members>changeRecordTypeController</members>
-        <members>TaskPopUpMessageController</members>
+        <members>AssetHeadersForCaseControllerTest</members>
         <members>BusinessRuleUtility</members>
         <members>CaseAssetValidator</members>
+        <members>CaseAssetValidatorTest</members>
         <members>CaseAttributeService</members>
+        <members>CaseAttributeServiceTest</members>
+        <members>CaseBusinessRuleService</members>
+        <members>CaseBusinessRuleServiceTest</members>
+        <members>CaseContextGetter</members>
+        <members>CaseContextGetterTest</members>
+        <members>CaseController</members>
+        <members>CaseControllerTest</members>
         <members>CaseDMLService</members>
+        <members>CaseDMLServiceTest</members>
+        <members>CaseDataGovernorService</members>
+        <members>CaseDataGovernorServiceTest</members>
         <members>CaseDetailHelper</members>
-        <members>CaseTriggerHelper</members>
         <members>CaseTriggerHandler</members>
+        <members>CaseTriggerHandlerTest</members>
+        <members>CaseTriggerHelper</members>
+        <members>CaseUIService</members>
+        <members>CaseUIServiceTest</members>
+        <members>ContactContextGetter</members>
+        <members>ContactContextGetterTest</members>
+        <members>ContactSearchandCreate</members>
+        <members>ContactSearchandCreateTest</members>
+        <members>CreatePendingInformationTask</members>
+        <members>CreatePendingInformationTaskTest</members>
+        <members>CustomCaseHighlightPanelCntrl</members>
+        <members>CustomCaseHighlightPanelCntrlTest</members>
         <members>DuplicateCheckOnCaseController</members>
+        <members>DuplicateCheckOnCaseControllerTest</members>
         <members>Entitlement_Utility</members>
+        <members>GetCaseInformation</members>
+        <members>GetCaseInformationTest</members>
         <members>LocationContainerController</members>
+        <members>LocationContainerControllerTest</members>
+        <members>QuoteContextGetter</members>
+        <members>QuoteContextGetterTest</members>
         <members>SLACalculationUtility</members>
+        <members>ServiceDateContainerController</members>
+        <members>ServiceDateContainerControllerTest</members>
+        <members>TaskContextGetter</members>
+        <members>TaskContextGetterTest</members>
+        <members>TaskPopUpMessageController</members>
+        <members>TestDataFactory</members>
+        <members>UI_customLookUpController</members>
         <members>UniversalQueryUtility</members>
+        <members>UniversalQueryUtilityTest</members>
+        <members>WorkOrderContextGetter</members>
+        <members>WorkOrderContextGetterTest</members>
         <members>WorkOrderCreation</members>
+        <members>WorkOrderCreationTest</members>
+        <members>changeRecordTypeController</members>
         <name>ApexClass</name>
     </types>
     <types>
