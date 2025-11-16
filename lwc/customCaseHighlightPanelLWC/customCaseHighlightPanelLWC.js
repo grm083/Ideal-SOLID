@@ -102,6 +102,47 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
         return getFieldValue(this.caseRecord.data, CASE_STATUS);
     }
 
+    // Null-safe getters for relationship fields
+    get locationName() {
+        return this.caseDetails?.Location__r?.Name || '';
+    }
+
+    get locationId() {
+        return this.caseDetails?.Location__c || null;
+    }
+
+    get vendorName() {
+        return this.caseDetails?.Supplier__r?.Name || '';
+    }
+
+    get clientName() {
+        return this.caseDetails?.Client__r?.Name || '';
+    }
+
+    get assetName() {
+        return this.caseDetails?.Asset?.Name || '';
+    }
+
+    get assetId() {
+        return this.caseDetails?.AssetId || null;
+    }
+
+    get contactName() {
+        return this.caseDetails?.Contact?.Name || '';
+    }
+
+    get contactId() {
+        return this.caseDetails?.ContactId || null;
+    }
+
+    get workOrderNumber() {
+        return this.caseDetails?.Acorn_Work_order__c || '';
+    }
+
+    get workOrderId() {
+        return this.caseDetails?.Work_Order__c || null;
+    }
+
     // Lifecycle Hooks
     connectedCallback() {
         this.subscribeToGovernor();
