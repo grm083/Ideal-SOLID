@@ -18,7 +18,7 @@ const CASE_FIELDS = [CASE_ID, CASE_STATUS, CASE_SUPPLIER];
 export default class ClientContainerLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
 
     // Private properties
     @track showClientSearch = false;

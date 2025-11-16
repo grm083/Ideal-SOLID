@@ -169,15 +169,15 @@ public with sharing class CaseDataGovernorService {
                 when 'contact' {
                     Case caseRecord = CaseContextGetter.getCaseById(caseId);
                     if (caseRecord.ContactId != null) {
-                        Contact contact = ContactContextGetter.getContactById(caseRecord.ContactId);
-                        sectionData.put('caseContact', contact);
+                        Map<Id, Contact> contactMap = ContactContextGetter.getContactById(new Set<Id>{caseRecord.ContactId});
+                        sectionData.put('caseContact', contactMap.get(caseRecord.ContactId));
                     }
                 }
                 when 'asset' {
                     Case caseRecord = CaseContextGetter.getCaseById(caseId);
                     if (caseRecord.AssetId != null) {
-                        Asset asset = AssetContextGetter.getAssetById(caseRecord.AssetId);
-                        sectionData.put('caseAsset', asset);
+                        Map<Id, Asset> assetMap = AssetContextGetter.getHeaderById(new Set<Id>{caseRecord.AssetId});
+                        sectionData.put('caseAsset', assetMap.get(caseRecord.AssetId));
                     }
                 }
                 when 'businessrules' {
@@ -237,27 +237,32 @@ public with sharing class CaseDataGovernorService {
 
         // Load Client Account
         if (caseRecord.Client__c != null) {
-            pageData.clientAccount = AccountContextGetter.getAccountById(caseRecord.Client__c);
+            Map<Id, Account> clientMap = AccountContextGetter.getClientById(new Set<Id>{caseRecord.Client__c});
+            pageData.clientAccount = clientMap.get(caseRecord.Client__c);
         }
 
         // Load Location Account
         if (caseRecord.Location__c != null) {
-            pageData.locationAccount = AccountContextGetter.getAccountById(caseRecord.Location__c);
+            Map<Id, Account> locationMap = AccountContextGetter.getLocationById(new Set<Id>{caseRecord.Location__c});
+            pageData.locationAccount = locationMap.get(caseRecord.Location__c);
         }
 
         // Load Supplier Account
         if (caseRecord.Supplier__c != null) {
-            pageData.supplierAccount = AccountContextGetter.getAccountById(caseRecord.Supplier__c);
+            Map<Id, Account> supplierMap = AccountContextGetter.getClientById(new Set<Id>{caseRecord.Supplier__c});
+            pageData.supplierAccount = supplierMap.get(caseRecord.Supplier__c);
         }
 
         // Load Case Contact
         if (caseRecord.ContactId != null) {
-            pageData.caseContact = ContactContextGetter.getContactById(caseRecord.ContactId);
+            Map<Id, Contact> contactMap = ContactContextGetter.getContactById(new Set<Id>{caseRecord.ContactId});
+            pageData.caseContact = contactMap.get(caseRecord.ContactId);
         }
 
         // Load Case Asset
         if (caseRecord.AssetId != null) {
-            pageData.caseAsset = AssetContextGetter.getAssetById(caseRecord.AssetId);
+            Map<Id, Asset> assetMap = AssetContextGetter.getHeaderById(new Set<Id>{caseRecord.AssetId});
+            pageData.caseAsset = assetMap.get(caseRecord.AssetId);
         }
 
         // Load Related Cases

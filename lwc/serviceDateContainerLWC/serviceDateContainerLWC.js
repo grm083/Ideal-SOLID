@@ -31,7 +31,7 @@ const CASE_FIELDS = [
 export default class ServiceDateContainerLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
     @api parentId;
 
     // Private properties

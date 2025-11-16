@@ -19,7 +19,7 @@ const CASE_FIELDS = [CASE_ID, CASE_STATUS, CASE_SUPPLIER];
 export default class VendorContainerLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
 
     // Private properties
     showVendorSearch = false;

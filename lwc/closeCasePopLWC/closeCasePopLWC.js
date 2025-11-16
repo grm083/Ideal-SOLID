@@ -27,7 +27,7 @@ const CASE_FIELDS = [CASE_ID, CASE_RECORD_TYPE_ID];
 export default class CloseCasePopLWC extends LightningElement {
     // Public properties
     @api recordId;
-    @api showForm = true;
+    @api showForm = false;
 
     // Private properties
     @track closeCaseReason = '';
