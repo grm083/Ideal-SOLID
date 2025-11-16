@@ -485,4 +485,16 @@ public class TestDataFactory {
 
         return testData;
     }
+
+    /**
+     * @description Create Code_Switch__c custom setting for Process Builder to Flow migration
+     * Used by CaseTriggerHandler tests
+     */
+    public static void createProcessBuilderTOFlow() {
+        Code_Switch__c codeSwitch = new Code_Switch__c(
+            Name = 'Process_Builder_to_Flow',
+            Switch_Off__c = false
+        );
+        insert codeSwitch;
+    }
 }
