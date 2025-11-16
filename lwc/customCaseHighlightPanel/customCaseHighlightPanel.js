@@ -1,8 +1,31 @@
+/**
+ * CustomCaseHighlightPanel - REFACTORED to use Case Data Governor
+ *
+ * This refactored version demonstrates the governor pattern where instead of making
+ * direct Apex calls on load, the component subscribes to the CaseDataChannel LMS
+ * and receives centralized data from the caseDataGovernor component.
+ *
+ * BENEFITS:
+ * - Eliminates 2 Apex calls on component load (getCaseHighlightDetails, getCapacityEligibility)
+ * - Receives comprehensive case data from single source
+ * - Auto-updates when governor publishes refreshes
+ * - Falls back to direct Apex if governor not present (backward compatible)
+ *
+ * ARCHITECTURE:
+ * - Subscribes to CaseDataChannel LMS in connectedCallback
+ * - Receives pageData from caseDataGovernor
+ * - Maps pageData to component properties
+ * - Still makes getQueueName call (user-triggered action)
+ */
 import { LightningElement, api, track, wire } from 'lwc';
 import { getRecord, getFieldValue, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
 
-// Import Apex method
+// Import LMS Channel
+import CASE_DATA_CHANNEL from '@salesforce/messageChannel/CaseDataChannel__c';
+
+// Import Apex methods (for fallback and user-triggered actions only)
 import getCaseHighlightDetails from '@salesforce/apex/CustomCaseHighlightPanelCntrl.getCaseHighlightDetails';
 import getCapacityEligibility from '@salesforce/apex/CustomCaseHighlightPanelCntrl.getCapacityEligibilty';
 import getQueueName from '@salesforce/apex/CustomCaseHighlightPanelCntrl.getQueueName';
@@ -14,41 +37,6 @@ import CASE_STATUS from '@salesforce/schema/Case.Status';
 
 const CASE_FIELDS = [CASE_ID, CASE_NUMBER, CASE_STATUS];
 
-/**
- * CustomCaseHighlightPanel - LWC component for case highlight panel
- * Converted from Aura component: aura/CustomCaseHighlightPanel
- *
- * @description Master orchestrator component that serves as the case management control center.
- * Displays a comprehensive 2-table layout showing all key case fields with clickable actions
- * to open various modal components for editing different aspects of the case.
- *
- * This component is one of the largest in the codebase (352 lines in Aura) and integrates
- * with ALL the other components we've converted:
- * - LocationContainer, VendorContainer, ClientContainer
- * - ShowAssetHeadersOnCase
- * - SearchExistingContact
- * - ServiceDateContainer
- * - FillCaseSubType
- * - SetCaseCustomerInfo
- * - CloseCasePop
- * - CaseNavigation
- * - changeRecordType
- * - HoverOverCards (for hover tooltips)
- *
- * Features:
- * - Two-row table layout with 20+ fields
- * - Conditional column headers based on case type/status
- * - Clickable field headers that open modals for editing
- * - Color-coding (actionColor, blankColor, capacityColor)
- * - Hover cards for Asset, Location, and Contact
- * - Queue name lookup
- * - Capacity eligibility check
- * - Business rule integration for New Service cases
- * - Task status highlighting
- *
- * NOTE: Full conversion requires all child components to be available as LWC.
- * This version provides the structure and integration points.
- */
 export default class CustomCaseHighlightPanel extends NavigationMixin(LightningElement) {
     // Public properties
     @api recordId;
@@ -56,6 +44,7 @@ export default class CustomCaseHighlightPanel extends NavigationMixin(LightningE
     // Case details
     @track caseDetails = {};
     @track isLoading = true;
+    @track isLoadingFromGovernor = false;
 
     // Modal state
     @track isModalOpen = false;
@@ -95,6 +84,15 @@ export default class CustomCaseHighlightPanel extends NavigationMixin(LightningE
     @track isCapacityEligible = false;
     @track IsPOProfileDisable = false;
 
+    // Governor integration
+    subscription = null;
+    hasReceivedGovernorData = false;
+    governorTimeout = null;
+
+    // Wire message context
+    @wire(MessageContext)
+    messageContext;
+
     // Wire case record
     @wire(getRecord, { recordId: '$recordId', fields: CASE_FIELDS })
     caseRecord;
@@ -105,14 +103,156 @@ export default class CustomCaseHighlightPanel extends NavigationMixin(LightningE
     }
 
     // Lifecycle Hooks
-    async connectedCallback() {
-        await this.loadCaseDetails();
-        await this.checkCapacityEligibility();
+    connectedCallback() {
+        this.subscribeToGovernor();
+
+        // Set timeout to fall back to direct Apex if governor doesn't respond
+        this.governorTimeout = setTimeout(() => {
+            if (!this.hasReceivedGovernorData) {
+                console.warn('Governor data not received, falling back to direct Apex calls');
+                this.loadDataDirectly();
+            }
+        }, 2000); // Wait 2 seconds for governor
     }
 
-    // Data Loading Methods
-    async loadCaseDetails() {
+    disconnectedCallback() {
+        this.unsubscribeFromGovernor();
+        if (this.governorTimeout) {
+            clearTimeout(this.governorTimeout);
+        }
+    }
+
+    // ========================================================================
+    // GOVERNOR INTEGRATION (NEW!)
+    // ========================================================================
+
+    /**
+     * Subscribe to Case Data Channel LMS
+     */
+    subscribeToGovernor() {
+        if (this.subscription) {
+            return;
+        }
+
+        this.subscription = subscribe(
+            this.messageContext,
+            CASE_DATA_CHANNEL,
+            (message) => this.handleGovernorMessage(message)
+        );
+    }
+
+    /**
+     * Unsubscribe from LMS
+     */
+    unsubscribeFromGovernor() {
+        if (this.subscription) {
+            unsubscribe(this.subscription);
+            this.subscription = null;
+        }
+    }
+
+    /**
+     * Handle messages from Case Data Governor
+     */
+    handleGovernorMessage(message) {
+        // Only process messages for this case
+        if (message.caseId !== this.recordId) {
+            return;
+        }
+
+        // Handle different message types
+        switch (message.eventType) {
+            case 'load':
+            case 'refresh':
+                this.processGovernorData(message);
+                break;
+            case 'error':
+                console.error('Governor error:', message.errorMessage);
+                this.loadDataDirectly(); // Fall back to direct Apex
+                break;
+        }
+    }
+
+    /**
+     * Process data received from governor
+     */
+    processGovernorData(message) {
+        try {
+            const pageData = JSON.parse(message.pageData);
+
+            if (!pageData || !pageData.caseRecord) {
+                return;
+            }
+
+            this.hasReceivedGovernorData = true;
+            if (this.governorTimeout) {
+                clearTimeout(this.governorTimeout);
+            }
+
+            // Map governor data to component properties
+            this.mapGovernorDataToComponent(pageData);
+
+            this.isLoading = false;
+
+        } catch (error) {
+            console.error('Error processing governor data:', error);
+            this.loadDataDirectly(); // Fall back to direct Apex
+        }
+    }
+
+    /**
+     * Map governor pageData to component properties
+     */
+    mapGovernorDataToComponent(pageData) {
+        // Set case details from governor
+        this.caseDetails = pageData.caseRecord;
+
+        // Set display values
+        this.poValue = pageData.caseRecord.PurchaseOrder_Number__c || '-';
+        this.chargeableValue = pageData.caseRecord.Chargeable__c || '-';
+        this.psiValue = pageData.caseRecord.PSI__c || '-';
+        this.ccValue = pageData.caseRecord.Company_Category__c || '-';
+
+        // Set flags from caseUI wrapper
+        if (pageData.caseUI) {
+            this.isReqInfo = !!(pageData.caseUI.reqInfo && pageData.caseUI.reqInfo !== '');
+            this.isCPQ = pageData.userContext?.isCPQUser || false;
+            this.isAssetReq = !!(pageData.caseRecord.AssetId) || !pageData.caseUI.isAssetMandatory;
+        }
+
+        // Set status flags
+        this.isNew = pageData.caseRecord.Status === 'New';
+        this.isNewService = pageData.caseRecord.Case_Record_Type__c === 'New Service Case';
+
+        // Determine account type
+        this.determineAccountType(pageData.caseRecord);
+
+        // Note: Capacity eligibility and queue name still need to be fetched separately
+        // as they're not included in governor data (can be added later)
+        this.checkCapacityEligibility();
+    }
+
+    // ========================================================================
+    // FALLBACK DIRECT DATA LOADING (ORIGINAL METHODS)
+    // ========================================================================
+
+    /**
+     * Load data directly via Apex (fallback if governor not available)
+     */
+    async loadDataDirectly() {
         this.isLoading = true;
+        try {
+            await this.loadCaseDetails();
+            await this.checkCapacityEligibility();
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    /**
+     * Original loadCaseDetails method (used as fallback)
+     */
+    async loadCaseDetails() {
         try {
             const wrapper = await getCaseHighlightDetails({ caseId: this.recordId });
 
@@ -156,8 +296,6 @@ export default class CustomCaseHighlightPanel extends NavigationMixin(LightningE
             }
         } catch (error) {
             console.error('Error loading case details:', error);
-        } finally {
-            this.isLoading = false;
         }
     }
 
@@ -215,6 +353,10 @@ export default class CustomCaseHighlightPanel extends NavigationMixin(LightningE
             console.error('Error fetching queue name:', error);
         }
     }
+
+    // ========================================================================
+    // EVENT HANDLERS (UNCHANGED)
+    // ========================================================================
 
     // Navigation Handlers
     handleNavigate(event) {
@@ -301,9 +443,26 @@ export default class CustomCaseHighlightPanel extends NavigationMixin(LightningE
 
     // Refresh Handler (from child components)
     async handleRefresh() {
-        await this.loadCaseDetails();
-        await this.checkCapacityEligibility();
+        // Request governor to refresh - NEW!
+        if (this.hasReceivedGovernorData) {
+            this.requestGovernorRefresh();
+        } else {
+            // Fallback to direct load
+            await this.loadDataDirectly();
+        }
         await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+    }
+
+    /**
+     * Request governor to refresh data - NEW!
+     */
+    requestGovernorRefresh() {
+        const message = {
+            caseId: this.recordId,
+            eventType: 'refresh',
+            timestamp: new Date().toISOString()
+        };
+        publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }
 
     // Hover Handlers

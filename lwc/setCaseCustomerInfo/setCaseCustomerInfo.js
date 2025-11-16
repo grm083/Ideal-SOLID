@@ -1,8 +1,21 @@
+/**
+ * SetCaseCustomerInfo - REFACTORED to use Case Data Governor
+ *
+ * REFACTORING CHANGES:
+ * - Subscribes to CaseDataChannel LMS
+ * - Gets case details from pageData (eliminating getCaseRecordDetails call)
+ * - Still calls getCompanyCategory (could be added to governor in future)
+ * - Maintains backward compatibility with fallback
+ */
 import { LightningElement, api, track, wire } from 'lwc';
 import { getRecord, getFieldValue, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { subscribe, unsubscribe, MessageContext, publish } from 'lightning/messageService';
 
-// Import Apex methods
+// Import LMS Channel
+import CASE_DATA_CHANNEL from '@salesforce/messageChannel/CaseDataChannel__c';
+
+// Import Apex methods (fallback and company categories)
 import getCaseRecordDetails from '@salesforce/apex/GetCaseInformation.getCaseRecordDetails';
 import getCompanyCategory from '@salesforce/apex/GetCaseInformation.getCompanyCategory';
 
@@ -11,20 +24,10 @@ import CASE_ID from '@salesforce/schema/Case.Id';
 import CASE_RECORD_TYPE_ID from '@salesforce/schema/Case.RecordTypeId';
 import CASE_TYPE from '@salesforce/schema/Case.Case_Type__c';
 import CASE_SUB_TYPE from '@salesforce/schema/Case.Case_Sub_Type__c';
+import CASE_COMPANY_CATEGORY from '@salesforce/schema/Case.Company_Category__c';
 
-const CASE_FIELDS = [CASE_ID, CASE_RECORD_TYPE_ID, CASE_TYPE, CASE_SUB_TYPE];
+const CASE_FIELDS = [CASE_ID, CASE_RECORD_TYPE_ID, CASE_TYPE, CASE_SUB_TYPE, CASE_COMPANY_CATEGORY];
 
-/**
- * SetCaseCustomerInfo - LWC component for setting customer-required information
- * Converted from Aura component: aura/SetCaseCustomerInfo
- *
- * @description Modal form for setting:
- * - Purchase Order information with override
- * - Company Category selection
- * - Haul Away service details (conditionally)
- * - PSI information
- * - Billing dispute information (conditionally)
- */
 export default class SetCaseCustomerInfo extends LightningElement {
     // Public properties
     @api recordId;
@@ -40,6 +43,15 @@ export default class SetCaseCustomerInfo extends LightningElement {
     @track vendorSelected = '';
     @track isHaulAwayUIEnabled = false;
     @track isBillingInvoiceChargeDispute = false;
+
+    // Governor integration
+    subscription = null;
+    hasReceivedGovernorData = false;
+    governorTimeout = null;
+
+    // Wire message context
+    @wire(MessageContext)
+    messageContext;
 
     // Wire Case Record
     @wire(getRecord, { recordId: '$recordId', fields: CASE_FIELDS })
@@ -58,21 +70,136 @@ export default class SetCaseCustomerInfo extends LightningElement {
         return getFieldValue(this.caseRecord.data, CASE_SUB_TYPE);
     }
 
-    // Lifecycle Hooks
-    async connectedCallback() {
-        await this.loadCaseDetails();
-        await this.loadCompanyCategories();
+    // ========================================================================
+    // LIFECYCLE HOOKS
+    // ========================================================================
+
+    connectedCallback() {
+        this.subscribeToGovernor();
+        this.loadCompanyCategories();
+
+        // Fallback timeout if governor doesn't respond
+        this.governorTimeout = setTimeout(() => {
+            if (!this.hasReceivedGovernorData) {
+                console.warn('Governor data not received, falling back to direct Apex');
+                this.loadCaseDetailsDirectly();
+            }
+        }, 2000);
     }
 
-    // Data Loading Methods
-    async loadCaseDetails() {
+    disconnectedCallback() {
+        this.unsubscribeFromGovernor();
+        if (this.governorTimeout) {
+            clearTimeout(this.governorTimeout);
+        }
+    }
+
+    // ========================================================================
+    // GOVERNOR INTEGRATION
+    // ========================================================================
+
+    subscribeToGovernor() {
+        if (this.subscription) {
+            return;
+        }
+
+        this.subscription = subscribe(
+            this.messageContext,
+            CASE_DATA_CHANNEL,
+            (message) => this.handleGovernorMessage(message)
+        );
+    }
+
+    unsubscribeFromGovernor() {
+        if (this.subscription) {
+            unsubscribe(this.subscription);
+            this.subscription = null;
+        }
+    }
+
+    handleGovernorMessage(message) {
+        if (message.caseId !== this.recordId) {
+            return;
+        }
+
+        switch (message.eventType) {
+            case 'load':
+            case 'refresh':
+                this.processGovernorData(message);
+                break;
+            case 'error':
+                console.error('Governor error:', message.errorMessage);
+                this.loadCaseDetailsDirectly();
+                break;
+        }
+    }
+
+    processGovernorData(message) {
+        try {
+            const pageData = JSON.parse(message.pageData);
+
+            if (!pageData || !pageData.caseRecord) {
+                return;
+            }
+
+            this.hasReceivedGovernorData = true;
+            if (this.governorTimeout) {
+                clearTimeout(this.governorTimeout);
+            }
+
+            // Map governor data to component
+            this.mapGovernorDataToComponent(pageData);
+
+        } catch (error) {
+            console.error('Error processing governor data:', error);
+            this.loadCaseDetailsDirectly();
+        }
+    }
+
+    mapGovernorDataToComponent(pageData) {
+        const caseRecord = pageData.caseRecord;
+
+        // Set company category if available
+        if (caseRecord.CompanyCategoryCode__c) {
+            this.selectedCompanyCategoryValue = caseRecord.CompanyCategoryCode__c;
+        }
+
+        // Get haul away info from case record
+        if (caseRecord.Is_Haul_Away_Service__c) {
+            this.isHaulAwayChecked = true;
+        }
+
+        // Check haul away vendor requirements
+        if (caseRecord.Haul_Away_Vendor__c === '223110_5378' && caseRecord.Is_Haul_Away_Service__c) {
+            this.vendorIdRequired = true;
+        }
+
+        // Check if haul away service booked
+        if (caseRecord.Haul_Away_Vendor__c &&
+            caseRecord.Haul_Away_Vendor__c !== 'Not Available' &&
+            caseRecord.Is_Haul_Away_Service__c) {
+            this.haulAwayBookedRequired = true;
+        }
+
+        // Haul away UI enabled (could come from pageConfig in future)
+        this.isHaulAwayUIEnabled = true;
+
+        // Check for billing invoice charge dispute
+        if (caseRecord.Case_Type__c === 'Billing' &&
+            caseRecord.Case_Sub_Type__c === 'Invoice Charge Dispute') {
+            this.isBillingInvoiceChargeDispute = true;
+        }
+    }
+
+    // ========================================================================
+    // FALLBACK DIRECT DATA LOADING
+    // ========================================================================
+
+    async loadCaseDetailsDirectly() {
         try {
             const result = await getCaseRecordDetails({ caseId: this.recordId });
 
             if (result && result.length > 0) {
-                // result[0] is record type ID (not needed with @wire)
-                // result[2] is company category code
-
                 if (result.length > 2) {
                     this.selectedCompanyCategoryValue = result[2];
                 }
@@ -109,6 +236,10 @@ export default class SetCaseCustomerInfo extends LightningElement {
             this.showToast('Error', error.body?.message || 'Error loading company categories', 'error');
         }
     }
+
+    // ========================================================================
+    // EVENT HANDLERS
+    // ========================================================================
 
     // Event Handlers
     handleCloseModal() {
@@ -166,12 +297,27 @@ export default class SetCaseCustomerInfo extends LightningElement {
         // Refresh the record
         notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
 
+        // Request governor to refresh
+        if (this.hasReceivedGovernorData) {
+            this.requestGovernorRefresh();
+        }
+
         // Dispatch success event
         this.dispatchEvent(new CustomEvent('customerinfoupdated', {
             detail: { caseId: this.recordId }
         }));
 
         this.showToast('Success', 'Customer information updated successfully', 'success');
+    }
+
+    requestGovernorRefresh() {
+        const message = {
+            caseId: this.recordId,
+            eventType: 'refresh',
+            section: 'case',
+            timestamp: new Date().toISOString()
+        };
+        publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }
 
     showToast(title, message, variant) {
