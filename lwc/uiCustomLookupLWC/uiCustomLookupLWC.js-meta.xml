@@ -7,6 +7,6 @@
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
         <target>lightningCommunity__Page</target>
-        <target>lightningQuickAction__QuickAction</target>
+        <target>lightning__RecordAction</target>
     </targets>
 </LightningComponentBundle>
