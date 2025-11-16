@@ -1,0 +1,16 @@
+.slds-combobox {
+    position: relative;
+}
+
+.slds-dropdown {
+    max-height: 15rem;
+    overflow-y: auto;
+}
+
+.slds-is-close .slds-dropdown {
+    display: none;
+}
+
+.slds-is-open .slds-dropdown {
+    display: block;
+}
