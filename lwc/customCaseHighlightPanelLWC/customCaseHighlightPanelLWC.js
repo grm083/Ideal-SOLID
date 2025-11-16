@@ -484,13 +484,15 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
 
     // Refresh Handler (from child components)
     async handleRefresh() {
-        // Request governor to refresh - NEW!
+        // Always reload data directly to ensure immediate refresh
+        await this.loadDataDirectly();
+
+        // Notify governor to refresh (so other subscribed components also update)
         if (this.hasReceivedGovernorData) {
             this.requestGovernorRefresh();
-        } else {
-            // Fallback to direct load
-            await this.loadDataDirectly();
         }
+
+        // Notify wire service of record update
         await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
     }
 
