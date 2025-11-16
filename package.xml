@@ -1,60 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
+        <!-- Apex Classes -->
+        <members>CaseController</members>
+        <members>CaseDataGovernorService</members>
+        <members>UI_customLookUpController</members>
+        <members>CaseUIService</members>
+        <members>CaseBusinessRuleService</members>
+        <members>CaseContextGetter</members>
         <members>AccountContextGetter</members>
+        <members>ContactContextGetter</members>
         <members>AssetContextGetter</members>
+        <members>QuoteContextGetter</members>
+        <members>TaskContextGetter</members>
+        <members>WorkOrderContextGetter</members>
+        <members>GetCaseInformation</members>
+        <members>ContactSearchandCreate</members>
+        <members>CustomCaseHighlightPanelCntrl</members>
+        <members>CreatePendingInformationTask</members>
+        <members>ServiceDateContainerController</members>
         <members>AssetHeadersForCaseController</members>
+        <members>changeRecordTypeController</members>
+        <members>TaskPopUpMessageController</members>
+        <members>NTEBRRulesModalCtrl</members>
+        <members>UTIL_LoggingService</members>
+        <members>UTIL_ErrorConstants</members>
         <members>BusinessRuleUtility</members>
         <members>CaseAssetValidator</members>
         <members>CaseAttributeService</members>
-        <members>CaseBusinessRuleService</members>
-        <members>CaseContextGetter</members>
         <members>CaseDMLService</members>
         <members>CaseDetailHelper</members>
-        <members>CaseTriggerHandler</members>
         <members>CaseTriggerHelper</members>
-        <members>CaseUIService</members>
-        <members>ContactContextGetter</members>
-        <members>ContactSearchandCreate</members>
-        <members>CreatePendingInformationTask</members>
-        <members>CustomCaseHighlightPanelCntrl</members>
+        <members>CaseTriggerHandler</members>
         <members>DuplicateCheckOnCaseController</members>
         <members>Entitlement_Utility</members>
-        <members>GetCaseInformation</members>
-        <members>HoverOverCardsCntrlTest</members>
         <members>LocationContainerController</members>
-        <members>QuoteContextGetter</members>
         <members>SLACalculationUtility</members>
-        <members>ServiceDateContainerController</members>
-        <members>TaskContextGetter</members>
-        <members>TaskPopUpMessageController</members>
         <members>UniversalQueryUtility</members>
-        <members>WorkOrderContextGetter</members>
         <members>WorkOrderCreation</members>
-        <members>changeRecordTypeController</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>CaseNavigation</members>
-        <members>ClientContainer</members>
-        <members>CloseCasePop</members>
-        <members>CreatePendingInformationTask</members>
-        <members>CustomCaseHighlightPanel</members>
-        <members>FillCaseSubType</members>
-        <members>HoverOverCards</members>
-        <members>LocationContainer</members>
-        <members>SearchExistingContact</members>
-        <members>ServiceDateContainer</members>
-        <members>SetCaseCustomerInfo</members>
-        <members>ShowAssetHeadersOnCase</members>
-        <members>ShowCaseMessages</members>
-        <members>VendorContainer</members>
-        <members>changeRecordType</members>
-        <name>AuraDefinitionBundle</name>
-    </types>
-    <types>
-        <members>ntebRulesModal</members>
+        <!-- Lightning Web Components -->
+        <members>addFavoriteContainersLWC</members>
+        <members>caseDataGovernorLWC</members>
+        <members>caseLocationDetailsLWC</members>
+        <members>caseNavigationLWC</members>
+        <members>caseQuoteModalLWC</members>
+        <members>changeRecordTypeLWC</members>
+        <members>clientContainerLWC</members>
+        <members>clientSearchLWC</members>
+        <members>closeCasePopLWC</members>
+        <members>createNewAccountTitleLWC</members>
+        <members>createPendingInformationTaskLWC</members>
+        <members>customCalendarLWC</members>
+        <members>customCaseHighlightPanelLWC</members>
+        <members>existingQuoteModalLWC</members>
+        <members>fillCaseSubTypeLWC</members>
+        <members>hoverOverCardsLWC</members>
+        <members>locationAssetSearchLWC</members>
+        <members>locationContainerLWC</members>
+        <members>ntebRulesModalLWC</members>
+        <members>searchExistingContactLWC</members>
+        <members>serviceDateContainerLWC</members>
+        <members>setCaseCustomerInfoLWC</members>
+        <members>setCaseSLADateLWC</members>
+        <members>showAssetHeadersOnCaseLWC</members>
+        <members>showCaseMessagesLWC</members>
+        <members>uiCustomLookupLWC</members>
+        <members>uiCustomLookupResultLWC</members>
+        <members>vendorContainerLWC</members>
+        <members>vendorSearchLWC</members>
+        <members>wmCapacityLWC</members>
         <name>LightningComponentBundle</name>
     </types>
-    <version>63.0</version>
+    <types>
+        <!-- Lightning Message Channels -->
+        <members>CaseDataChannel</members>
+        <name>LightningMessageChannel</name>
+    </types>
+    <version>62.0</version>
 </Package>

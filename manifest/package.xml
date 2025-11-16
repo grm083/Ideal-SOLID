@@ -66,15 +66,5 @@
         <members>CaseDataChannel</members>
         <name>LightningMessageChannel</name>
     </types>
-    <types>
-        <!-- Custom Objects (if any) -->
-        <members>Case</members>
-        <members>Account</members>
-        <members>Contact</members>
-        <members>Asset</members>
-        <members>Task</members>
-        <members>WorkOrder</members>
-        <name>CustomObject</name>
-    </types>
     <version>62.0</version>
 </Package>
