@@ -845,6 +845,15 @@ q.SBQQ__ExpirationDate__c = date.today() + 60;
             return sObjFldsMap.get('label').compareTo(((sortingWrapper)compareTo).sObjFldsMap.get('label'));
         }
     }
+
+    @AuraEnabled
+    public static string getAddProductId() {
+        
+        String addProduct = [SELECT Id FROM SBQQ__CustomAction__c WHERE Name =: Constant_Util.ADD_PRODUCTS].Id;
+        
+        return addProduct;
+        
+    }
     
     // ========================================================================
     // HELPER METHODS - CONVERSION

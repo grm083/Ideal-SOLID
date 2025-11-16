@@ -22,9 +22,6 @@
         <members>AssetHeadersForCaseController</members>
         <members>changeRecordTypeController</members>
         <members>TaskPopUpMessageController</members>
-        <members>NTEBRRulesModalCtrl</members>
-        <members>UTIL_LoggingService</members>
-        <members>UTIL_ErrorConstants</members>
         <members>BusinessRuleUtility</members>
         <members>CaseAssetValidator</members>
         <members>CaseAttributeService</members>
