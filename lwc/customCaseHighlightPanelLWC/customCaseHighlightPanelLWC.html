@@ -91,27 +91,56 @@
                     <!-- Location/Vendor/Client Data -->
                     <template if:true={isLocation}>
                         <td>
-                            <a data-value={caseDetails.Location__c} onclick={handleNavigate}>
-                                {caseDetails.Location__r.Name}
-                            </a>
+                            <template if:true={locationId}>
+                                <a data-value={locationId} onclick={handleNavigate}>
+                                    {locationName}
+                                </a>
+                            </template>
+                            <template if:false={locationId}>
+                                <span class="slds-text-color_weak">-</span>
+                            </template>
                         </td>
                     </template>
                     <template if:true={isVendor}>
-                        <td>{caseDetails.Supplier__r.Name}</td>
+                        <td>
+                            <template if:true={vendorName}>
+                                {vendorName}
+                            </template>
+                            <template if:false={vendorName}>
+                                <span class="slds-text-color_weak">-</span>
+                            </template>
+                        </td>
                     </template>
                     <template if:true={isClient}>
-                        <td>{caseDetails.Client__r.Name}</td>
+                        <td>
+                            <template if:true={clientName}>
+                                {clientName}
+                            </template>
+                            <template if:false={clientName}>
+                                <span class="slds-text-color_weak">-</span>
+                            </template>
+                        </td>
                     </template>
 
                     <td>
-                        <a data-value={caseDetails.AssetId} onclick={handleNavigate}>
-                            {caseDetails.Asset.Name}
-                        </a>
+                        <template if:true={assetId}>
+                            <a data-value={assetId} onclick={handleNavigate}>
+                                {assetName}
+                            </a>
+                        </template>
+                        <template if:false={assetId}>
+                            <span class="slds-text-color_weak">-</span>
+                        </template>
                     </td>
                     <td>
-                        <a data-value={caseDetails.ContactId} onclick={handleNavigate}>
-                            {caseDetails.Contact.Name}
-                        </a>
+                        <template if:true={contactId}>
+                            <a data-value={contactId} onclick={handleNavigate}>
+                                {contactName}
+                            </a>
+                        </template>
+                        <template if:false={contactId}>
+                            <span class="slds-text-color_weak">-</span>
+                        </template>
                     </td>
                     <td>{caseDetails.SLA_Service_DateTime__c}</td>
                     <td>{caseDetails.Case_Record_Type__c}</td>
@@ -119,9 +148,14 @@
                     <td>{caseDetails.Case_Sub_Type__c}</td>
                     <td>{caseDetails.Case_Reason__c}</td>
                     <td>
-                        <a data-value={caseDetails.Work_Order__c} onclick={handleNavigate}>
-                            {caseDetails.Acorn_Work_order__c}
-                        </a>
+                        <template if:true={workOrderId}>
+                            <a data-value={workOrderId} onclick={handleNavigate}>
+                                {workOrderNumber}
+                            </a>
+                        </template>
+                        <template if:false={workOrderId}>
+                            <span class="slds-text-color_weak">-</span>
+                        </template>
                     </td>
                     <td class={caseDetails.Status_Color_Class}>{caseDetails.Status}</td>
                 </tr>
