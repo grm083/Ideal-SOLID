@@ -60,6 +60,7 @@ export default class SearchExistingContactLWC extends LightningElement {
     @track boolSOSL = false;
     @track showSearch = false;
     @track boolShowNew = false;
+    @track boolCaseNew = false;
     @track boolEdit = false;
     @track boolShowUser = false;
     @track boolReadOnly = false;
@@ -166,6 +167,10 @@ export default class SearchExistingContactLWC extends LightningElement {
         ];
     }
 
+    get caseIsNew() {
+        return this.caseObj.Status === 'New';
+    }
+
     // Lifecycle Hooks
     async connectedCallback() {
         await this.loadCaseData();
@@ -183,6 +188,7 @@ export default class SearchExistingContactLWC extends LightningElement {
             this.caseContact = caseData.ContactId;
             this.caseUser = caseData.Requested_By_User__c;
             this.caseStatus = caseData.Status;
+            this.boolCaseNew = this.caseIsNew;
 
             this.boolShowUser = !!this.caseUser;
 
