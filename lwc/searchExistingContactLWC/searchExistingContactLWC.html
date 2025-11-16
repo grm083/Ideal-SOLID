@@ -40,28 +40,40 @@
                                 <strong>Contact type:</strong>
                             </div>
                             <div class="slds-col slds-size_3-of-12">
-                                <lightning-button
-                                    label="Customer"
-                                    variant={boolCustomer ? 'brand' : 'neutral'}
-                                    icon-name={boolCustomer ? 'utility:check' : 'utility:add'}
+                                <lightning-button-stateful
+                                    label-when-off="Customer"
+                                    label-when-on="Customer"
+                                    label-when-hover="Customer"
+                                    icon-name-when-off="utility:add"
+                                    icon-name-when-on="utility:check"
+                                    icon-name-when-hover="utility:add"
+                                    selected={boolCustomer}
                                     onclick={handleCustomerClick}>
-                                </lightning-button>
+                                </lightning-button-stateful>
                             </div>
                             <div class="slds-col slds-size_3-of-12">
-                                <lightning-button
-                                    label="Vendor"
-                                    variant={boolVendor ? 'brand' : 'neutral'}
-                                    icon-name={boolVendor ? 'utility:check' : 'utility:add'}
+                                <lightning-button-stateful
+                                    label-when-off="Vendor"
+                                    label-when-on="Vendor"
+                                    label-when-hover="Vendor"
+                                    icon-name-when-off="utility:add"
+                                    icon-name-when-on="utility:check"
+                                    icon-name-when-hover="utility:add"
+                                    selected={boolVendor}
                                     onclick={handleVendorClick}>
-                                </lightning-button>
+                                </lightning-button-stateful>
                             </div>
                             <div class="slds-col slds-size_3-of-12">
-                                <lightning-button
-                                    label="Internal"
-                                    variant={boolInternal ? 'brand' : 'neutral'}
-                                    icon-name={boolInternal ? 'utility:check' : 'utility:add'}
+                                <lightning-button-stateful
+                                    label-when-off="Internal"
+                                    label-when-on="Internal"
+                                    label-when-hover="Internal"
+                                    icon-name-when-off="utility:add"
+                                    icon-name-when-on="utility:check"
+                                    icon-name-when-hover="utility:add"
+                                    selected={boolInternal}
                                     onclick={handleInternalClick}>
-                                </lightning-button>
+                                </lightning-button-stateful>
                             </div>
                         </div>
 
