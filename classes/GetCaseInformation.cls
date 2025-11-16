@@ -896,6 +896,7 @@ q.SBQQ__ExpirationDate__c = date.today() + 60;
         wrapper.Is_UpdateAssetActiveUser = uiWrapper.isUpdateAssetActiveUser;
         wrapper.progressCaseVisibility = uiWrapper.progressCaseVisibility;
         wrapper.addQuoteVisibility = uiWrapper.addQuoteVisibility;
+        wrapper.isAddCaseAsset = uiWrapper.isAddCaseAsset;
         wrapper.isCaseInfoReady = uiWrapper.isCaseInfoReady;
         wrapper.caseAppliedRules = uiWrapper.caseAppliedRules;
         wrapper.IsHaulAwayService = uiWrapper.isHaulAwayService;
@@ -946,6 +947,7 @@ q.SBQQ__ExpirationDate__c = date.today() + 60;
         @AuraEnabled public Boolean Is_UpdateAssetActiveUser {get;set;}
         @AuraEnabled public Boolean progressCaseVisibility {get;set;}
         @AuraEnabled public Boolean addQuoteVisibility {get;set;}
+        @AuraEnabled public Boolean isAddCaseAsset {get;set;}
         @AuraEnabled public Boolean isCaseInfoReady {get;set;}
         @AuraEnabled public Boolean IsHaulAwayService {get;set;}
         

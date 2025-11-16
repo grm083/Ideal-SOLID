@@ -63,6 +63,7 @@ public with sharing class CaseUIService {
         @AuraEnabled public Boolean isUpdateAssetActiveUser {get;set;}
         @AuraEnabled public Boolean progressCaseVisibility {get;set;}
         @AuraEnabled public Boolean addQuoteVisibility {get;set;}
+        @AuraEnabled public Boolean isAddCaseAsset {get;set;}
         @AuraEnabled public Boolean isCaseInfoReady {get;set;}
         @AuraEnabled public Boolean isHaulAwayService {get;set;}
         
@@ -639,9 +640,12 @@ public with sharing class CaseUIService {
     private static void determineButtonVisibility(CaseUIWrapper wrapper, Case caseObj) {
         // Progress Case button visibility
         wrapper.progressCaseVisibility = shouldShowProgressCaseButton(wrapper, caseObj);
-        
+
         // Add Quote button visibility
         wrapper.addQuoteVisibility = shouldShowAddQuoteButton(wrapper, caseObj);
+
+        // Add Case Assets button visibility
+        wrapper.isAddCaseAsset = shouldShowAddCaseAssetButton(wrapper, caseObj);
     }
     
     /**
@@ -725,6 +729,49 @@ public with sharing class CaseUIService {
         return false;
     }
     
+    /**
+     * @description Determine if Add Case Assets button should be visible
+     */
+    private static Boolean shouldShowAddCaseAssetButton(CaseUIWrapper wrapper, Case caseObj) {
+        // Don't show if case is closed
+        if (caseObj.Status == 'Closed') {
+            return false;
+        }
+
+        // Show button based on case info messages that indicate missing or invalid case assets
+        if (String.isNotBlank(wrapper.caseInfo)) {
+            // Show if there's a "No Case Asset" or similar error message
+            if (wrapper.caseInfo.contains(Constant_Util.NO_CASE_ASSETS) ||
+                wrapper.caseInfo.contains(Constant_Util.NO_CASE_ASSET_MSG) ||
+                wrapper.caseInfo.contains(Constant_Util.CASE_ASSETS_END_DATE_PASSED) ||
+                wrapper.caseInfo.contains(Constant_Util.ASSET_NOT_ACTIVE) ||
+                wrapper.caseInfo == Constant_Util.SELECT_ASSET) {
+                return true;
+            }
+        }
+
+        // Show if asset validation is flagged and case is in New status
+        if (wrapper.assetValidation &&
+            caseObj.Status == Constant_Util.STATUS_New &&
+            String.isNotBlank(caseObj.AssetId)) {
+            return true;
+        }
+
+        // Show for manual case assets that need attention
+        if (wrapper.isManualCaseAsset &&
+            String.isNotBlank(caseObj.AssetId) &&
+            String.isNotBlank(caseObj.ContactId) &&
+            caseObj.Status == Constant_Util.STATUS_New) {
+            // Don't show if already ready for work order
+            if (wrapper.caseInfo != Constant_Util.READY &&
+                wrapper.caseInfo != Constant_Util.READY_MULTIASSET) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @description Logic check for Add Quote button visibility
      */
