@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Lightning Message Service channel for Case page data distribution. Used by caseDataGovernor to publish centralized case data to subscribing components.</description>
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <description>The Case record ID</description>
+        <fieldName>caseId</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>Type of data event (load, refresh, update, error)</description>
+        <fieldName>eventType</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>Complete case page data wrapper as JSON string</description>
+        <fieldName>pageData</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>Section being updated (case, contact, asset, businessRules, etc.)</description>
+        <fieldName>section</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>Timestamp of the data load/update</description>
+        <fieldName>timestamp</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>Error message if eventType is error</description>
+        <fieldName>errorMessage</fieldName>
+    </lightningMessageFields>
+    <masterLabel>Case Data Channel</masterLabel>
+</LightningMessageChannel>
