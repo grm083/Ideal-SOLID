@@ -1,8 +1,25 @@
+/**
+ * FillCaseSubTypeLWC - Modal for filling case type, sub-type, and reason
+ *
+ * REFACTORED TO USE CASE DATA GOVERNOR:
+ * ======================================
+ * - Subscribes to CaseDataChannel LMS for centralized data
+ * - Uses pageData.caseAsset from governor (eliminates getCaseAssetDetails call)
+ * - Maintains backward compatibility with fallback to direct Apex
+ * - Follows same pattern as setCaseCustomerInfoLWC and showCaseMessagesLWC
+ *
+ * @see caseDataGovernorLWC - Centralized data hub
+ * @see CaseDataGovernorService - Apex service providing asset data
+ */
 import { LightningElement, api, track, wire } from 'lwc';
 import { getRecord, getFieldValue, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { subscribe, unsubscribe, MessageContext, publish } from 'lightning/messageService';
 
-// Import Apex methods
+// Import LMS Channel
+import CASE_DATA_CHANNEL from '@salesforce/messageChannel/CaseDataChannel__c';
+
+// Import Apex methods (fallback only)
 import getCaseAssetDetails from '@salesforce/apex/GetCaseInformation.getcaseAssetDetails';
 
 // Import custom label
@@ -17,16 +34,6 @@ import CASE_REASON from '@salesforce/schema/Case.Case_Reason__c';
 
 const CASE_FIELDS = [CASE_ID, CASE_RECORD_TYPE_ID, CASE_TYPE, CASE_SUB_TYPE, CASE_REASON];
 
-/**
- * FillCaseSubType - LWC component for filling case type, sub-type, and reason
- * Converted from Aura component: aura/FillCaseSubType
- *
- * @description Modal form with complex validation logic for:
- * - Case Type selection
- * - Case Sub-Type selection (dependent on type)
- * - Case Reason selection (required for certain combinations)
- * - Product family validation for Pickup cases
- */
 export default class FillCaseSubTypeLWC extends LightningElement {
     // Public properties
     @api recordId;
@@ -38,6 +45,15 @@ export default class FillCaseSubTypeLWC extends LightningElement {
     @track caseReason = '';
     @track showErrorMessage = false;
     @track errorMessage = '';
+
+    // Governor integration
+    @track caseAsset = null; // Asset data from governor or direct call
+    subscription = null;
+    hasReceivedGovernorData = false;
+
+    // Wire message context
+    @wire(MessageContext)
+    messageContext;
 
     // Custom label
     label = {
@@ -73,6 +89,88 @@ export default class FillCaseSubTypeLWC extends LightningElement {
         return this.showErrorMessage && this.errorMessage.includes('Case Reason')
             ? 'slds-form-element slds-has-error'
             : '';
+    }
+
+    // ========================================================================
+    // LIFECYCLE HOOKS
+    // ========================================================================
+
+    connectedCallback() {
+        this.subscribeToGovernor();
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeFromGovernor();
+    }
+
+    // ========================================================================
+    // GOVERNOR INTEGRATION
+    // ========================================================================
+
+    subscribeToGovernor() {
+        if (this.subscription) {
+            return;
+        }
+
+        this.subscription = subscribe(
+            this.messageContext,
+            CASE_DATA_CHANNEL,
+            (message) => this.handleGovernorMessage(message)
+        );
+    }
+
+    unsubscribeFromGovernor() {
+        if (this.subscription) {
+            unsubscribe(this.subscription);
+            this.subscription = null;
+        }
+    }
+
+    handleGovernorMessage(message) {
+        if (message.caseId !== this.recordId) {
+            return;
+        }
+
+        switch (message.eventType) {
+            case 'load':
+            case 'refresh':
+            case 'update':
+                this.processGovernorData(message);
+                break;
+            case 'error':
+                console.error('Governor error:', message.errorMessage);
+                break;
+        }
+    }
+
+    processGovernorData(message) {
+        try {
+            const pageData = JSON.parse(message.pageData);
+
+            if (!pageData) {
+                return;
+            }
+
+            this.hasReceivedGovernorData = true;
+
+            // Store asset data from governor
+            if (pageData.caseAsset) {
+                this.caseAsset = pageData.caseAsset;
+            }
+
+        } catch (error) {
+            console.error('Error processing governor data:', error);
+        }
+    }
+
+    requestGovernorRefresh() {
+        const message = {
+            caseId: this.recordId,
+            eventType: 'refresh',
+            section: 'asset',
+            timestamp: new Date().toISOString()
+        };
+        publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }
 
     // Event Handlers
@@ -139,15 +237,30 @@ export default class FillCaseSubTypeLWC extends LightningElement {
 
     async validatePickupCase(fields) {
         try {
-            const caseAssets = await getCaseAssetDetails({ caseId: this.recordId });
+            let asset = null;
 
-            if (caseAssets && caseAssets.length > 0) {
-                const caseData = caseAssets[0];
-                const asset = caseData.Asset;
+            // PREFERRED: Use asset from governor if available
+            if (this.hasReceivedGovernorData && this.caseAsset) {
+                asset = this.caseAsset;
+            } else {
+                // FALLBACK: Load asset via direct Apex call
+                const caseAssets = await getCaseAssetDetails({ caseId: this.recordId });
+
+                if (caseAssets && caseAssets.length > 0) {
+                    const caseData = caseAssets[0];
+                    asset = caseData.Asset;
+
+                    // Cache for future use
+                    this.caseAsset = asset;
+                }
+            }
+
+            // Perform validations if asset exists
+            if (asset) {
                 const newSubType = fields.Case_Sub_Type__c;
 
                 // Check Rolloff validation
-                if (asset && asset.ProductFamily === 'Rolloff') {
+                if (asset.ProductFamily === 'Rolloff') {
                     // Skip validation for Open Top Temporary assets
                     const isOpenTopTemp = asset.Equipment_Type__c === 'Open Top' && asset.Duration__c === 'Temporary';
 
@@ -159,7 +272,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
                 }
 
                 // Check Commercial validation
-                if (asset && asset.ProductFamily === 'Commercial' && asset.Equipment_Type__c !== 'Hand Pickup') {
+                if (asset.ProductFamily === 'Commercial' && asset.Equipment_Type__c !== 'Hand Pickup') {
                     if (!this.COMMERCIAL_ALLOWED_SUBTYPES.includes(newSubType)) {
                         this.showErrorMessage = true;
                         this.errorMessage = 'For Product Family Commercial we can only select Extra Pickup, On-Call and Bale(s)';
@@ -190,6 +303,11 @@ export default class FillCaseSubTypeLWC extends LightningElement {
         setTimeout(() => {
             notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
         }, 2000);
+
+        // Request governor to refresh if we received data from it
+        if (this.hasReceivedGovernorData) {
+            this.requestGovernorRefresh();
+        }
 
         // Dispatch success event
         this.dispatchEvent(new CustomEvent('subtypeupdated', {
