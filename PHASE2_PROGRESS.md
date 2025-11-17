@@ -108,6 +108,54 @@
 
 ---
 
+### Phase 3 Part 1: Quote Line & Additional Wrapper Service Extraction (COMPLETE)
+
+**Commit:** `9cf9590` - "feat: Add wrapper building and quote line update services - Phase 3 Part 1"
+
+#### What Was Created:
+
+**1. QuoteProcurementQuoteLineService.cls** (148 lines)
+- `updateQuoteOverview()` - Updates quote line bundles from header wrapper
+- `getPicklistAPIName()` - Converts picklist labels to API names
+- Handles quantity updates including lock products via QuoteLineServices
+- Updates SLA dates, material grades, company categories
+
+**2. QuoteProcurementQuoteLineServiceTest.cls** (7 test methods, 280 lines)
+- Tests updateQuoteOverview success scenarios
+- Tests child line updates and accessory handling
+- Tests null material grade and empty company category
+- Tests SLA date updates for parent lines
+- Tests error handling for invalid parent ID
+
+**3. Enhanced QuoteProcurementWrapperService.cls** (+158 lines)
+- `buildQuoteWrapper()` - Simplified wrapper builder for quote overview
+- `buildQuoteOverviewHeader()` - Helper method for simplified header building
+- Creates ProductsWrapper with header properties and material type
+- No MAS, work orders, or detail wrappers (simpler than buildWrapper)
+
+**4. Enhanced QuoteProcurementWrapperServiceTest.cls** (+130 lines, 7 new test methods)
+- Tests buildQuoteWrapper success scenarios
+- Tests header properties and material type extraction
+- Tests account and vendor information
+- Tests dates and quantities
+- Tests error handling
+
+**5. Controller Refactoring:**
+- `buildQuoteWrapper()`: 73 lines → 3 lines
+- `updateQuoteOverview()`: 42 lines → 3 lines
+- **Total reduction: 115 lines**
+
+**Business Logic Preserved:**
+- ✅ Quote overview wrapper building with all properties
+- ✅ Material type extraction from waste stream
+- ✅ Accessory quantity handling (not updated)
+- ✅ Lock product quantity updates via QuoteLineServices
+- ✅ SLA date updates for parent lines only
+- ✅ Equipment size picklist conversion
+- ✅ Company category and material grade updates
+
+---
+
 ## 📊 Overall Refactoring Statistics
 
 ### Cumulative Progress
@@ -117,7 +165,8 @@
 | Phase 2A | 2 | ~194 | 1 new | 1 new | ✅ Complete |
 | Phase 2B | 4 | ~107 | 1 new | 1 new | ✅ Complete |
 | Phase 2C | 2 | ~262 | 1 new | 1 new | ✅ Complete |
-| **Total** | **54** | **~1,413** | **13** | **13** | **67% Done** |
+| Phase 3 Part 1 | 2 | ~115 | 1 new + 1 enhanced | 1 new + 1 enhanced | ✅ Complete |
+| **Total** | **56** | **~1,528** | **14** | **14** | **69% Done** |
 
 ### Methods Remaining (High Priority)
 1. **createDelivery()** (~527 lines) - Requires phased approach
@@ -230,15 +279,16 @@
 
 ## 📈 Success Metrics
 
-### Current State (After Phase 2C):
-- ✅ 54 out of 81 methods refactored (67%)
-- ✅ ~1,413 lines reduced from controller
-- ✅ 13 service classes created
-- ✅ 13 test classes with 85%+ coverage
+### Current State (After Phase 3 Part 1):
+- ✅ 56 out of 81 methods refactored (69%)
+- ✅ ~1,528 lines reduced from controller
+- ✅ 14 service classes created
+- ✅ 14 test classes with 85%+ coverage
 - ✅ 100% backward compatibility maintained
 - ✅ 0 breaking changes to Lightning components
 - ✅ Product option operations fully extracted
-- ✅ Wrapper building fully extracted
+- ✅ Wrapper building fully extracted (both buildWrapper and buildQuoteWrapper)
+- ✅ Quote line update operations extracted
 - ✅ caseQuoteModalLWC backend fully refactored
 
 ### Next Target (Phase 3):
@@ -252,8 +302,8 @@
 ## 🔧 Technical Debt & Future Work
 
 ### Methods Still Needing Extraction:
-1. updateQuoteOverview() (~43 lines) - Quote line bundle updates
-2. buildQuoteWrapper() - Similar to buildWrapper
+1. ✅ **DONE**: updateQuoteOverview() - Extracted to QuoteProcurementQuoteLineService
+2. ✅ **DONE**: buildQuoteWrapper() - Extracted to QuoteProcurementWrapperService
 3. createQuoteLines() (~200+ lines) - Quote line bundle creation
 4. Various amendment/modification methods
 5. createDelivery() - See phased approach above
@@ -290,11 +340,21 @@
 4. classes/QuoteProcurementWrapperServiceTest.cls (NEW - 500+ lines)
 5. classes/QuoteProcurementWrapperServiceTest.cls-meta.xml (NEW)
 
+### Phase 3 Part 1 Files:
+1. classes/QuoteProcurementController.cls (115 lines reduced)
+2. classes/QuoteProcurementWrapperService.cls (ENHANCED - 158 lines added)
+3. classes/QuoteProcurementWrapperServiceTest.cls (ENHANCED - 130 lines added)
+4. classes/QuoteProcurementQuoteLineService.cls (NEW - 148 lines)
+5. classes/QuoteProcurementQuoteLineService.cls-meta.xml (NEW)
+6. classes/QuoteProcurementQuoteLineServiceTest.cls (NEW - 280 lines)
+7. classes/QuoteProcurementQuoteLineServiceTest.cls-meta.xml (NEW)
+
 ### Git History:
 - Commit a7fbcaf: Phase 1 - 46 methods refactored
 - Commit a1341a6: Phase 2A - Favorites service extraction
 - Commit 00b9541: Phase 2B - Product option service extraction
 - Commit 01dd8cb: Phase 2C - Wrapper building service extraction
+- Commit 9cf9590: Phase 3 Part 1 - Quote line & additional wrapper service extraction
 
 ---
 
@@ -341,13 +401,16 @@
 6. Product option extraction completed smoothly (Phase 2B)
 7. Method overloading preserved in service layer (removeProductOption)
 8. Special business logic maintained (Keys end date handling)
+9. Wrapper service enhancement pattern worked well (adding buildQuoteWrapper to existing service)
+10. Quote line service extraction preserved all business rules (accessory handling, lock products, SLA dates)
 
 ### Challenges:
-1. buildWrapper is extremely complex (240 lines of nesting) - Next priority
-2. createDelivery needs multi-sprint phased approach
-3. Many external dependencies make extraction harder
-4. Wrapper classes tightly coupled to UI needs
+1. ✅ **RESOLVED**: buildWrapper is extremely complex (240 lines of nesting) - Completed in Phase 2C
+2. ✅ **RESOLVED**: buildQuoteWrapper extraction - Completed in Phase 3 Part 1
+3. createDelivery needs multi-sprint phased approach
+4. Many external dependencies make extraction harder
 5. Method overloading required careful naming in service (removeProductOptionWithKeys)
+6. Picklist conversion logic (getPicklistAPIName) still in controller - consider extracting to utility
 
 ### Best Practices Applied:
 1. Single Responsibility Principle
@@ -375,5 +438,5 @@
 ---
 
 **Last Updated:** 2025-11-17
-**Status:** Phase 2C Complete ✅
-**Next:** Additional Method Extraction or createDelivery() Phased Approach (Phase 3)
+**Status:** Phase 3 Part 1 Complete ✅
+**Next:** Continue Phase 3 or createDelivery() Phased Approach
