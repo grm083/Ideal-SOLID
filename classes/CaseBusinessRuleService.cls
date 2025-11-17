@@ -1639,21 +1639,19 @@ public without sharing class CaseBusinessRuleService {
             return false;
         }
 
+        // REFACTORED: Use CaseContextGetter for metadata query (Phase 3)
         String buttonName = 'Progress Case';
-        List<Case_Highlight_Panel_Button__mdt> metadata = [
-            SELECT Visibility__c
-            FROM Case_Highlight_Panel_Button__mdt
-            WHERE Record_Type__c = :caseRecord.RecordType.Name
-            AND Case_Type__c = :caseRecord.Case_Type__c
-            AND Case_Sub_Type__c = :caseRecord.Case_Sub_Type__c
-            AND Case_Reason__c = :caseRecord.Case_Reason__c
-            AND Button_Name__c = :buttonName
-            AND isCPQ_Active_User__c = :isCPQUser
-            AND isUpdateAssetActiveUser__c = :isUpdateAssetActiveUser
-            LIMIT 1
-        ];
+        Case_Highlight_Panel_Button__mdt metadata = CaseContextGetter.getButtonVisibilityMetadata(
+            caseRecord.RecordType.Name,
+            caseRecord.Case_Type__c,
+            caseRecord.Case_Sub_Type__c,
+            caseRecord.Case_Reason__c,
+            buttonName,
+            isCPQUser,
+            isUpdateAssetActiveUser
+        );
 
-        if (!metadata.isEmpty() && metadata[0].Visibility__c) {
+        if (metadata != null && metadata.Visibility__c) {
             return evaluateProgressCaseVisibility(
                 caseRecord,
                 caseInfo,
@@ -1724,21 +1722,19 @@ public without sharing class CaseBusinessRuleService {
             return false;
         }
 
+        // REFACTORED: Use CaseContextGetter for metadata query (Phase 3)
         String buttonName = 'Add Quote';
-        List<Case_Highlight_Panel_Button__mdt> metadata = [
-            SELECT Visibility__c
-            FROM Case_Highlight_Panel_Button__mdt
-            WHERE Record_Type__c = :caseRecord.RecordType.Name
-            AND Case_Type__c = :caseRecord.Case_Type__c
-            AND Case_Sub_Type__c = :caseRecord.Case_Sub_Type__c
-            AND Case_Reason__c = :caseRecord.Case_Reason__c
-            AND Button_Name__c = :buttonName
-            AND isCPQ_Active_User__c = :isCPQUser
-            AND isUpdateAssetActiveUser__c = :isUpdateAssetActiveUser
-            LIMIT 1
-        ];
+        Case_Highlight_Panel_Button__mdt metadata = CaseContextGetter.getButtonVisibilityMetadata(
+            caseRecord.RecordType.Name,
+            caseRecord.Case_Type__c,
+            caseRecord.Case_Sub_Type__c,
+            caseRecord.Case_Reason__c,
+            buttonName,
+            isCPQUser,
+            isUpdateAssetActiveUser
+        );
 
-        if (!metadata.isEmpty() && metadata[0].Visibility__c) {
+        if (metadata != null && metadata.Visibility__c) {
             return evaluateAddQuoteVisibility(
                 caseRecord,
                 caseInfo,
@@ -1803,11 +1799,8 @@ public without sharing class CaseBusinessRuleService {
         String caseInfo,
         Boolean isOpportunityCreated
     ) {
-        User u = [
-            SELECT Id, User_categorization_code__c
-            FROM User
-            WHERE Id = :UserInfo.getUserId()
-        ];
+        // REFACTORED: Use CaseContextGetter for user query (Phase 3)
+        User u = CaseContextGetter.getCurrentUserWithPermissions();
 
         if (u.User_categorization_code__c != null &&
             (u.User_categorization_code__c == Constant_Util.CSRES ||
@@ -1823,15 +1816,10 @@ public without sharing class CaseBusinessRuleService {
                 caseRecord.Case_Sub_Type__c != null ||
                 (caseRecord.Case_Reason__c != null && caseRecord.Case_Type__c != 'Standard Case')) {
 
-                List<Add_Quote__mdt> metadata = [
-                    SELECT Visibility__c
-                    FROM Add_Quote__mdt
-                    WHERE Button_Name__c = 'Add Quote'
-                    AND UCC__c = :u.User_categorization_code__c
-                    LIMIT 1
-                ];
+                // REFACTORED: Use CaseContextGetter for metadata query (Phase 3)
+                Add_Quote__mdt metadata = CaseContextGetter.getAddQuoteMetadataByUCC(u.User_categorization_code__c);
 
-                if (!metadata.isEmpty() && metadata[0].Visibility__c) {
+                if (metadata != null && metadata.Visibility__c) {
                     return true;
                 }
             }

@@ -672,12 +672,189 @@ public with sharing class CaseContextGetter {
     }
     
     public static Map<Id, WorkOrder> getWorkOrderByCaseId(Set<Id> idSet) {
-        
+
         //Call the universal query utility while limiting on the basis of Id (constraint)
         List<WorkOrder> woList = (List<WorkOrder>) UniversalQueryUtility.universalQuery('WorkOrder', idSet, 'CaseId');
         Map<Id, WorkOrder> workOrderCache = new Map<Id, WorkOrder>();
         workOrderCache.putAll(woList);
-        
+
         return workOrderCache;
+    }
+
+    // ========================================================================
+    // USER QUERY METHODS - Phase 3 Consolidation
+    // ========================================================================
+
+    /**
+     * @description Retrieves current user with permissions and profile information
+     * Consolidates user queries from CaseUIService (Phase 3)
+     * @return User record with CPQ, Update Asset, and categorization code fields
+     */
+    public static User getCurrentUserWithPermissions() {
+        return [
+            SELECT Id, CPQ_Active_User__c, Update_Asset_Active_User__c,
+                   User_categorization_code__c, Profile.Name
+            FROM User
+            WHERE Id = :UserInfo.getUserId()
+            LIMIT 1
+        ];
+    }
+
+    /**
+     * @description Checks if current user has CPQ license assigned
+     * Consolidates query from CaseUIService.getUserDetail (Phase 3)
+     * @return True if user has Salesforce CPQ License
+     */
+    public static Boolean hasCPQLicense() {
+        List<PermissionSetLicenseAssign> pslList = [
+            SELECT Id
+            FROM PermissionSetLicenseAssign
+            WHERE PermissionSetLicense.MasterLabel = 'Salesforce CPQ License'
+            AND AssigneeId = :UserInfo.getUserId()
+            LIMIT 1
+        ];
+
+        return !pslList.isEmpty();
+    }
+
+    // ========================================================================
+    // RECORDTYPE QUERY METHODS - Phase 3 Consolidation
+    // ========================================================================
+
+    /**
+     * @description Retrieves all Case RecordTypes excluding specific types
+     * Consolidates query from CaseUIService.getCaseRecordTypeList (Phase 3)
+     * @param excludeRecordTypeNames Set of record type names to exclude
+     * @return List of RecordType records
+     */
+    public static List<RecordType> getCaseRecordTypes(Set<String> excludeRecordTypeNames) {
+        if (excludeRecordTypeNames == null || excludeRecordTypeNames.isEmpty()) {
+            return [
+                SELECT Id, Name, DeveloperName
+                FROM RecordType
+                WHERE SObjectType = 'Case'
+                AND IsActive = true
+            ];
+        }
+
+        return [
+            SELECT Id, Name, DeveloperName
+            FROM RecordType
+            WHERE SObjectType = 'Case'
+            AND Name NOT IN :excludeRecordTypeNames
+            AND IsActive = true
+        ];
+    }
+
+    // ========================================================================
+    // METADATA QUERY METHODS - Phase 3 Consolidation
+    // ========================================================================
+
+    /**
+     * @description Retrieves Case Highlight Panel Button metadata for visibility rules
+     * Consolidates queries from CaseBusinessRuleService (Phase 3)
+     * @param recordTypeName Case record type name
+     * @param caseType Case type
+     * @param caseSubType Case sub type
+     * @param caseReason Case reason
+     * @param buttonName Button name to search for
+     * @param isCPQUser Whether user has CPQ access
+     * @param isUpdateAssetUser Whether user can update assets
+     * @return Case_Highlight_Panel_Button__mdt record or null
+     */
+    public static Case_Highlight_Panel_Button__mdt getButtonVisibilityMetadata(
+        String recordTypeName,
+        String caseType,
+        String caseSubType,
+        String caseReason,
+        String buttonName,
+        Boolean isCPQUser,
+        Boolean isUpdateAssetUser
+    ) {
+        List<Case_Highlight_Panel_Button__mdt> metadata = [
+            SELECT Visibility__c
+            FROM Case_Highlight_Panel_Button__mdt
+            WHERE Record_Type__c = :recordTypeName
+            AND Case_Type__c = :caseType
+            AND Case_Sub_Type__c = :caseSubType
+            AND Case_Reason__c = :caseReason
+            AND Button_Name__c = :buttonName
+            AND isCPQ_Active_User__c = :isCPQUser
+            AND isUpdateAssetActiveUser__c = :isUpdateAssetUser
+            LIMIT 1
+        ];
+
+        return metadata.isEmpty() ? null : metadata[0];
+    }
+
+    /**
+     * @description Retrieves Add Quote metadata by User Categorization Code
+     * Consolidates query from CaseBusinessRuleService (Phase 3)
+     * @param userCategorizationCode The UCC code to search for
+     * @return Add_Quote__mdt record or null
+     */
+    public static Add_Quote__mdt getAddQuoteMetadataByUCC(String userCategorizationCode) {
+        List<Add_Quote__mdt> metadata = [
+            SELECT Visibility__c
+            FROM Add_Quote__mdt
+            WHERE Button_Name__c = 'Add Quote'
+            AND UCC__c = :userCategorizationCode
+            LIMIT 1
+        ];
+
+        return metadata.isEmpty() ? null : metadata[0];
+    }
+
+    // ========================================================================
+    // PARENT CASE QUERY METHODS - Phase 3 Consolidation
+    // ========================================================================
+
+    /**
+     * @description Retrieves parent Cases by Ids with location timezone information
+     * Consolidates query from CaseTriggerHandler (Phase 3)
+     * @param parentCaseIds Set of parent case Ids
+     * @return List of parent Case records with location details
+     */
+    public static List<Case> getParentCasesWithLocation(Set<Id> parentCaseIds) {
+        return [
+            SELECT Id, AccountId, Client__c, Location__c,
+                   Location__r.tz__Timezone_SFDC__c,
+                   Reference_Number__c, CreatedDate
+            FROM Case
+            WHERE Id IN :parentCaseIds
+        ];
+    }
+
+    /**
+     * @description Retrieves related Cases by various criteria
+     * Consolidates query from CaseTriggerHandler.getRelatedCases (Phase 3)
+     * @param caseIds Set of Case Ids to find related cases for
+     * @param referenceNumbers Set of reference numbers to search
+     * @param parentIds Set of parent Ids to search
+     * @return List of related Case records
+     */
+    public static List<Case> getRelatedCasesByMultipleCriteria(
+        Set<Id> caseIds,
+        Set<String> referenceNumbers,
+        Set<Id> parentIds
+    ) {
+        List<Case> relatedCases = new List<Case>();
+
+        if (caseIds != null && !caseIds.isEmpty()) {
+            String query = 'SELECT ' + CASE_EXTENDED_FIELDS + ' FROM Case WHERE Id IN :caseIds';
+            relatedCases.addAll(Database.query(query));
+        }
+
+        if (referenceNumbers != null && !referenceNumbers.isEmpty()) {
+            String query = 'SELECT ' + CASE_EXTENDED_FIELDS + ' FROM Case WHERE Reference_Number__c IN :referenceNumbers';
+            relatedCases.addAll(Database.query(query));
+        }
+
+        if (parentIds != null && !parentIds.isEmpty()) {
+            String query = 'SELECT ' + CASE_EXTENDED_FIELDS + ' FROM Case WHERE ParentId IN :parentIds';
+            relatedCases.addAll(Database.query(query));
+        }
+
+        return relatedCases;
     }
 }

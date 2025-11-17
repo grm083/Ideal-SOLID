@@ -451,31 +451,31 @@ public with sharing class CaseUIService {
     
     /**
      * @description Get list of case record types
+     * REFACTORED: Now uses CaseContextGetter for data access (Phase 3)
      * @return List of case record type names
      */
     @AuraEnabled(cacheable=true)
     public static List<String> getCaseRecordTypeList() {
         List<String> recordTypeNames = new List<String>();
-        
+
         try {
-            List<RecordType> recordTypes = [
-                SELECT Name
-                FROM RecordType
-                WHERE SObjectType = 'Case'
-                AND Name != :Constant_Util.UPDATE_ASSET_CASE
-                AND Name != :Constant_Util.New_Service_Case
-            ];
-            
+            Set<String> excludedTypes = new Set<String>{
+                Constant_Util.UPDATE_ASSET_CASE,
+                Constant_Util.New_Service_Case
+            };
+
+            List<RecordType> recordTypes = CaseContextGetter.getCaseRecordTypes(excludedTypes);
+
             for (RecordType rt : recordTypes) {
                 recordTypeNames.add(rt.Name);
             }
-            
+
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
                                                    UTIL_ErrorConstants.ERROR_APPLICATION,
                                                    LoggingLevel.ERROR);
         }
-        
+
         return recordTypeNames;
     }
     
@@ -753,34 +753,22 @@ public with sharing class CaseUIService {
     
     /**
      * @description Check if user has CPQ license and permissions
+     * REFACTORED: Now uses CaseContextGetter for data access (Phase 3)
      */
     private static Boolean getUserDetail() {
-        User u = [
-            SELECT Id, CPQ_Active_User__c, Profile.Name
-            FROM User
-            WHERE Id = :UserInfo.getUserId()
-        ];
-        
-        List<PermissionSetLicenseAssign> pslList = [
-            SELECT Id
-            FROM PermissionSetLicenseAssign
-            WHERE PermissionSetLicense.MasterLabel = 'Salesforce CPQ License'
-            AND AssigneeId = :UserInfo.getUserId()
-        ];
-        
-        return !pslList.isEmpty() && u.CPQ_Active_User__c;
+        User u = CaseContextGetter.getCurrentUserWithPermissions();
+        Boolean hasCPQLicense = CaseContextGetter.hasCPQLicense();
+
+        return hasCPQLicense && u.CPQ_Active_User__c;
     }
-    
+
     /**
      * @description Check if user has active asset update permissions
+     * REFACTORED: Now uses CaseContextGetter for data access (Phase 3)
      */
     private static Boolean getActiveAssetUserDetail() {
-        User u = [
-            SELECT Id, Update_Asset_Active_User__c
-            FROM User
-            WHERE Id = :UserInfo.getUserId()
-        ];
-        
+        User u = CaseContextGetter.getCurrentUserWithPermissions();
+
         return u.Update_Asset_Active_User__c;
     }
     
