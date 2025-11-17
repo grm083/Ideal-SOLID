@@ -358,13 +358,15 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
     /**
      * Request fresh data from CaseDataGovernor
      * This is the preferred way to refresh data (uses centralized governor)
+     * Uses 'reload' to force complete data reload after DML operations
      */
     requestCaseDataRefresh(section = null) {
         const message = {
             caseId: this.recordId,
-            eventType: section ? 'refresh' : 'reload',
+            eventType: section ? 'refresh' : 'reload',  // 'reload' forces full refresh from Apex
             section: section,
-            requestedBy: 'showCaseMessagesLWC'
+            requestedBy: 'showCaseMessagesLWC',
+            timestamp: new Date().toISOString()
         };
         publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }
@@ -668,16 +670,37 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
         console.log('Showing progress buttons');
     }
 
-    // Utility Methods
+    // ========================================================================
+    // REFRESH UTILITIES - Call after DML operations
+    // ========================================================================
+
+    /**
+     * Refresh all case data after DML operations
+     *
+     * This method ensures all components on the page get fresh data through a multi-layered approach:
+     * 1. notifyRecordUpdateAvailable() - Refreshes Lightning Data Service wire adapters
+     * 2. requestCaseDataRefresh() - Publishes to CaseDataChannel LMS
+     * 3. CaseDataGovernorLWC receives message and reloads from Apex
+     * 4. CaseDataGovernorLWC publishes fresh data to all subscribers
+     * 5. All components (this, CustomCaseHighlightPanelLWC, etc.) receive updates
+     *
+     * USAGE: Call this method after ANY successful Case DML operation
+     * Example:
+     *   const result = await updateCase(...);
+     *   if (result === 'Success') {
+     *       this.refreshView();
+     *   }
+     */
     refreshView() {
-        // Refresh the case record
+        // 1. Refresh Lightning Data Service wire adapters
         notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
 
-        // Request refresh from CaseDataGovernor (preferred)
-        // Falls back to direct call if governor not present
+        // 2. Request refresh from CaseDataGovernor (preferred path)
+        //    This triggers a full reload and publishes to all subscribed components
         if (this.hasReceivedGovernorData) {
             this.requestCaseDataRefresh();
         } else {
+            // Fallback: Direct load if governor not present
             this.loadCaseMessages();
         }
     }
