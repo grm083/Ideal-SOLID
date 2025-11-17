@@ -92,9 +92,21 @@
                     <template if:true={isLocation}>
                         <td>
                             <template if:true={locationId}>
-                                <a data-value={locationId} onclick={handleNavigate}>
+                                <a data-value={locationId} onclick={handleNavigate}
+                                   onmouseenter={handleLocationMouseEnter}
+                                   onmouseleave={handleLocationMouseLeave}>
                                     {locationName}
                                 </a>
+                                <template if:true={showLocationHover}>
+                                    <div class="locationhover"
+                                         onmouseenter={handleLocationCardMouseEnter}
+                                         onmouseleave={handleLocationCardMouseLeave}>
+                                        <c-hover-over-cards-l-w-c
+                                            record-id={recordId}
+                                            object-type="Location">
+                                        </c-hover-over-cards-l-w-c>
+                                    </div>
+                                </template>
                             </template>
                             <template if:false={locationId}>
                                 <span class="slds-text-color_weak">-</span>
@@ -124,9 +136,21 @@
 
                     <td>
                         <template if:true={assetId}>
-                            <a data-value={assetId} onclick={handleNavigate}>
+                            <a data-value={assetId} onclick={handleNavigate}
+                               onmouseenter={handleAssetMouseEnter}
+                               onmouseleave={handleAssetMouseLeave}>
                                 {assetName}
                             </a>
+                            <template if:true={showAssetHover}>
+                                <div class="assethover"
+                                     onmouseenter={handleAssetCardMouseEnter}
+                                     onmouseleave={handleAssetCardMouseLeave}>
+                                    <c-hover-over-cards-l-w-c
+                                        record-id={recordId}
+                                        object-type="Asset">
+                                    </c-hover-over-cards-l-w-c>
+                                </div>
+                            </template>
                         </template>
                         <template if:false={assetId}>
                             <span class="slds-text-color_weak">-</span>
@@ -134,9 +158,21 @@
                     </td>
                     <td>
                         <template if:true={contactId}>
-                            <a data-value={contactId} onclick={handleNavigate}>
+                            <a data-value={contactId} onclick={handleNavigate}
+                               onmouseenter={handleContactMouseEnter}
+                               onmouseleave={handleContactMouseLeave}>
                                 {contactName}
                             </a>
+                            <template if:true={showContactHover}>
+                                <div class="contacthover"
+                                     onmouseenter={handleContactCardMouseEnter}
+                                     onmouseleave={handleContactCardMouseLeave}>
+                                    <c-hover-over-cards-l-w-c
+                                        record-id={recordId}
+                                        object-type="Contact">
+                                    </c-hover-over-cards-l-w-c>
+                                </div>
+                            </template>
                         </template>
                         <template if:false={contactId}>
                             <span class="slds-text-color_weak">-</span>
@@ -246,6 +282,8 @@
     <template if:true={isModalOpenAsset}>
         <c-location-asset-search-l-w-c
             record-id={recordId}
+            show-form={isModalOpenAsset}
+            onclosemodal={handleCloseModal}
             onrefresh={handleRefresh}>
         </c-location-asset-search-l-w-c>
     </template>

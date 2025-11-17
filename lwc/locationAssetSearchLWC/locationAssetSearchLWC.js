@@ -5,6 +5,7 @@ import updateCase from '@salesforce/apex/CaseController.updateCase';
 
 export default class LocationAssetSearchLWC extends LightningElement {
     @api recordId;
+    @api showForm = false;
 
     @track searchKeyword = '';
     @track previousSearchKeyword = '';
@@ -199,6 +200,7 @@ export default class LocationAssetSearchLWC extends LightningElement {
             if (result === 'Success') {
                 this.showToast('Success', 'Case updated successfully', 'success');
                 this.dispatchEvent(new CustomEvent('refresh'));
+                this.handleCloseModal();
             } else {
                 this.showToast('Error', 'Error: ' + result, 'error');
             }
@@ -210,6 +212,11 @@ export default class LocationAssetSearchLWC extends LightningElement {
             this.showToast('Error', 'Save failed: ' + (error.body?.message || error.message), 'error');
             this.showSpinner = false;
         }
+    }
+
+    handleCloseModal() {
+        this.showForm = false;
+        this.dispatchEvent(new CustomEvent('closemodal'));
     }
 
     showToast(title, message, variant) {

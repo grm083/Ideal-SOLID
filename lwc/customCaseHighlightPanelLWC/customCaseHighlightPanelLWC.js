@@ -62,6 +62,14 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
     @track showAssetHover = false;
     @track showLocationHover = false;
     @track showContactHover = false;
+    @track assetHoverCard = false;
+    @track locationHoverCard = false;
+    @track contactHoverCard = false;
+    hoverTimer = null;
+
+    // Hover delay constants (in milliseconds)
+    HOVER_DELAY = 500; // Delay before showing hover card
+    SLEEP_DELAY = 300; // Delay before hiding hover card
 
     // Display values
     @track poValue = '-';
@@ -515,28 +523,96 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
         publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }
 
-    // Hover Handlers
+    // Hover Handlers - Asset
     handleAssetMouseEnter() {
-        this.showAssetHover = true;
+        this.hoverTimer = setTimeout(() => {
+            if (!this.assetHoverCard) {
+                this.showAssetHover = true;
+                this.assetHoverCard = true;
+            }
+        }, this.HOVER_DELAY);
     }
 
     handleAssetMouseLeave() {
+        if (this.hoverTimer) {
+            clearTimeout(this.hoverTimer);
+        }
+        setTimeout(() => {
+            if (this.assetHoverCard) {
+                this.showAssetHover = false;
+                this.assetHoverCard = false;
+            }
+        }, this.SLEEP_DELAY);
+    }
+
+    handleAssetCardMouseEnter() {
+        this.assetHoverCard = false; // Prevent auto-hide when mouse enters card
+    }
+
+    handleAssetCardMouseLeave() {
+        this.assetHoverCard = false;
         this.showAssetHover = false;
     }
 
+    // Hover Handlers - Location
     handleLocationMouseEnter() {
-        this.showLocationHover = true;
+        this.hoverTimer = setTimeout(() => {
+            if (!this.locationHoverCard) {
+                this.showLocationHover = true;
+                this.locationHoverCard = true;
+            }
+        }, this.HOVER_DELAY);
     }
 
     handleLocationMouseLeave() {
+        if (this.hoverTimer) {
+            clearTimeout(this.hoverTimer);
+        }
+        setTimeout(() => {
+            if (this.locationHoverCard) {
+                this.showLocationHover = false;
+                this.locationHoverCard = false;
+            }
+        }, this.SLEEP_DELAY);
+    }
+
+    handleLocationCardMouseEnter() {
+        this.locationHoverCard = false; // Prevent auto-hide when mouse enters card
+    }
+
+    handleLocationCardMouseLeave() {
+        this.locationHoverCard = false;
         this.showLocationHover = false;
     }
 
+    // Hover Handlers - Contact
     handleContactMouseEnter() {
-        this.showContactHover = true;
+        this.hoverTimer = setTimeout(() => {
+            if (!this.contactHoverCard) {
+                this.showContactHover = true;
+                this.contactHoverCard = true;
+            }
+        }, this.HOVER_DELAY);
     }
 
     handleContactMouseLeave() {
+        if (this.hoverTimer) {
+            clearTimeout(this.hoverTimer);
+        }
+        setTimeout(() => {
+            if (this.contactHoverCard) {
+                this.showContactHover = false;
+                this.contactHoverCard = false;
+            }
+        }, this.SLEEP_DELAY);
+    }
+
+    handleContactCardMouseEnter() {
+        this.contactHoverCard = false; // Prevent auto-hide when mouse enters card
+    }
+
+    handleContactCardMouseLeave() {
+        this.contactHoverCard = false;
         this.showContactHover = false;
     }
 }

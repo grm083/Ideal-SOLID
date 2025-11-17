@@ -30,3 +30,25 @@
 .wrapTextCls {
     word-wrap: break-word;
 }
+
+/* Hover card styles */
+.locationhover {
+    position: fixed;
+    width: 34rem;
+    padding: 20px;
+    z-index: 9999;
+}
+
+.assethover {
+    position: fixed;
+    width: 46rem;
+    padding: 20px;
+    z-index: 9999;
+}
+
+.contacthover {
+    position: fixed;
+    width: 30rem;
+    padding: 20px;
+    z-index: 9999;
+}
