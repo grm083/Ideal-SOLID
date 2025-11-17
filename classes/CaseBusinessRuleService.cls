@@ -1606,7 +1606,240 @@ public without sharing class CaseBusinessRuleService {
                 UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
         }
     }
-    
+
+    // ========================================================================
+    // UI BUTTON VISIBILITY BUSINESS RULES
+    // Moved from CaseUIService - Phase 2 Refactoring
+    // These methods contain business logic for determining button visibility
+    // ========================================================================
+
+    /**
+     * @description Determines if Progress Case button should be visible based on business rules
+     * Moved from CaseUIService.shouldShowProgressCaseButton (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record to evaluate
+     * @param isCPQUser Whether current user has CPQ access
+     * @param isUpdateAssetActiveUser Whether current user can update assets
+     * @param caseInfo Current case information/validation message
+     * @param workOrderCreation Whether work order creation is enabled
+     * @param isAssetMandatory Whether asset is mandatory
+     * @param isCaseInfoReady Whether case info is ready
+     * @return True if Progress Case button should be visible
+     */
+    public static Boolean shouldShowProgressCaseButton(
+        Case caseRecord,
+        Boolean isCPQUser,
+        Boolean isUpdateAssetActiveUser,
+        String caseInfo,
+        Boolean workOrderCreation,
+        Boolean isAssetMandatory,
+        Boolean isCaseInfoReady
+    ) {
+        if (caseRecord.Status == 'Closed') {
+            return false;
+        }
+
+        String buttonName = 'Progress Case';
+        List<Case_Highlight_Panel_Button__mdt> metadata = [
+            SELECT Visibility__c
+            FROM Case_Highlight_Panel_Button__mdt
+            WHERE Record_Type__c = :caseRecord.RecordType.Name
+            AND Case_Type__c = :caseRecord.Case_Type__c
+            AND Case_Sub_Type__c = :caseRecord.Case_Sub_Type__c
+            AND Case_Reason__c = :caseRecord.Case_Reason__c
+            AND Button_Name__c = :buttonName
+            AND isCPQ_Active_User__c = :isCPQUser
+            AND isUpdateAssetActiveUser__c = :isUpdateAssetActiveUser
+            LIMIT 1
+        ];
+
+        if (!metadata.isEmpty() && metadata[0].Visibility__c) {
+            return evaluateProgressCaseVisibility(
+                caseRecord,
+                caseInfo,
+                workOrderCreation,
+                isAssetMandatory,
+                isCaseInfoReady
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * @description Evaluates the detailed business logic for Progress Case button visibility
+     * Moved from CaseUIService.progressCaseVisibilityLogicCheck (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record
+     * @param caseInfo Current case information message
+     * @param workOrderCreation Whether work order creation is enabled
+     * @param isAssetMandatory Whether asset is mandatory
+     * @param isCaseInfoReady Whether case info is ready
+     * @return True if visibility conditions are met
+     */
+    private static Boolean evaluateProgressCaseVisibility(
+        Case caseRecord,
+        String caseInfo,
+        Boolean workOrderCreation,
+        Boolean isAssetMandatory,
+        Boolean isCaseInfoReady
+    ) {
+        if (caseRecord.Case_Type__c != 'New Service' && caseInfo != null &&
+            ((caseInfo.contains('Ready') || !isCaseInfoReady) ||
+             caseInfo == Constant_Util.PROGRESS_CASE ||
+             (caseInfo != Constant_Util.ASSET_NOT_ACTIVE &&
+              workOrderCreation && !isAssetMandatory &&
+              caseRecord.ContactId != null))) {
+            return true;
+        } else if (caseRecord.Case_Type__c == 'New Service' && caseInfo == null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @description Determines if Add Quote button should be visible based on business rules
+     * Moved from CaseUIService.shouldShowAddQuoteButton (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record to evaluate
+     * @param isCPQUser Whether current user has CPQ access
+     * @param isUpdateAssetActiveUser Whether current user can update assets
+     * @param caseInfo Current case information/validation message
+     * @param isOpportunityCreated Whether opportunity has been created
+     * @return True if Add Quote button should be visible
+     */
+    public static Boolean shouldShowAddQuoteButton(
+        Case caseRecord,
+        Boolean isCPQUser,
+        Boolean isUpdateAssetActiveUser,
+        String caseInfo,
+        Boolean isOpportunityCreated
+    ) {
+        // Check for Haul Away service
+        Boolean isHaulAway = HaulAwayService.getIsHaulAwayService(caseRecord);
+        if (isHaulAway && !isOpportunityCreated &&
+            caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New)) {
+            return true;
+        } else if (isHaulAway && isOpportunityCreated) {
+            return false;
+        }
+
+        String buttonName = 'Add Quote';
+        List<Case_Highlight_Panel_Button__mdt> metadata = [
+            SELECT Visibility__c
+            FROM Case_Highlight_Panel_Button__mdt
+            WHERE Record_Type__c = :caseRecord.RecordType.Name
+            AND Case_Type__c = :caseRecord.Case_Type__c
+            AND Case_Sub_Type__c = :caseRecord.Case_Sub_Type__c
+            AND Case_Reason__c = :caseRecord.Case_Reason__c
+            AND Button_Name__c = :buttonName
+            AND isCPQ_Active_User__c = :isCPQUser
+            AND isUpdateAssetActiveUser__c = :isUpdateAssetActiveUser
+            LIMIT 1
+        ];
+
+        if (!metadata.isEmpty() && metadata[0].Visibility__c) {
+            return evaluateAddQuoteVisibility(
+                caseRecord,
+                caseInfo,
+                isOpportunityCreated
+            );
+        } else {
+            // Check UCC code for fallback logic
+            return evaluateAddQuoteByUserCategory(
+                caseRecord,
+                isCPQUser,
+                caseInfo,
+                isOpportunityCreated
+            );
+        }
+    }
+
+    /**
+     * @description Evaluates the detailed business logic for Add Quote button visibility
+     * Moved from CaseUIService.addQuoteVisibilityLogicCheck (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record
+     * @param caseInfo Current case information message
+     * @param isOpportunityCreated Whether opportunity has been created
+     * @return True if visibility conditions are met
+     */
+    private static Boolean evaluateAddQuoteVisibility(
+        Case caseRecord,
+        String caseInfo,
+        Boolean isOpportunityCreated
+    ) {
+        if (caseRecord.ContactId != null &&
+            caseInfo != null &&
+            caseInfo != '' &&
+            caseInfo != Constant_Util.ASSET_NOT_ACTIVE &&
+            !isOpportunityCreated &&
+            (caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New) ||
+             caseRecord.Status.equalsIgnoreCase(Constant_Util.Case_Open_Status))) {
+
+            if (caseRecord.Case_Type__c == 'New Service' &&
+                caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New)) {
+                return true;
+            } else if (caseRecord.Case_Type__c != 'New Service' && caseRecord.AssetId != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @description Evaluates Add Quote visibility based on User Categorization Code
+     * Moved from CaseUIService.getUserUCCDetail (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record
+     * @param isCPQUser Whether current user has CPQ access
+     * @param caseInfo Current case information message
+     * @param isOpportunityCreated Whether opportunity has been created
+     * @return True if visibility conditions are met based on UCC
+     */
+    private static Boolean evaluateAddQuoteByUserCategory(
+        Case caseRecord,
+        Boolean isCPQUser,
+        String caseInfo,
+        Boolean isOpportunityCreated
+    ) {
+        User u = [
+            SELECT Id, User_categorization_code__c
+            FROM User
+            WHERE Id = :UserInfo.getUserId()
+        ];
+
+        if (u.User_categorization_code__c != null &&
+            (u.User_categorization_code__c == Constant_Util.CSRES ||
+             u.User_categorization_code__c == Constant_Util.CSDTRES ||
+             u.User_categorization_code__c == Constant_Util.SPCOR) &&
+            isCPQUser) {
+
+            if ((caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New) ||
+                 caseRecord.Status.equalsIgnoreCase(Constant_Util.Case_Open_Status) ||
+                 caseRecord.Status != Constant_Util.CLOSED) &&
+                caseRecord.ContactId != null &&
+                caseRecord.Case_Type__c != null &&
+                caseRecord.Case_Sub_Type__c != null ||
+                (caseRecord.Case_Reason__c != null && caseRecord.Case_Type__c != 'Standard Case')) {
+
+                List<Add_Quote__mdt> metadata = [
+                    SELECT Visibility__c
+                    FROM Add_Quote__mdt
+                    WHERE Button_Name__c = 'Add Quote'
+                    AND UCC__c = :u.User_categorization_code__c
+                    LIMIT 1
+                ];
+
+                if (!metadata.isEmpty() && metadata[0].Visibility__c) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // Custom exception class for better error handling
     private class CustomException extends Exception {}
 }

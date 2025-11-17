@@ -650,82 +650,48 @@ public with sharing class CaseUIService {
     
     /**
      * @description Determine if Progress Case button should be visible
+     * REFACTORED: Now delegates to CaseBusinessRuleService (Phase 2)
+     * Business logic moved to proper service layer
      */
     private static Boolean shouldShowProgressCaseButton(CaseUIWrapper wrapper, Case caseObj) {
-        if (caseObj.Status == 'Closed') {
-            return false;
-        }
-        
-        String buttonName = 'Progress Case';
-        List<Case_Highlight_Panel_Button__mdt> metadata = [
-            SELECT Visibility__c
-            FROM Case_Highlight_Panel_Button__mdt
-            WHERE Record_Type__c = :caseObj.RecordType.Name
-            AND Case_Type__c = :caseObj.Case_Type__c
-            AND Case_Sub_Type__c = :caseObj.Case_Sub_Type__c
-            AND Case_Reason__c = :caseObj.Case_Reason__c
-            AND Button_Name__c = :buttonName
-            AND isCPQ_Active_User__c = :wrapper.isCPQUser
-            AND isUpdateAssetActiveUser__c = :wrapper.isUpdateAssetActiveUser
-            LIMIT 1
-        ];
-        
-        if (!metadata.isEmpty() && metadata[0].Visibility__c) {
-            return progressCaseVisibilityLogicCheck(wrapper);
-        }
-        
-        return false;
+        // Delegate to CaseBusinessRuleService for business logic evaluation
+        return CaseBusinessRuleService.shouldShowProgressCaseButton(
+            caseObj,
+            wrapper.isCPQUser,
+            wrapper.isUpdateAssetActiveUser,
+            wrapper.caseInfo,
+            wrapper.workOrderCreation,
+            wrapper.isAssetMandatory,
+            wrapper.isCaseInfoReady
+        );
     }
     
     /**
      * @description Determine if Add Quote button should be visible
+     * REFACTORED: Now delegates to CaseBusinessRuleService (Phase 2)
+     * Business logic moved to proper service layer
      */
     private static Boolean shouldShowAddQuoteButton(CaseUIWrapper wrapper, Case caseObj) {
-        // Check for Haul Away service
-        Boolean isHaulAway = HaulAwayService.getIsHaulAwayService(caseObj);
-        if (isHaulAway && !wrapper.isOpportunityCreated && 
-            wrapper.caseStatus.equalsIgnoreCase(Constant_Util.STATUS_New)) {
-            return true;
-        } else if (isHaulAway && wrapper.isOpportunityCreated) {
-            return false;
-        }
-        
-        String buttonName = 'Add Quote';
-        List<Case_Highlight_Panel_Button__mdt> metadata = [
-            SELECT Visibility__c
-            FROM Case_Highlight_Panel_Button__mdt
-            WHERE Record_Type__c = :caseObj.RecordType.Name
-            AND Case_Type__c = :caseObj.Case_Type__c
-            AND Case_Sub_Type__c = :caseObj.Case_Sub_Type__c
-            AND Case_Reason__c = :caseObj.Case_Reason__c
-            AND Button_Name__c = :buttonName
-            AND isCPQ_Active_User__c = :wrapper.isCPQUser
-            AND isUpdateAssetActiveUser__c = :wrapper.isUpdateAssetActiveUser
-            LIMIT 1
-        ];
-        
-        if (!metadata.isEmpty() && metadata[0].Visibility__c) {
-            return addQuoteVisibilityLogicCheck(wrapper);
-        } else {
-            // Check UCC code
-            return getUserUCCDetail(wrapper);
-        }
+        // Delegate to CaseBusinessRuleService for business logic evaluation
+        return CaseBusinessRuleService.shouldShowAddQuoteButton(
+            caseObj,
+            wrapper.isCPQUser,
+            wrapper.isUpdateAssetActiveUser,
+            wrapper.caseInfo,
+            wrapper.isOpportunityCreated
+        );
     }
     
     /**
      * @description Logic check for Progress Case button visibility
+     * DEPRECATED: This method has been moved to CaseBusinessRuleService (Phase 2)
+     * Kept as a stub for backward compatibility only
+     * @deprecated Use CaseBusinessRuleService.shouldShowProgressCaseButton instead
      */
+    @Deprecated
     private static Boolean progressCaseVisibilityLogicCheck(CaseUIWrapper wrapper) {
-        if (wrapper.caseType != 'New Service' && wrapper.caseInfo != null &&
-            ((wrapper.caseInfo.contains('Ready') || !wrapper.isCaseInfoReady) ||
-             wrapper.caseInfo == Constant_Util.PROGRESS_CASE ||
-             (wrapper.caseInfo != Constant_Util.ASSET_NOT_ACTIVE && 
-              wrapper.workOrderCreation && !wrapper.isAssetMandatory && 
-              wrapper.caseData.ContactId != null))) {
-            return true;
-        } else if (wrapper.caseType == 'New Service' && wrapper.caseInfo == null) {
-            return true;
-        }
+        // This method is deprecated and should not be called
+        // All logic has been moved to CaseBusinessRuleService
         return false;
     }
     
@@ -774,23 +740,14 @@ public with sharing class CaseUIService {
 
     /**
      * @description Logic check for Add Quote button visibility
+     * DEPRECATED: This method has been moved to CaseBusinessRuleService (Phase 2)
+     * Kept as a stub for backward compatibility only
+     * @deprecated Use CaseBusinessRuleService.shouldShowAddQuoteButton instead
      */
+    @Deprecated
     private static Boolean addQuoteVisibilityLogicCheck(CaseUIWrapper wrapper) {
-        if (wrapper.caseData.ContactId != null && 
-            wrapper.caseInfo != null && 
-            wrapper.caseInfo != '' && 
-            wrapper.caseInfo != Constant_Util.ASSET_NOT_ACTIVE && 
-            !wrapper.isOpportunityCreated &&
-            (wrapper.caseStatus.equalsIgnoreCase(Constant_Util.STATUS_New) || 
-             wrapper.caseStatus.equalsIgnoreCase(Constant_Util.Case_Open_Status))) {
-            
-            if (wrapper.caseType == 'New Service' && 
-                wrapper.caseStatus.equalsIgnoreCase(Constant_Util.STATUS_New)) {
-                return true;
-            } else if (wrapper.caseType != 'New Service' && wrapper.assetId != null) {
-                return true;
-            }
-        }
+        // This method is deprecated and should not be called
+        // All logic has been moved to CaseBusinessRuleService
         return false;
     }
     
@@ -851,42 +808,14 @@ public with sharing class CaseUIService {
     
     /**
      * @description Check user categorization code for button visibility
+     * DEPRECATED: This method has been moved to CaseBusinessRuleService (Phase 2)
+     * Kept as a stub for backward compatibility only
+     * @deprecated Use CaseBusinessRuleService.shouldShowAddQuoteButton instead
      */
+    @Deprecated
     private static Boolean getUserUCCDetail(CaseUIWrapper wrapper) {
-        User u = [
-            SELECT Id, User_categorization_code__c
-            FROM User
-            WHERE Id = :UserInfo.getUserId()
-        ];
-        
-        if (u.User_categorization_code__c != null &&
-            (u.User_categorization_code__c == Constant_Util.CSRES ||
-             u.User_categorization_code__c == Constant_Util.CSDTRES ||
-             u.User_categorization_code__c == Constant_Util.SPCOR) &&
-            getUserDetail()) {
-            
-            if ((wrapper.caseStatus.equalsIgnoreCase(Constant_Util.STATUS_New) ||
-                 wrapper.caseStatus.equalsIgnoreCase(Constant_Util.Case_Open_Status) ||
-                 wrapper.caseStatus != Constant_Util.CLOSED) &&
-                wrapper.caseData.ContactId != null &&
-                wrapper.caseType != null &&
-                wrapper.caseSubType != null ||
-                (wrapper.caseReason != null && wrapper.caseType != 'Standard Case')) {
-                
-                List<Add_Quote__mdt> metadata = [
-                    SELECT Visibility__c
-                    FROM Add_Quote__mdt
-                    WHERE Button_Name__c = 'Add Quote'
-                    AND UCC__c = :u.User_categorization_code__c
-                    LIMIT 1
-                ];
-                
-                if (!metadata.isEmpty() && metadata[0].Visibility__c) {
-                    return true;
-                }
-            }
-        }
-        
+        // This method is deprecated and should not be called
+        // All logic has been moved to CaseBusinessRuleService
         return false;
     }
 }
