@@ -47,3 +47,21 @@
     font-weight: bold;
     background-color: #f3f3f3;
 }
+
+/* Make table body rows and cells opaque */
+tbody tr {
+    background-color: white !important;
+}
+
+tbody td {
+    background-color: white !important;
+}
+
+/* Ensure table headers are also opaque */
+thead tr {
+    background-color: #f3f3f3 !important;
+}
+
+thead th {
+    background-color: #f3f3f3 !important;
+}

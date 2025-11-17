@@ -27,28 +27,28 @@
                     <!-- Location/Vendor/Client Column -->
                     <template if:true={isLocation}>
                         <th class="slds-text-title_caps">
-                            <a class="actionColor" onclick={handleOpenLocation}>Location Name</a>
+                            <a class={locationHeaderClass} onclick={handleOpenLocation}>Location Name</a>
                         </th>
                     </template>
                     <template if:true={isVendor}>
                         <th class="slds-text-title_caps">
-                            <a class="actionColor" onclick={handleOpenVendor}>Vendor Name</a>
+                            <a class={vendorHeaderClass} onclick={handleOpenVendor}>Vendor Name</a>
                         </th>
                     </template>
                     <template if:true={isClient}>
                         <th class="slds-text-title_caps">
-                            <a class="actionColor" onclick={handleOpenClient}>Client Name</a>
+                            <a class={clientHeaderClass} onclick={handleOpenClient}>Client Name</a>
                         </th>
                     </template>
 
                     <!-- Asset -->
                     <th class="slds-text-title_caps">
-                        <a class="actionColor" onclick={handleOpenAsset}>Asset</a>
+                        <a class={assetHeaderClass} onclick={handleOpenAsset}>Asset</a>
                     </th>
 
                     <!-- Contact -->
                     <th class="slds-text-title_caps">
-                        <a class="actionColor" onclick={handleOpenContact}>Contact</a>
+                        <a class={contactHeaderClass} onclick={handleOpenContact}>Contact</a>
                     </th>
 
                     <!-- SLA -->
@@ -66,16 +66,18 @@
 
                     <!-- Case Type -->
                     <th class="slds-text-title_caps">
-                        <a class="actionColor" onclick={handleOpenCaseType}>Case Type</a>
+                        <a class={caseTypeHeaderClass} onclick={handleOpenCaseType}>Case Type</a>
                     </th>
 
                     <!-- Case Sub-Type -->
                     <th class="slds-text-title_caps">
-                        <a class="actionColor" onclick={handleOpenCaseType}>Case Sub-Type</a>
+                        <a class={caseSubTypeHeaderClass} onclick={handleOpenCaseType}>Case Sub-Type</a>
                     </th>
 
                     <!-- Case Reason -->
-                    <th class="slds-text-title_caps">Case Reason</th>
+                    <th class="slds-text-title_caps">
+                        <a class={caseReasonHeaderClass} onclick={handleOpenCaseType}>Case Reason</a>
+                    </th>
 
                     <!-- WorkOrder -->
                     <th class="slds-text-title_caps">WorkOrder</th>
@@ -207,7 +209,7 @@
                     </th>
                     <th class="slds-text-title_caps">Material</th>
                     <th class="slds-text-title_caps">
-                        <a class="actionColor" onclick={handleOpenCustomerInfo}>Required Information</a>
+                        <a class={requiredInfoHeaderClass} onclick={handleOpenCustomerInfo}>Required Information</a>
                     </th>
                     <th class="slds-text-title_caps">
                         <a class="actionColor" onclick={handleOpenServiceDate}>Service Date</a>

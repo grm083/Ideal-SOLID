@@ -151,6 +151,93 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
         return this.caseDetails?.Work_Order__c || null;
     }
 
+    // Computed properties for header styling (red when required field is blank)
+    // Treats '-' as empty since it's injected defensively for null values
+    get isRequiredInfoBlank() {
+        // Required Information is blank if all values are empty or '-'
+        const isEmpty = (val) => !val || val === '-';
+        return isEmpty(this.poValue) && isEmpty(this.chargeableValue) &&
+               isEmpty(this.psiValue) && isEmpty(this.ccValue);
+    }
+
+    get isAssetBlank() {
+        return !this.assetId || this.assetId === null;
+    }
+
+    get isContactBlank() {
+        return !this.contactId || this.contactId === null;
+    }
+
+    get isLocationBlank() {
+        return !this.locationId || this.locationId === null;
+    }
+
+    get isVendorBlank() {
+        return !this.vendorName || this.vendorName === '';
+    }
+
+    get isClientBlank() {
+        return !this.clientName || this.clientName === '';
+    }
+
+    get isCaseTypeBlank() {
+        return !this.caseDetails?.Case_Type__c;
+    }
+
+    get isCaseSubTypeBlank() {
+        return !this.caseDetails?.Case_Sub_Type__c;
+    }
+
+    get isCaseReasonBlank() {
+        return !this.caseDetails?.Case_Reason__c;
+    }
+
+    // Computed properties for header CSS classes
+    get requiredInfoHeaderClass() {
+        // Use blankColor (red) if field is blank OR if isReqInfo flag is set
+        return (this.isRequiredInfoBlank || this.isReqInfo) ? 'blankColor' : 'actionColor';
+    }
+
+    get assetHeaderClass() {
+        // Asset header should be red if asset is required but missing
+        // isAssetReq = false means: Asset is missing AND it's mandatory
+        return (!this.isAssetReq || this.isAssetBlank) ? 'blankColor' : 'actionColor';
+    }
+
+    get contactHeaderClass() {
+        return this.isContactBlank ? 'blankColor' : 'actionColor';
+    }
+
+    get locationHeaderClass() {
+        // Check if it's a "New Location" case
+        const isNewLocationCase = this.caseDetails?.Case_Sub_Type__c === 'New Location';
+        return (this.isLocationBlank && !isNewLocationCase) ? 'blankColor' : 'actionColor';
+    }
+
+    get vendorHeaderClass() {
+        // Check if it's a "New Vendor" case
+        const isNewVendorCase = this.caseDetails?.Case_Sub_Type__c === 'New Vendor';
+        return (this.isVendorBlank && !isNewVendorCase) ? 'blankColor' : 'actionColor';
+    }
+
+    get clientHeaderClass() {
+        // Check if it's a "New Client" case
+        const isNewClientCase = this.caseDetails?.Case_Sub_Type__c === 'New Client';
+        return (this.isClientBlank && !isNewClientCase) ? 'blankColor' : 'actionColor';
+    }
+
+    get caseTypeHeaderClass() {
+        return (this.isCaseTypeBlank && this.isNew) ? 'blankColor' : 'actionColor';
+    }
+
+    get caseSubTypeHeaderClass() {
+        return (this.isCaseSubTypeBlank && this.isNew) ? 'blankColor' : 'actionColor';
+    }
+
+    get caseReasonHeaderClass() {
+        return (this.isCaseReasonBlank && this.isNew && this.isCPQ) ? 'blankColor' : 'actionColor';
+    }
+
     // Lifecycle Hooks
     connectedCallback() {
         this.subscribeToGovernor();
