@@ -4,7 +4,7 @@
  * This test class provides complete coverage for the CaseAssetValidator service,
  * testing all validation methods, case asset management, and helper functions.
  *
- * Coverage Target: 75%+
+ * Coverage Target: 85%+
  *
  * @author Waste Management
  * @date 2025
@@ -18,29 +18,36 @@ private class CaseAssetValidatorTest {
         // Create full test hierarchy
         Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
 
-        // Create additional assets with child relationships for comprehensive testing
         Account locationAccount = (Account)testData.get('locationAccount');
         Product2 prod = (Product2)testData.get('product');
 
-        // Create Commercial asset with scheduled occurrence
-        Asset commercialAsset = new Asset(
-            Name = 'Commercial Test Asset',
+        // Update product to have Equipment Type
+        prod.Equipment_Type__c = 'Container';
+        update prod;
+
+        // Create Commercial Scheduled asset with proper hierarchy
+        Asset commercialScheduled = new Asset(
+            Name = 'Commercial Scheduled Asset',
             AccountId = locationAccount.Id,
             Product2Id = prod.Id,
             Status = 'Installed',
             ProductFamily = 'Commercial',
             Occurrence_Type__c = 'Scheduled',
             Start_Date__c = Date.today().addDays(-30),
-            Is_Active__c = true
+            End_Date__c = Date.today().addDays(365),
+            Is_Active__c = true,
+            Service_Header_Id__c = null // Will be set to own ID after insert
         );
-        insert commercialAsset;
+        insert commercialScheduled;
 
-        // Create child assets for commercial asset
-        List<Asset> childAssets = new List<Asset>();
-        Asset childPickup = new Asset(
-            Name = 'Pickup Service',
+        commercialScheduled.Service_Header_Id__c = commercialScheduled.Id;
+        update commercialScheduled;
+
+        // Create child pickup service (scheduled with XPU)
+        Asset childPickupScheduled = new Asset(
+            Name = 'Scheduled Pickup with XPU',
             AccountId = locationAccount.Id,
-            ParentId = commercialAsset.Id,
+            ParentId = commercialScheduled.Id,
             Product2Id = prod.Id,
             Service_Type__c = 'Pickup',
             Occurrence_Type__c = 'Scheduled',
@@ -48,10 +55,147 @@ private class CaseAssetValidatorTest {
             Is_Core_Service__c = true,
             Is_Active__c = true,
             Start_Date__c = Date.today().addDays(-30),
-            ProductFamily = 'Commercial'
+            End_Date__c = Date.today().addDays(365),
+            ProductFamily = 'Commercial',
+            Service_Header_Id__c = commercialScheduled.Id
         );
-        childAssets.add(childPickup);
-        insert childAssets;
+        insert childPickupScheduled;
+
+        // Create Commercial On-Call asset
+        Asset commercialOnCall = new Asset(
+            Name = 'Commercial OnCall Asset',
+            AccountId = locationAccount.Id,
+            Product2Id = prod.Id,
+            Status = 'Installed',
+            ProductFamily = 'Commercial',
+            Occurrence_Type__c = 'On-Call',
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            Is_Active__c = true,
+            Service_Header_Id__c = null
+        );
+        insert commercialOnCall;
+
+        commercialOnCall.Service_Header_Id__c = commercialOnCall.Id;
+        update commercialOnCall;
+
+        // Create child on-call pickup service
+        Asset childPickupOnCall = new Asset(
+            Name = 'OnCall Pickup',
+            AccountId = locationAccount.Id,
+            ParentId = commercialOnCall.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Pickup',
+            Occurrence_Type__c = 'On-Call',
+            Has_Extra_Pickup__c = false,
+            Is_Core_Service__c = true,
+            Is_Active__c = true,
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            ProductFamily = 'Commercial',
+            Service_Header_Id__c = commercialOnCall.Id
+        );
+        insert childPickupOnCall;
+
+        // Create Rolloff asset with children
+        Asset rolloffAsset = new Asset(
+            Name = 'Rolloff Asset',
+            AccountId = locationAccount.Id,
+            Product2Id = prod.Id,
+            Status = 'Installed',
+            ProductFamily = 'Rolloff',
+            Occurrence_Type__c = 'On-Call',
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            Is_Active__c = true,
+            Service_Header_Id__c = null
+        );
+        insert rolloffAsset;
+
+        rolloffAsset.Service_Header_Id__c = rolloffAsset.Id;
+        update rolloffAsset;
+
+        // Create rolloff child assets
+        List<Asset> rolloffChildren = new List<Asset>();
+
+        // Core disposal service
+        rolloffChildren.add(new Asset(
+            Name = 'Disposal Service',
+            AccountId = locationAccount.Id,
+            ParentId = rolloffAsset.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Disposal',
+            Is_Core_Service__c = true,
+            Is_Active__c = true,
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            ProductFamily = 'Rolloff',
+            Service_Header_Id__c = rolloffAsset.Id
+        ));
+
+        // Recycling service
+        rolloffChildren.add(new Asset(
+            Name = 'Recycling Service',
+            AccountId = locationAccount.Id,
+            ParentId = rolloffAsset.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Recycling',
+            Is_Core_Service__c = false,
+            Is_Active__c = true,
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            ProductFamily = 'Rolloff',
+            Service_Header_Id__c = rolloffAsset.Id
+        ));
+
+        insert rolloffChildren;
+
+        // Create Services asset
+        Asset servicesAsset = new Asset(
+            Name = 'Services Asset',
+            AccountId = locationAccount.Id,
+            Product2Id = prod.Id,
+            Status = 'Installed',
+            ProductFamily = 'Services',
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            Is_Active__c = true,
+            Service_Header_Id__c = null
+        );
+        insert servicesAsset;
+
+        servicesAsset.Service_Header_Id__c = servicesAsset.Id;
+        update servicesAsset;
+
+        // Create services child assets
+        Asset bulkService = new Asset(
+            Name = 'Bulk Service',
+            AccountId = locationAccount.Id,
+            ParentId = servicesAsset.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Bulk',
+            Is_Active__c = true,
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(365),
+            ProductFamily = 'Services',
+            Service_Header_Id__c = servicesAsset.Id
+        );
+        insert bulkService;
+
+        // Create expired asset for testing date validation
+        Asset expiredAsset = new Asset(
+            Name = 'Expired Asset',
+            AccountId = locationAccount.Id,
+            Product2Id = prod.Id,
+            Status = 'Installed',
+            ProductFamily = 'Commercial',
+            Occurrence_Type__c = 'Scheduled',
+            Start_Date__c = Date.today().addDays(-365),
+            End_Date__c = Date.today().addDays(-1),
+            Is_Active__c = false,
+            Service_Header_Id__c = null
+        );
+        insert expiredAsset;
 
         // Create case with SBS_Case_Asset__c relationships
         Case testCase = (Case)testData.get('case');
@@ -66,22 +210,239 @@ private class CaseAssetValidatorTest {
     }
 
     // ========================================================================
-    // VALIDATE PICKUP ASSET TESTS
+    // VALIDATE PICKUP ASSET - COMMERCIAL SCHEDULED TESTS
     // ========================================================================
 
     @isTest
-    static void testValidatePickupAsset_Success() {
-        Asset testAsset = [SELECT Id FROM Asset WHERE ProductFamily = 'Rolloff' LIMIT 1];
+    static void testValidatePickupAsset_CommercialScheduled_Success() {
+        Asset commercialAsset = [SELECT Id FROM Asset WHERE Name = 'Commercial Scheduled Asset' LIMIT 1];
         Date serviceDate = Date.today().addDays(7);
 
         Test.startTest();
         CaseAssetValidator.ValidationResult result =
-            CaseAssetValidator.validatePickupAsset(testAsset.Id, serviceDate);
+            CaseAssetValidator.validatePickupAsset(commercialAsset.Id, serviceDate);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals('PICKUP', result.validationType, 'Validation type should be PICKUP');
+        System.assertEquals(true, result.isValid, 'Commercial scheduled should be valid');
+        System.assertEquals('COMMERCIAL', result.validationType, 'Should validate as commercial');
     }
+
+    @isTest
+    static void testValidatePickupAsset_CommercialScheduled_NoXPU() {
+        // Create commercial asset without XPU child
+        Account loc = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' LIMIT 1];
+        Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
+
+        Asset noXPUAsset = new Asset(
+            Name = 'No XPU Asset',
+            AccountId = loc.Id,
+            Product2Id = prod.Id,
+            ProductFamily = 'Commercial',
+            Occurrence_Type__c = 'Scheduled',
+            Start_Date__c = Date.today().addDays(-30),
+            Is_Active__c = true
+        );
+        insert noXPUAsset;
+
+        // Add child without XPU
+        Asset childNoXPU = new Asset(
+            Name = 'No XPU Child',
+            AccountId = loc.Id,
+            ParentId = noXPUAsset.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Pickup',
+            Occurrence_Type__c = 'Scheduled',
+            Has_Extra_Pickup__c = false,
+            Is_Core_Service__c = true,
+            Is_Active__c = true,
+            Start_Date__c = Date.today().addDays(-30),
+            ProductFamily = 'Commercial'
+        );
+        insert childNoXPU;
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(noXPUAsset.Id, Date.today().addDays(7));
+        Test.stopTest();
+
+        System.assertEquals(false, result.isValid, 'Should fail without XPU component');
+        System.assert(result.errorMessage.contains('Extra Pickup'), 'Error should mention XPU');
+    }
+
+    @isTest
+    static void testValidatePickupAsset_CommercialScheduled_NoCoreService() {
+        Account loc = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' LIMIT 1];
+        Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
+
+        Asset noCoreAsset = new Asset(
+            Name = 'No Core Service Asset',
+            AccountId = loc.Id,
+            Product2Id = prod.Id,
+            ProductFamily = 'Commercial',
+            Occurrence_Type__c = 'Scheduled',
+            Start_Date__c = Date.today().addDays(-30),
+            Is_Active__c = true
+        );
+        insert noCoreAsset;
+
+        // Add child that is not core service
+        Asset childNotCore = new Asset(
+            Name = 'Not Core Child',
+            AccountId = loc.Id,
+            ParentId = noCoreAsset.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Pickup',
+            Occurrence_Type__c = 'Scheduled',
+            Has_Extra_Pickup__c = true,
+            Is_Core_Service__c = false,
+            Is_Active__c = false,
+            Start_Date__c = Date.today().addDays(-30),
+            End_Date__c = Date.today().addDays(-1),
+            ProductFamily = 'Commercial'
+        );
+        insert childNotCore;
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(noCoreAsset.Id, Date.today().addDays(7));
+        Test.stopTest();
+
+        System.assertEquals(false, result.isValid, 'Should fail without active core service');
+    }
+
+    // ========================================================================
+    // VALIDATE PICKUP ASSET - COMMERCIAL ON-CALL TESTS
+    // ========================================================================
+
+    @isTest
+    static void testValidatePickupAsset_CommercialOnCall_Success() {
+        Asset onCallAsset = [SELECT Id FROM Asset WHERE Name = 'Commercial OnCall Asset' LIMIT 1];
+        Date serviceDate = Date.today().addDays(7);
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(onCallAsset.Id, serviceDate);
+        Test.stopTest();
+
+        System.assertEquals(true, result.isValid, 'On-call asset should be valid');
+    }
+
+    @isTest
+    static void testValidatePickupAsset_CommercialOnCall_MultiplePickups() {
+        Account loc = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' LIMIT 1];
+        Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
+
+        Asset multiPickup = new Asset(
+            Name = 'Multi Pickup Asset',
+            AccountId = loc.Id,
+            Product2Id = prod.Id,
+            ProductFamily = 'Commercial',
+            Occurrence_Type__c = 'On-Call',
+            Start_Date__c = Date.today().addDays(-30),
+            Is_Active__c = true
+        );
+        insert multiPickup;
+
+        // Add multiple on-call pickup children
+        List<Asset> children = new List<Asset>();
+        for (Integer i = 0; i < 2; i++) {
+            children.add(new Asset(
+                Name = 'OnCall Pickup ' + i,
+                AccountId = loc.Id,
+                ParentId = multiPickup.Id,
+                Product2Id = prod.Id,
+                Service_Type__c = 'Pickup',
+                Occurrence_Type__c = 'On-Call',
+                Has_Extra_Pickup__c = false,
+                Is_Core_Service__c = true,
+                Is_Active__c = true,
+                Start_Date__c = Date.today().addDays(-30),
+                ProductFamily = 'Commercial'
+            ));
+        }
+        insert children;
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(multiPickup.Id, Date.today().addDays(7));
+        Test.stopTest();
+
+        System.assertEquals(false, result.isValid, 'Should fail with multiple on-call pickups');
+        System.assert(result.errorMessage.contains('corrupted'), 'Error should mention corruption');
+    }
+
+    // ========================================================================
+    // VALIDATE PICKUP ASSET - ROLLOFF TESTS
+    // ========================================================================
+
+    @isTest
+    static void testValidatePickupAsset_Rolloff_WithCoreService() {
+        Asset rolloffAsset = [SELECT Id FROM Asset WHERE ProductFamily = 'Rolloff' LIMIT 1];
+        Date serviceDate = Date.today().addDays(7);
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(rolloffAsset.Id, serviceDate);
+        Test.stopTest();
+
+        System.assertEquals(true, result.isValid, 'Rolloff with core service should be valid');
+        System.assertEquals('ROLLOFF', result.validationType, 'Type should be ROLLOFF');
+    }
+
+    @isTest
+    static void testValidatePickupAsset_Rolloff_NoActiveComponents() {
+        Account loc = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' LIMIT 1];
+        Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
+
+        Asset rolloffNoCore = new Asset(
+            Name = 'Rolloff No Core',
+            AccountId = loc.Id,
+            Product2Id = prod.Id,
+            ProductFamily = 'Rolloff',
+            Start_Date__c = Date.today().addDays(-30),
+            Is_Active__c = true
+        );
+        insert rolloffNoCore;
+
+        // Add expired child
+        Asset expiredChild = new Asset(
+            Name = 'Expired Disposal',
+            AccountId = loc.Id,
+            ParentId = rolloffNoCore.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Disposal',
+            Is_Core_Service__c = true,
+            Is_Active__c = false,
+            Start_Date__c = Date.today().addDays(-365),
+            End_Date__c = Date.today().addDays(-1),
+            ProductFamily = 'Rolloff'
+        );
+        insert expiredChild;
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(rolloffNoCore.Id, Date.today().addDays(7));
+        Test.stopTest();
+
+        System.assertEquals(false, result.isValid, 'Should fail without active components');
+    }
+
+    @isTest
+    static void testValidatePickupAsset_AssetNotActive() {
+        Asset expiredAsset = [SELECT Id FROM Asset WHERE Name = 'Expired Asset' LIMIT 1];
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validatePickupAsset(expiredAsset.Id, Date.today());
+        Test.stopTest();
+
+        System.assertEquals(false, result.isValid, 'Expired asset should be invalid');
+        System.assert(result.errorMessage.contains('not active'), 'Error should mention inactive');
+    }
+
+    // ========================================================================
+    // VALIDATE PICKUP ASSET - EDGE CASES
+    // ========================================================================
 
     @isTest
     static void testValidatePickupAsset_NullAsset() {
@@ -91,7 +452,7 @@ private class CaseAssetValidatorTest {
         Test.stopTest();
 
         System.assertEquals(false, result.isValid, 'Should be invalid for null asset');
-        System.assert(result.errorMessage.contains('required'), 'Error message should mention required');
+        System.assert(result.errorMessage.contains('required'), 'Error should mention required');
     }
 
     @isTest
@@ -118,36 +479,60 @@ private class CaseAssetValidatorTest {
         System.assertEquals(false, result.isValid, 'Should be invalid for non-existent asset');
     }
 
-    @isTest
-    static void testValidatePickupAsset_CommercialFamily() {
-        Asset commercialAsset = [SELECT Id FROM Asset WHERE ProductFamily = 'Commercial' LIMIT 1];
-        Date serviceDate = Date.today().addDays(7);
-
-        Test.startTest();
-        CaseAssetValidator.ValidationResult result =
-            CaseAssetValidator.validatePickupAsset(commercialAsset.Id, serviceDate);
-        Test.stopTest();
-
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals('COMMERCIAL', result.validationType, 'Should validate as commercial');
-    }
-
     // ========================================================================
     // VALIDATE NON-PICKUP ASSET TESTS
     // ========================================================================
 
     @isTest
     static void testValidateNonPickupAsset_Success() {
-        Asset testAsset = [SELECT Id FROM Asset LIMIT 1];
+        Asset commercialAsset = [SELECT Id FROM Asset WHERE Name = 'Commercial Scheduled Asset' LIMIT 1];
         Date serviceDate = Date.today().addDays(7);
 
         Test.startTest();
         CaseAssetValidator.ValidationResult result =
-            CaseAssetValidator.validateNonPickupAsset(testAsset.Id, serviceDate);
+            CaseAssetValidator.validateNonPickupAsset(commercialAsset.Id, serviceDate);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assertEquals(true, result.isValid, 'Should be valid with active children');
         System.assertEquals('NON_PICKUP', result.validationType, 'Type should be NON_PICKUP');
+    }
+
+    @isTest
+    static void testValidateNonPickupAsset_NoActiveChildren() {
+        Account loc = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' LIMIT 1];
+        Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
+
+        Asset noActiveChildren = new Asset(
+            Name = 'No Active Children',
+            AccountId = loc.Id,
+            Product2Id = prod.Id,
+            ProductFamily = 'Commercial',
+            Start_Date__c = Date.today().addDays(-30),
+            Is_Active__c = true
+        );
+        insert noActiveChildren;
+
+        // Add expired child
+        Asset expiredChild = new Asset(
+            Name = 'Expired Child',
+            AccountId = loc.Id,
+            ParentId = noActiveChildren.Id,
+            Product2Id = prod.Id,
+            Service_Type__c = 'Pickup',
+            Is_Active__c = false,
+            Start_Date__c = Date.today().addDays(-365),
+            End_Date__c = Date.today().addDays(-1),
+            ProductFamily = 'Commercial'
+        );
+        insert expiredChild;
+
+        Test.startTest();
+        CaseAssetValidator.ValidationResult result =
+            CaseAssetValidator.validateNonPickupAsset(noActiveChildren.Id, Date.today().addDays(7));
+        Test.stopTest();
+
+        System.assertEquals(false, result.isValid, 'Should fail without active children');
+        System.assert(result.errorMessage.contains('end date'), 'Error should mention end dates');
     }
 
     @isTest
@@ -216,7 +601,6 @@ private class CaseAssetValidatorTest {
         CaseAssetValidator.removeObsoleteAssetLinks(oldCaseAssetMap);
         Test.stopTest();
 
-        // Verify execution without errors
         System.assert(true, 'Method should execute without errors');
     }
 
@@ -235,19 +619,15 @@ private class CaseAssetValidatorTest {
 
     @isTest
     static void testCreateCaseAssetRelationships_Insert() {
-        Map<String, Object> testData = TestDataFactoryRefactored.createFullTestHierarchy();
         Case newCase = TestDataFactoryRefactored.createCase('Service_Request');
-        Asset testAsset = (Asset)testData.get('asset');
+        Asset testAsset = [SELECT Id, Service_Header_Id__c, Service_Type__c, Is_Active__c, ProductFamily, Start_Date__c, End_Date__c
+                          FROM Asset WHERE Name = 'Commercial Scheduled Asset' LIMIT 1];
         newCase.AssetId = testAsset.Id;
         newCase.Service_Date__c = Date.today().addDays(7);
         insert newCase;
 
         Map<Id, Case> caseMap = new Map<Id, Case>{newCase.Id => newCase};
-        Map<Id, Asset> assetMap = new Map<Id, Asset>([
-            SELECT Id, Service_Header_Id__c, Service_Type__c, Is_Active__c,
-                   ProductFamily, Start_Date__c, End_Date__c
-            FROM Asset WHERE Id = :testAsset.Id
-        ]);
+        Map<Id, Asset> assetMap = new Map<Id, Asset>{testAsset.Id => testAsset};
 
         Test.startTest();
         CaseAssetValidator.createCaseAssetRelationships(caseMap, null, assetMap);
@@ -262,16 +642,13 @@ private class CaseAssetValidatorTest {
         Case oldCase = testCase.clone(true, true, true, true);
 
         // Change asset
-        Asset newAsset = [SELECT Id FROM Asset WHERE Id != :testCase.AssetId LIMIT 1];
+        Asset newAsset = [SELECT Id, Service_Header_Id__c, Service_Type__c, Is_Active__c, ProductFamily, Start_Date__c, End_Date__c
+                         FROM Asset WHERE Id != :testCase.AssetId LIMIT 1];
         testCase.AssetId = newAsset.Id;
 
         Map<Id, Case> newCaseMap = new Map<Id, Case>{testCase.Id => testCase};
         Map<Id, Case> oldCaseMap = new Map<Id, Case>{oldCase.Id => oldCase};
-        Map<Id, Asset> assetMap = new Map<Id, Asset>([
-            SELECT Id, Service_Header_Id__c, Service_Type__c, Is_Active__c,
-                   ProductFamily, Start_Date__c, End_Date__c
-            FROM Asset WHERE Id = :newAsset.Id
-        ]);
+        Map<Id, Asset> assetMap = new Map<Id, Asset>{newAsset.Id => newAsset};
 
         Test.startTest();
         CaseAssetValidator.createCaseAssetRelationships(newCaseMap, oldCaseMap, assetMap);
@@ -397,6 +774,42 @@ private class CaseAssetValidatorTest {
     }
 
     @isTest
+    static void testShouldResetSLA_LocationChanged() {
+        Account loc1 = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' LIMIT 1];
+        Account loc2 = [SELECT Id FROM Account WHERE RecordType.Name = 'Location' AND Id != :loc1.Id LIMIT 1];
+
+        Case oldCase = TestDataFactoryRefactored.createCase('Service_Request');
+        oldCase.Location__c = loc1.Id;
+
+        Case newCase = oldCase.clone(false, false, false, false);
+        newCase.Location__c = loc2.Id;
+
+        Test.startTest();
+        Boolean result = CaseAssetValidator.shouldResetSLA(newCase, oldCase);
+        Test.stopTest();
+
+        System.assertEquals(true, result, 'Should reset SLA when location changes');
+    }
+
+    @isTest
+    static void testShouldResetSLA_AssetChanged() {
+        Asset asset1 = [SELECT Id FROM Asset LIMIT 1];
+        Asset asset2 = [SELECT Id FROM Asset WHERE Id != :asset1.Id LIMIT 1];
+
+        Case oldCase = TestDataFactoryRefactored.createCase('Service_Request');
+        oldCase.AssetId = asset1.Id;
+
+        Case newCase = oldCase.clone(false, false, false, false);
+        newCase.AssetId = asset2.Id;
+
+        Test.startTest();
+        Boolean result = CaseAssetValidator.shouldResetSLA(newCase, oldCase);
+        Test.stopTest();
+
+        System.assertEquals(true, result, 'Should reset SLA when asset changes');
+    }
+
+    @isTest
     static void testShouldResetSLA_NoChanges() {
         Case oldCase = TestDataFactoryRefactored.createCase('Service_Request');
         Case newCase = oldCase.clone(false, false, false, false);
@@ -414,10 +827,8 @@ private class CaseAssetValidatorTest {
 
     @isTest
     static void testIdentifyROLAssetsThatAffectSubtype() {
-        Asset rolloffAsset = [SELECT Id, ProductFamily FROM Asset WHERE ProductFamily = 'Rolloff' LIMIT 1];
-        Map<Id, Asset> assetMap = new Map<Id, Asset>([
-            SELECT Id, Product2.Family FROM Asset WHERE Id = :rolloffAsset.Id
-        ]);
+        Asset rolloffAsset = [SELECT Id, Product2.Family FROM Asset WHERE ProductFamily = 'Rolloff' LIMIT 1];
+        Map<Id, Asset> assetMap = new Map<Id, Asset>{rolloffAsset.Id => rolloffAsset};
 
         Test.startTest();
         Set<Id> result = CaseAssetValidator.identifyROLAssetsThatAffectSubtype(assetMap);
