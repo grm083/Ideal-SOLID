@@ -45,16 +45,8 @@ public without sharing class CustomCaseHighlightPanelCntrl {
         Case myCases;
 
       try{
-            myCases = [SELECT Id, Client__c,accountId,CaseNumber,Reference_Number__c,Profile_Number__c,Override_Profile_Number_Task__c,Location__c,Supplier__c,Supplier__r.Name,Location__r.Name,ContactId,Contact.Name, Contact_Title__c,Case_Type__c,Case_Sub_type__c,
-            Invoice_Number__c,Disputed_Amount__c,//SDT 39047           
-            AssetId,Asset.Name,Asset_Material__c,Status,Case_Sub_Status__c,EmailofContact__c,SLA_Service_Date_Time__c,Override_PO_Create_Task__c,SuppliedEmail,Case_Reason__c,				
-                       PSI_Override_Reason__c,PSI_Comments__c,Chargeable__c,createdDate,Show_Multiple_Asset_Cases__c,Is_Multiple_Asset__c,Service_Date__c,SLA_Service_DateTime__c,Service_Date_Text__c,Origin,PSI__c,OwnerId,
-                       PurchaseOrder_Number__c,SlaStartDate,ContactDepartment__c,Case_Record_Type__c,isMultiCalendarChecked__c,Work_Order__c,Work_Order__r.WorkOrderNumber,Tracking_Number__c,Acorn_Work_order__c,Location__r.Customer_Location_Code__c,
-                       Client__r.Name,Location__r.Location_Code__c,Location__r.ShippingStreet,Location__r.ShippingCity,Location__r.ShippingPostalCode,Location__r.ShippingState,Location__r.ShippingCountry,Location__r.Phone,Location__r.Primary_Segment__c, Location__r.Secondary_Segment__c,Location__r.tz__Local_Time_Short__c,Contact.Phone, 
-                       Contact.MobilePhone, Contact.Preferred_Method__c,Contact.Email_Validated__c,Contact.Email,Asset.Material_Type__c,Asset.Duration__c,Asset.Occurrence_Type__c,Asset.Schedule__c, Asset.Quantity__c,Asset.Supplier__r.Name,Asset.Vendor_ID__c,Asset.Service_Type__c,Asset.Acorn_SID__c,Asset.Supplier__c,
-                       Asset.Sensitivity_Code__c,Asset.Has_Extra_Pickup__c,Asset.Equipment_Owner__c,Asset.Start_Date__c,Asset.End_Date__c,Asset.Container_Position__c, Asset.Category__c,Asset.MAS_Customer_Unique_Id__c,Asset.Vendor_Account_Number__c,Company_Category__c, Override_Company_Category_Create_Task__c,RecordTypeId,
-                       Business_RuleId__c,Required_Information__c,Location__r.Location_Type__c,Location__r.Geography__c,Location__r.Division__c,Location__r.Brand__c, Location__r.Is_Portal_Customer__c, Location__r.Portal_Name__c, 
-                       Asset.MAS_Company_Account_Number__c,Asset.ProductFamily,Asset.Cost_Currency__c,Asset.Price_Currency__c,Asset.MAS_Library__c,Asset.Project_Code__r.ProjectCode_Id__c,CPQ_New_Service__c,(select id,Name,Asset_Header__r.Name from Case_Assets1__r) FROM CASE WHERE id =:caseId LIMIT 1];
+            // REFACTORED (Phase 5D): Use CaseContextGetter for centralized query
+            myCases = CaseContextGetter.getCaseWithHighlightPanelFields(caseId);
             if(myCases.Service_Date__c!= null){
                 myCases.Service_Date_Text__c = myCases.Service_Date__c.format();
                 }else{
