@@ -418,4 +418,134 @@ private class QuoteProcurementWrapperServiceTest {
 
         System.assert(exceptionThrown, 'Exception should be thrown for invalid case ID');
     }
+
+    /**
+     * @description Test buildQuoteWrapper - success scenario
+     */
+    @isTest
+    static void testBuildQuoteWrapper_Success() {
+        SBQQ__Quote__c testQuote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+
+        Test.startTest();
+        QuoteProcurementController.ProductsWrapper result =
+            QuoteProcurementWrapperService.buildQuoteWrapper(testQuote.Id);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Wrapper should not be null');
+        System.assertNotEquals(null, result.configuredProducts, 'Configured products should not be null');
+        System.assert(result.configuredProducts.size() > 0, 'Should have configured products');
+    }
+
+    /**
+     * @description Test buildQuoteWrapper - verify header properties
+     */
+    @isTest
+    static void testBuildQuoteWrapper_VerifyHeaderProperties() {
+        SBQQ__Quote__c testQuote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+
+        Test.startTest();
+        QuoteProcurementController.ProductsWrapper result =
+            QuoteProcurementWrapperService.buildQuoteWrapper(testQuote.Id);
+        Test.stopTest();
+
+        QuoteProcurementController.HeaderWrapper header = result.configuredProducts[0];
+        System.assertNotEquals(null, header.caseType, 'Case type should be set');
+        System.assertNotEquals(null, header.quoteName, 'Quote name should be set');
+        System.assertNotEquals(null, header.quoteStatus, 'Quote status should be set');
+        System.assertNotEquals(null, header.productId, 'Product ID should be set');
+        System.assertNotEquals(null, header.equipmentType, 'Equipment type should be set');
+        System.assertEquals('10 Yard', header.equipmentSize, 'Equipment size should match');
+    }
+
+    /**
+     * @description Test buildQuoteWrapper - verify material type extraction
+     */
+    @isTest
+    static void testBuildQuoteWrapper_VerifyMaterialType() {
+        SBQQ__Quote__c testQuote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+
+        Test.startTest();
+        QuoteProcurementController.ProductsWrapper result =
+            QuoteProcurementWrapperService.buildQuoteWrapper(testQuote.Id);
+        Test.stopTest();
+
+        QuoteProcurementController.HeaderWrapper header = result.configuredProducts[0];
+        System.assertNotEquals(null, header.materialType, 'Material type should be set from waste stream');
+        System.assertNotEquals(null, header.materialTypeCode, 'Material type code should be set');
+    }
+
+    /**
+     * @description Test buildQuoteWrapper - verify account information
+     */
+    @isTest
+    static void testBuildQuoteWrapper_VerifyAccountInfo() {
+        SBQQ__Quote__c testQuote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+
+        Test.startTest();
+        QuoteProcurementController.ProductsWrapper result =
+            QuoteProcurementWrapperService.buildQuoteWrapper(testQuote.Id);
+        Test.stopTest();
+
+        QuoteProcurementController.HeaderWrapper header = result.configuredProducts[0];
+        System.assertNotEquals(null, header.clientId, 'Client ID should be set');
+        System.assertNotEquals(null, header.locationId, 'Location ID should be set');
+        System.assertNotEquals(null, header.contactID, 'Contact ID should be set');
+        System.assertNotEquals(null, header.primaryContact, 'Primary contact should be set');
+    }
+
+    /**
+     * @description Test buildQuoteWrapper - verify vendor information
+     */
+    @isTest
+    static void testBuildQuoteWrapper_VerifyVendorInfo() {
+        SBQQ__Quote__c testQuote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+
+        Test.startTest();
+        QuoteProcurementController.ProductsWrapper result =
+            QuoteProcurementWrapperService.buildQuoteWrapper(testQuote.Id);
+        Test.stopTest();
+
+        QuoteProcurementController.HeaderWrapper header = result.configuredProducts[0];
+        System.assertNotEquals(null, header.vendorName, 'Vendor name should be set');
+        System.assertEquals('Test Vendor', header.vendorName, 'Vendor name should match');
+    }
+
+    /**
+     * @description Test buildQuoteWrapper - verify dates and quantities
+     */
+    @isTest
+    static void testBuildQuoteWrapper_VerifyDatesAndQuantities() {
+        SBQQ__Quote__c testQuote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+
+        Test.startTest();
+        QuoteProcurementController.ProductsWrapper result =
+            QuoteProcurementWrapperService.buildQuoteWrapper(testQuote.Id);
+        Test.stopTest();
+
+        QuoteProcurementController.HeaderWrapper header = result.configuredProducts[0];
+        System.assertNotEquals(null, header.startDate, 'Start date should be set');
+        System.assertNotEquals(null, header.endDate, 'End date should be set');
+        System.assertEquals(1, header.quantity, 'Quantity should match');
+        System.assertEquals('TOS', header.occurrenceType, 'Occurrence type should match');
+    }
+
+    /**
+     * @description Test buildQuoteWrapper - error handling
+     */
+    @isTest
+    static void testBuildQuoteWrapper_InvalidQuoteId() {
+        Boolean exceptionThrown = false;
+
+        Test.startTest();
+        try {
+            QuoteProcurementWrapperService.buildQuoteWrapper('INVALID_ID_123');
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+            System.assert(e.getMessage().contains('Failed to build quote wrapper'),
+                         'Should throw proper exception for invalid quote ID');
+        }
+        Test.stopTest();
+
+        System.assert(exceptionThrown, 'Exception should be thrown for invalid quote ID');
+    }
 }

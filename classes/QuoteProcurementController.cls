@@ -40,78 +40,8 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static ProductsWrapper buildQuoteWrapper(String quoteId) {
-        SBQQ__Quote__c parentQuote = [SELECT Id, SBQQ__Account__r.Parent.AccountNumber,
-                                      SBQQ__Account__r.ParentId, Project__c, SBQQ__Account__c,
-                                      SBQQ__Account__r.Division__c, SBQQ__Account__r.Geography__c,
-                                      SBQQ__Account__r.Location_Type__c, SBQQ__Account__r.Brand__c,
-                                      Case_Sub_Type__c, Case_Reason__c, Case_Type__c,
-                                      SBQQ__Opportunity2__r.Case__r.Origin,
-                                      SBQQ__Opportunity2__r.Case__r.Recordtype.Name, toLabel(SBQQ__Status__c),
-                                      SBQQ__PrimaryContact__r.Name, SBQQ__PrimaryContact__c
-                                      FROM SBQQ__Quote__c
-                                      WHERE Id =: quoteId];
-        ProductsWrapper pw = new ProductsWrapper();
-        //TCS-SDT-31625-Added SBQQ__Quantity__c field to the query
-        List<SBQQ__QuoteLine__c> headerRecords = [SELECT SBQQ__Quote__r.Case_Type__c, SBQQ__Quote__r.Name, SBQQ__Quote__c,MaterialGrade__c,
-                                                  SBQQ__ProductName__c, toLabel(Duration__c),Vendor__r.Name, Vendor__r.Parent_Vendor_Id__c,
-                                                  toLabel(Equipment_Size__c), SBQQ__StartDate__c, SBQQ__EndDate__c,Occurrence_Type__c, SBQQ__Quantity__c,
-                                                  AssetId__c, CompanyCategoryName__c, SBQQ__Product__c, SBQQ__ProductFamily__c,SBQQ__ProductCode__c
-                      							  FROM SBQQ__QuoteLine__c
-                      							  WHERE SBQQ__Quote__c =: quoteId AND SBQQ__RequiredBy__c = Null];
-        List<HeaderWrapper> confProducts = new List<HeaderWrapper>();
-        
-        for (SBQQ__QuoteLine__c header : headerRecords){
-            HeaderWrapper prod = new HeaderWrapper();
-            prod.caseType = parentQuote.Case_Type__c;
-            prod.caseSubType = parentQuote.Case_Sub_Type__c;
-            prod.caseReason = parentQuote.Case_Reason__c;
-            prod.caseOrigin = parentQuote.SBQQ__Opportunity2__r.Case__r.Origin;
-            prod.caseRecordType = parentQuote.SBQQ__Opportunity2__r.Case__r.Recordtype.Name;
-            prod.quoteName = header.SBQQ__Quote__r.Name;
-            prod.productId = header.SBQQ__Product__c;
-            prod.productFamily = header.SBQQ__ProductFamily__c;
-            prod.quoteID = header.SBQQ__Quote__c;
-            prod.quantity = header.SBQQ__Quantity__c;
-            prod.equipmentType = header.SBQQ__ProductName__c;
-            prod.duration = header.Duration__c;
-            prod.quoteStatus = parentQuote.SBQQ__Status__c;
-            prod.equipmentSize = header.Equipment_Size__c;
-            prod.selectedMaterialGrade = header.MaterialGrade__c; //SDT-37527
-            prod.startDate = header.SBQQ__StartDate__c;
-            prod.endDate = header.SBQQ__EndDate__c;
-            prod.primaryContact = parentQuote.SBQQ__PrimaryContact__r.Name;
-            prod.contactID = parentQuote.SBQQ__PrimaryContact__c;
-            prod.occurrenceType = header.Occurrence_Type__c;
-            prod.clientId = parentQuote.SBQQ__Account__r.ParentId;
-            prod.locationId = parentQuote.SBQQ__Account__c;
-            prod.locationDivision = parentQuote.SBQQ__Account__r.Division__c;
-            prod.locationGeography = parentQuote.SBQQ__Account__r.Geography__c;
-            prod.locationType = parentQuote.SBQQ__Account__r.Location_Type__c;
-            prod.locationBrand = parentQuote.SBQQ__Account__r.Brand__c;
-            prod.projectCodeId = parentQuote.Project__c;
-            prod.assetId = header.AssetId__c;
-	    prod.companyCategoryName = header.CompanyCategoryName__c;
-	    prod.equipmentTypeCode = header.SBQQ__ProductCode__c;//SDT-38040-MAA
-        prod.vendorName = header.Vendor__r.Name;
-        prod.parentVendorId =  header.Vendor__r.Parent_Vendor_Id__c;
-            
-            List<SBQQ__QuoteLine__c> detailRecords = [SELECT SBQQ__ProductName__c, SBQQ__ProductCode__c, SBQQ__ProductFamily__c
-           											  FROM SBQQ__QuoteLine__c
-                      								  WHERE (SBQQ__RequiredBy__c =: header.Id OR SBQQ__RequiredBy__r.SBQQ__RequiredBy__c =: header.Id) AND SBQQ__ProductFamily__c != 'Waste Category'];
-            for (SBQQ__QuoteLine__c detail: detailRecords) {
-                //Immediately store the material type to the header record and skip to the next
-                //iteration
-                if (detail.SBQQ__ProductFamily__c == 'Waste Stream') {
-                    prod.materialType = detail.SBQQ__ProductName__c;
-                    prod.materialTypeCode = detail.SBQQ__ProductCode__c;
-                    break;
-                }
-            }
-           confProducts.add(prod);
-            
-        }
-        pw.configuredProducts = confProducts;
-        return pw;
+        // Refactored to use QuoteProcurementWrapperService
+        return QuoteProcurementWrapperService.buildQuoteWrapper(quoteId);
     }     
     //sdt-31000
     
@@ -944,47 +874,8 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static Boolean updateQuoteOverview(HeaderWrapper productWrapper) {
-		system.debug('productWrapper==>'+productWrapper);
-	List<SBQQ__QuoteLine__c> qlList = QuoteLineServices.getQuoteLinesByParentId(productWrapper.parentId);
-
-        productWrapper.equipmentSize = getPicklistAPIName(productWrapper.equipmentSize);
-        for(SBQQ__QuoteLine__c ql : qlList) {
-	    //ql.SBQQ__StartDate__c = productWrapper.startDate;
-            //ql.SBQQ__EndDate__c = (ql.SBQQ__ProductName__c == 'Delivery') ? productWrapper.startDate : productWrapper.endDate;
-            if (ql.SBQQ__ProductOption__r.SBQQ__Type__c != 'Accessory') {
-            	ql.SBQQ__Quantity__c = productWrapper.quantity;
-            }
-            
-            //TCS-pkulkarn-SDT-33379-5-Dec-2023-Added following call to Update Quantity on Lock Fee and Lock products
-            QuoteLineServices.updateQuantityForLockProducts(ql, productWrapper.quantity);
-            
-            ql.Description_of_Waste__c = productWrapper.wasteDescription;
-            ql.SLA_Override_Reason__c = productWrapper.slaOverrideReason;
-            ql.SLA_Override_Comment__c = productWrapper.slaOverrideComment;
-            ql.Equipment_Size__c = productWrapper.equipmentSize;
-            system.debug('productWrapper.equipmentSize==>'+productWrapper.equipmentSize);
-            //SDT-37527
-             if(productWrapper.selectedMaterialGrade != null)
-			ql.MaterialGrade__c = productWrapper.selectedMaterialGrade;
-            if(!String.isEmpty(productWrapper.companyCategory))
-                ql.CompanyCategoryCode__c = productWrapper.companyCategory;
-            if(!String.isEmpty(productWrapper.companyCategoryName))
-                ql.CompanyCategoryName__c = productWrapper.companyCategoryName;
-
-                //SDT-42448
-                 if(ql.SBQQ__RequiredBy__c == null){
-                        ql.Quote_SLA_Date__c = QuoteProcurementController.callDetermineSLA(ql.Id);
-                    } 
-        }
-
-        try {
-            update qlList;
-            return true;
-        } catch (exception e) {
-            system.debug('error is ==>'+e.getMessage());
-            
-            return false;
-        }
+        // Refactored to use QuoteProcurementQuoteLineService
+        return QuoteProcurementQuoteLineService.updateQuoteOverview(productWrapper);
     }
     public static string getPicklistAPIName(string labelName){
         string result = labelName;

@@ -147,9 +147,161 @@ public with sharing class QuoteProcurementWrapperService {
         }
     }
 
+    /**
+     * @description Build simplified ProductsWrapper for quote overview
+     * Refactored from: buildQuoteWrapper() in QuoteProcurementController
+     *
+     * Creates a simpler wrapper structure for quote overview display:
+     * - Header records with key properties
+     * - Material type extraction from waste stream
+     * - No MAS, work orders, or detail wrappers
+     *
+     * @param quoteId The Quote ID
+     * @return QuoteProcurementController.ProductsWrapper Wrapper with configured products
+     */
+    @AuraEnabled
+    public static QuoteProcurementController.ProductsWrapper buildQuoteWrapper(String quoteId) {
+        System.debug('QuoteProcurementWrapperService.buildQuoteWrapper - Start: ' + quoteId);
+
+        try {
+            // Query parent quote with extended quote and account information
+            SBQQ__Quote__c parentQuote = [
+                SELECT Id, SBQQ__Account__r.Parent.AccountNumber,
+                    SBQQ__Account__r.ParentId, Project__c, SBQQ__Account__c,
+                    SBQQ__Account__r.Division__c, SBQQ__Account__r.Geography__c,
+                    SBQQ__Account__r.Location_Type__c, SBQQ__Account__r.Brand__c,
+                    Case_Sub_Type__c, Case_Reason__c, Case_Type__c,
+                    SBQQ__Opportunity2__r.Case__r.Origin,
+                    SBQQ__Opportunity2__r.Case__r.Recordtype.Name,
+                    toLabel(SBQQ__Status__c),
+                    SBQQ__PrimaryContact__r.Name,
+                    SBQQ__PrimaryContact__c
+                FROM SBQQ__Quote__c
+                WHERE Id = :quoteId
+            ];
+
+            QuoteProcurementController.ProductsWrapper pw = new QuoteProcurementController.ProductsWrapper();
+
+            // Query header records (parent quote lines) - TCS-SDT-31625: Added SBQQ__Quantity__c field
+            List<SBQQ__QuoteLine__c> headerRecords = [
+                SELECT SBQQ__Quote__r.Case_Type__c, SBQQ__Quote__r.Name, SBQQ__Quote__c,
+                    MaterialGrade__c, SBQQ__ProductName__c, toLabel(Duration__c),
+                    Vendor__r.Name, Vendor__r.Parent_Vendor_Id__c,
+                    toLabel(Equipment_Size__c), SBQQ__StartDate__c, SBQQ__EndDate__c,
+                    Occurrence_Type__c, SBQQ__Quantity__c, AssetId__c, CompanyCategoryName__c,
+                    SBQQ__Product__c, SBQQ__ProductFamily__c, SBQQ__ProductCode__c
+                FROM SBQQ__QuoteLine__c
+                WHERE SBQQ__Quote__c = :quoteId
+                AND SBQQ__RequiredBy__c = null
+            ];
+
+            List<QuoteProcurementController.HeaderWrapper> confProducts =
+                new List<QuoteProcurementController.HeaderWrapper>();
+
+            for (SBQQ__QuoteLine__c header : headerRecords) {
+                QuoteProcurementController.HeaderWrapper prod =
+                    buildQuoteOverviewHeader(header, parentQuote);
+                confProducts.add(prod);
+            }
+
+            pw.configuredProducts = confProducts;
+
+            System.debug('Built quote wrapper with ' + confProducts.size() + ' configured products');
+            return pw;
+
+        } catch (Exception ex) {
+            System.debug(LoggingLevel.ERROR, 'Error in buildQuoteWrapper: ' + ex.getMessage());
+            UTIL_LoggingService.logHandledException(
+                ex,
+                UserInfo.getOrganizationId(),
+                UTIL_ErrorConstants.ERROR_APPLICATION,
+                LoggingLevel.ERROR
+            );
+            throw new AuraHandledException('Failed to build quote wrapper: ' + ex.getMessage());
+        }
+    }
+
     // ========================================================================
     // PRIVATE HELPER METHODS
     // ========================================================================
+
+    /**
+     * @description Build simplified HeaderWrapper for quote overview
+     * @param header The parent quote line
+     * @param parentQuote The parent quote with extended information
+     * @return QuoteProcurementController.HeaderWrapper The built header wrapper
+     */
+    private static QuoteProcurementController.HeaderWrapper buildQuoteOverviewHeader(
+        SBQQ__QuoteLine__c header,
+        SBQQ__Quote__c parentQuote
+    ) {
+        QuoteProcurementController.HeaderWrapper prod = new QuoteProcurementController.HeaderWrapper();
+
+        // Quote and case information
+        prod.caseType = parentQuote.Case_Type__c;
+        prod.caseSubType = parentQuote.Case_Sub_Type__c;
+        prod.caseReason = parentQuote.Case_Reason__c;
+        prod.caseOrigin = parentQuote.SBQQ__Opportunity2__r.Case__r.Origin;
+        prod.caseRecordType = parentQuote.SBQQ__Opportunity2__r.Case__r.Recordtype.Name;
+        prod.quoteName = header.SBQQ__Quote__r.Name;
+        prod.quoteStatus = parentQuote.SBQQ__Status__c;
+        prod.quoteID = header.SBQQ__Quote__c;
+
+        // Product information
+        prod.productId = header.SBQQ__Product__c;
+        prod.productFamily = header.SBQQ__ProductFamily__c;
+        prod.equipmentType = header.SBQQ__ProductName__c;
+        prod.equipmentTypeCode = header.SBQQ__ProductCode__c; // SDT-38040-MAA
+        prod.equipmentSize = header.Equipment_Size__c;
+        prod.quantity = header.SBQQ__Quantity__c;
+        prod.duration = header.Duration__c;
+        prod.selectedMaterialGrade = header.MaterialGrade__c; // SDT-37527
+        prod.occurrenceType = header.Occurrence_Type__c;
+
+        // Dates
+        prod.startDate = header.SBQQ__StartDate__c;
+        prod.endDate = header.SBQQ__EndDate__c;
+
+        // Contact information
+        prod.primaryContact = parentQuote.SBQQ__PrimaryContact__r.Name;
+        prod.contactID = parentQuote.SBQQ__PrimaryContact__c;
+
+        // Account information
+        prod.clientId = parentQuote.SBQQ__Account__r.ParentId;
+        prod.locationId = parentQuote.SBQQ__Account__c;
+        prod.locationDivision = parentQuote.SBQQ__Account__r.Division__c;
+        prod.locationGeography = parentQuote.SBQQ__Account__r.Geography__c;
+        prod.locationType = parentQuote.SBQQ__Account__r.Location_Type__c;
+        prod.locationBrand = parentQuote.SBQQ__Account__r.Brand__c;
+
+        // Vendor information
+        prod.vendorName = header.Vendor__r.Name;
+        prod.parentVendorId = header.Vendor__r.Parent_Vendor_Id__c;
+
+        // Other fields
+        prod.projectCodeId = parentQuote.Project__c;
+        prod.assetId = header.AssetId__c;
+        prod.companyCategoryName = header.CompanyCategoryName__c;
+
+        // Query and set material type from waste stream
+        List<SBQQ__QuoteLine__c> detailRecords = [
+            SELECT SBQQ__ProductName__c, SBQQ__ProductCode__c, SBQQ__ProductFamily__c
+            FROM SBQQ__QuoteLine__c
+            WHERE (SBQQ__RequiredBy__c = :header.Id OR SBQQ__RequiredBy__r.SBQQ__RequiredBy__c = :header.Id)
+            AND SBQQ__ProductFamily__c != 'Waste Category'
+        ];
+
+        for (SBQQ__QuoteLine__c detail : detailRecords) {
+            // Immediately store the material type to the header record and skip to next iteration
+            if (detail.SBQQ__ProductFamily__c == 'Waste Stream') {
+                prod.materialType = detail.SBQQ__ProductName__c;
+                prod.materialTypeCode = detail.SBQQ__ProductCode__c;
+                break;
+            }
+        }
+
+        return prod;
+    }
 
     /**
      * @description Build HeaderWrapper from quote line data
