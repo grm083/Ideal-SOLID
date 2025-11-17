@@ -1692,76 +1692,16 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static string addProductOption(Id quoteLineId, Id productOptionId){
-        // TODO: Complex product option logic - candidate for future service extraction
-        // Contains DML, SOQL, and business rules for adding product options to quote lines
-
-        List<SBQQ__QuoteLine__c> quoteLines = [SELECT Id, SBQQ__Number__c, SBQQ__StartDate__c, Equipment_Size__c,
-                                              SBQQ__Quote__c, SID__c
-                                              FROM SBQQ__QuoteLine__c
-                                              WHERE Id=: quoteLineId OR SBQQ__RequiredBy__c =: quoteLineId
-                                              ORDER BY SBQQ__Number__c DESC];
-      
-        // SDT-31973
-        SBQQ__ProductOption__c prodOption = [SELECT Id, SBQQ__OptionalSKU__c, SBQQ__OptionalSKU__r.Name, SBQQ__OptionalSKU__r.ProductCode, SBQQ__Quantity__c, Occurrence_Type__c,
-                                             CostModelType__c, Cost_Unit_of_Measure__c, PriceUOM__c, Schedule_Frequency__c,
-                                             Frequency_Interval__c
-                                             FROM SBQQ__ProductOption__c
-                                             WHERE Id=: productOptionId];
-
-        SBQQ__QuoteLine__c qLine = new SBQQ__QuoteLine__c(SBQQ__Quote__c = quoteLines[0].SBQQ__Quote__c,
-                                                            SBQQ__Product__c = prodOption.SBQQ__OptionalSKU__c,
-                                                            Equipment_Size__c = quoteLines[0].Equipment_Size__c,
-                                                            SBQQ__RequiredBy__c = quoteLineId,
-                                                            SBQQ__ProductOption__c = prodOption.Id,
-                                                            SBQQ__OptionLevel__c = 1,
-                                                            SBQQ__Number__c = quoteLines[0].SBQQ__Number__c + 1,
-                                                            SBQQ__CostEditable__c = true,
-                                                            SBQQ__PriceEditable__c = true,
-                                                            SBQQ__Quantity__c = prodOption.SBQQ__Quantity__c,
-                                                            Occurrence_Type__c = prodOption.Occurrence_Type__c, 
-                                                            CostModelType__c = prodOption.CostModelType__c, 
-                                                            Cost_Unit_of_Measure__c = prodOption.Cost_Unit_of_Measure__c, 
-                                                            PriceUOM__c = prodOption.PriceUOM__c,
-                                                            Schedule_Frequency__c = prodOption.Schedule_Frequency__c,
-                                                            Frequency_Interval__c = prodOption.Frequency_Interval__c,
-                                                            SBQQ__StartDate__c = quoteLines[0].SBQQ__StartDate__c,
-                                                            SID__c= quoteLines[0].SID__c);
-        system.debug('qLine==>'+qLine);
-        // SDT-31973
-        // For Key line adding ites End date same as start date
-        if(prodOption.SBQQ__OptionalSKU__r.Name == Constant_Util.KEYS)
-        {
-            qLine.SBQQ__EndDate__c = qLine.SBQQ__StartDate__c;
-        }
-        try {
-            insert qLine;
-            //return 'SUCCESS'; //SDT-23055: commenting it to retrieve inserted quoteline id
-            return String.valueOf(qLine.Id);
-        } catch (exception e) {
-            return e.getMessage();
-        }
-
+        // Refactored to use QuoteProcurementProductOptionService
+        return QuoteProcurementProductOptionService.addProductOption(quoteLineId, productOptionId);
     }
      // SDT-31752
     // quoteId = Parent QL Id
     // ProductionOptionId is the Id of the Optional SKU on the product option, This is to remove the option Id
     @AuraEnabled
     public static string removeProductOption(Id quoteLineId, Id productOptionId) {
-        // TODO: Complex product option removal logic - candidate for future service extraction
-        // Contains DML for removing product options from quote lines
-
-        SBQQ__QuoteLine__c quoteLine = [SELECT Id
-                                        FROM SBQQ__QuoteLine__c
-                                        WHERE SBQQ__RequiredBy__c =: quoteLineId
-                                        AND SBQQ__ProductOption__r.SBQQ__OptionalSKU__c =: productOptionId
-                                        LIMIT 1];
-        
-        try {
-            delete quoteLine;
-            return 'SUCCESS';
-        } catch (exception e) {
-            return e.getMessage();
-        }
+        // Refactored to use QuoteProcurementProductOptionService
+        return QuoteProcurementProductOptionService.removeProductOption(quoteLineId, productOptionId);
     }
     /*
      * SDT-23055
@@ -1773,20 +1713,8 @@ public class QuoteProcurementController {
      */
     @AuraEnabled
     public static string removeProductOption(Id quoteLineId, Id productOptionId, Id keyOptionId) {
-        // TODO: Complex product option removal logic (overloaded version) - candidate for future service extraction
-        // Contains DML for removing product options and associated keys from quote lines
-
-        List<SBQQ__QuoteLine__c> quoteLine = [SELECT Id
-                                        FROM SBQQ__QuoteLine__c
-                                        WHERE (SBQQ__RequiredBy__c =: quoteLineId AND SBQQ__ProductOption__r.SBQQ__OptionalSKU__c =: productOptionId) OR
-                                        (SBQQ__RequiredBy__r.SBQQ__RequiredBy__c =: quoteLineId AND SBQQ__ProductOption__c =: keyOptionId)
-                                        LIMIT 2];
-        try {
-            delete quoteLine;
-            return 'SUCCESS';
-        } catch (exception e) {
-            return e.getMessage();
-        }
+        // Refactored to use QuoteProcurementProductOptionService
+        return QuoteProcurementProductOptionService.removeProductOptionWithKeys(quoteLineId, productOptionId, keyOptionId);
     }
 
     /*
@@ -1798,35 +1726,8 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static string updateKeysQuantity(Id parentId, List<KeyMapWrapper> keyObj){
-        // TODO: Complex keys quantity update logic - candidate for future service extraction
-        // Contains DML and logic for updating padlock key quantities on quote lines
-
-        Set<String> idSet= new Set<String>();
-        Map<String,String> keyMap= new Map<String,String>();
-        for(KeyMapWrapper obj:keyObj){
-            System.debug('obj.id>>>'+obj.id);
-            idSet.add((String)obj.id);
-            keyMap.put((String)obj.id,(String)obj.value);
-        }
-        List<SBQQ__QuoteLine__c> quoteLines = [SELECT Id,SBQQ__Quantity__c,SBQQ__ProductOption__c
-                                                FROM SBQQ__QuoteLine__c
-                                                WHERE SBQQ__RequiredBy__r.SBQQ__RequiredBy__c =: parentId AND SBQQ__ProductOption__c IN: idSet];
-        System.debug('quoteLines>>>'+quoteLines);
-        List<SBQQ__QuoteLine__c> updatedquoteLinesList = new List<SBQQ__QuoteLine__c>();
-        for(SBQQ__QuoteLine__c ql: quoteLines){
-            if(keyMap.containsKey(ql.SBQQ__ProductOption__c)){
-                ql.SBQQ__Quantity__c = (keyMap.get(ql.SBQQ__ProductOption__c)== null || keyMap.get(ql.SBQQ__ProductOption__c)=='') ? 0:Decimal.valueOf(keyMap.get(ql.SBQQ__ProductOption__c));
-                updatedquoteLinesList.add(ql);    
-            }
-        }
-        try{
-            if(!updatedquoteLinesList.isEmpty()){
-                update updatedquoteLinesList;
-            }
-            return 'SUCCESS';
-        }catch (exception e) {
-            return e.getMessage();
-        }
+        // Refactored to use QuoteProcurementProductOptionService
+        return QuoteProcurementProductOptionService.updateKeysQuantity(parentId, keyObj);
     }
 
     // Getting all intergration metadata where isActive true
