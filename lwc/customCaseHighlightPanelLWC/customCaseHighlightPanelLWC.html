@@ -246,6 +246,8 @@
     <template if:true={isModalOpenAsset}>
         <c-location-asset-search-l-w-c
             record-id={recordId}
+            show-form={isModalOpenAsset}
+            onclosemodal={handleCloseModal}
             onrefresh={handleRefresh}>
         </c-location-asset-search-l-w-c>
     </template>
