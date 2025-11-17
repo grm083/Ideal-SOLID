@@ -310,15 +310,22 @@ public without sharing class CustomCaseHighlightPanelCntrl {
     public static String updateBRonCase(String caseId,String brId,String reqInfo){
 // Modified for SDT-33454 Start
         try {
-        If(String.isNotBlank(brId)){
-            Case newUpdate = new Case(Id=caseId,Business_RuleId__c=brId,Required_Information__c=reqInfo);
-if(newUpdate != null){
-            update newUpdate;
-        }
-}
+            If(String.isNotBlank(brId)){
+                Case newUpdate = new Case(Id=caseId,Business_RuleId__c=brId,Required_Information__c=reqInfo);
+                if(newUpdate != null){
+                    // REFACTORED: Use CaseDMLService instead of direct update
+                    List<Case> casesToUpdate = new List<Case>{newUpdate};
+                    CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(casesToUpdate);
+
+                    if(!result.isSuccess()){
+                        return 'error';
+                    }
+                }
+            }
         } catch (DmlException e) {
             //System.debug('A DML exception has occurred: ' + e.getMessage());
             STPExceptionUtil.setStepByStepExceptionObj('updateBRonCase', 'Case Screen',e.getMessage());
+            return 'error';
         }
         // Modified for SDT-33454 End
         return 'success';
