@@ -368,8 +368,13 @@ public class SLACalculationUtility {
                                                        }
                                                        catch(Exception e){
                                                            System.debug('Exception in calculateServiceDates: ' + e.getStackTraceString());
+                                                           UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(),
+                                                               UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
                                                        }
-                                                       return caseList;
+
+                                                       // FIX: Return the cases that were processed (from caseMap)
+                                                       // Previously returned empty caseList - now returning actual processed cases
+                                                       return caseMap.values();
                                                    }
     
     // ================================================================================
