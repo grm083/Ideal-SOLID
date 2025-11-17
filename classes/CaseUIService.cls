@@ -552,24 +552,35 @@ public with sharing class CaseUIService {
      */
     private static void evaluateBusinessRules(CaseUIWrapper wrapper, Case caseObj) {
         // Use CaseBusinessRuleService to evaluate all business rules
-        CaseBusinessRuleService.BusinessRuleResult brResult = 
+        CaseBusinessRuleService.BusinessRuleResult brResult =
             CaseBusinessRuleService.evaluateBusinessRules(caseObj.Id);
-        
+
         if (brResult != null) {
             // Populate approval information
             wrapper.enableapprovalInfo = brResult.requiresApproval;
             if (wrapper.enableapprovalInfo) {
                 wrapper.approvalInfo = 'Approval is required for this request, please review the active approval rules for further instruction.';
             }
-            
+
             /* Populate required information
             if (String.isNotBlank(String.join(brResult.validationMessages,', '))) {
                 wrapper.reqInfo = String.join(brResult.validationMessages, ',');
             }*/
-            
+
             // Populate validation messages
             if (!brResult.validationMessages.isEmpty()) {
                 wrapper.caseInfo = String.join(brResult.validationMessages, '\n');
+            } else {
+                // BUGFIX: Set caseInfo to 'Ready' or 'Multi Asset' when no validation issues
+                // This is required for ShowCaseMessagesLWC button visibility
+                // Without this, displayMsg becomes false and hides all action buttons
+                if (caseObj.Is_Multiple_Asset__c == true ||
+                    (String.isNotBlank(caseObj.Reference_Number__c) &&
+                     caseObj.Show_Multiple_Asset_Cases__c == true)) {
+                    wrapper.caseInfo = Constant_Util.READY_MULTIASSET;
+                } else {
+                    wrapper.caseInfo = Constant_Util.READY;
+                }
             }
         }
     }

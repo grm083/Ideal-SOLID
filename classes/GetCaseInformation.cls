@@ -440,6 +440,7 @@ public with sharing class GetCaseInformation {
 * @author WM
 * @date 10/28/2021
 * @description : Apex method SaveAdditionalTemplate to save Workorder Details on Case
+* REFACTORED: Use CaseDMLService instead of direct DML
 **/
     @AuraEnabled
     public static String saveAdditionalTemplate(String emailTempDesc,List<String> caseId){
@@ -450,17 +451,21 @@ public with sharing class GetCaseInformation {
                 Case c = new Case();
                 c.Id = caseId[0] ;
                 c.EmailTemplateAdditionalComments__c =emailTempDesc ;
-                database.update(c);            
-                status = Constant_Util.SUCCESS;
+
+                // REFACTORED: Use CaseDMLService instead of direct database.update
+                List<Case> casesToUpdate = new List<Case>{c};
+                CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(casesToUpdate);
+
+                status = result.isSuccess() ? Constant_Util.SUCCESS : Constant_Util.Failure;
             }
-            
+
         }Catch(Exception ex){
-            status = Constant_Util.Failure;            
+            status = Constant_Util.Failure;
             System.debug('New Error:'+ ex.getMessage());
             throw new AuraHandledException(ex.getMessage());
         }
         return status;
-        
+
     } 
     
     /**
@@ -488,18 +493,21 @@ public with sharing class GetCaseInformation {
     
     @AuraEnabled
     public static Boolean updateThisCaseToClose(String CaseId){
-        try{ 
+        try{
             Case c = [Select Id,Close_Irrelevant_Case__c,Close_Case_Reason__c, Status from Case where Id =: caseId];
             c.Close_Irrelevant_Case__c = true;
             c.Close_Case_Reason__c  = 'Duplicate';
             c.Case_Close_Reason__c = 'As Location already has active Quotes, this case is not required.';
             if(c != null) {
-                update c;
+                // REFACTORED: Use CaseDMLService instead of direct update
+                List<Case> casesToUpdate = new List<Case>{c};
+                CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(casesToUpdate);
+                return result.isSuccess();
             }
         }
         Catch(Exception ex){
             System.debug('Exception::::'+ex.getStackTraceString());
-            return null; 
+            return null;
         }
         return true;
     }
