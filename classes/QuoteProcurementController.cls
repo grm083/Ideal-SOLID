@@ -262,21 +262,13 @@ public class QuoteProcurementController {
   	 * @param		   material : String
   	 * @return		  List<Map<String, String>>
   	 * @story		  SDT-7527
-  	 * @Description   It passes material grade type valuesand label for picklist 
+  	 * @Description   It passes material grade type valuesand label for picklist
   	 */
+    // Refactored to use QuoteProcurementUIService
     @AuraEnabled(cacheable=true)
-  
-     public static List<Map<String, String>> getMaterialTypes(String material) {
-       List<Map<String, String>> grades = new List<Map<String, String>>();
-         grades.add(new Map<String,String>{'label'=>'--None--','value'=>''});
-       for (Material_type_Material_Grade_mapping__mdt m : [SELECT Material_Type__c,Material_Grade__c,Material_Grade_Code__c  FROM Material_type_Material_Grade_mapping__mdt WHERE Material_Type__c = :material]) {
-           Map<String, String> grade = new Map<String, String>();
-           grade.put('label', m.Material_Grade__c);
-           grade.put('value', m.Material_Grade__c);
-           grades.add(grade);
-       }
-       return grades;
-   }
+    public static List<Map<String, String>> getMaterialTypes(String material) {
+        return QuoteProcurementUIService.getMaterialTypes(material);
+    }
 
 //sdt-31000
        
@@ -541,9 +533,16 @@ public class QuoteProcurementController {
     }*/
     //SDT-29645 - End
     //SDT-29645 - Start
+    // Refactored to use QuoteProcurementMASService
     @AuraEnabled
     public static List<AggregateResult> returnUniqueMASDetails(Id quoteLineId) {
-        
+        return QuoteProcurementMASService.getMASDetailsForQuoteLine(quoteLineId);
+    }
+    /*
+    // ORIGINAL METHOD - REFACTORED ABOVE
+    @AuraEnabled
+    public static List<AggregateResult> returnUniqueMASDetails(Id quoteLineId) {
+
         SBQQ__QuoteLine__c parentLine = null;
         boolean newServiceCase = false;
         string lineOfBusiness;
@@ -568,19 +567,19 @@ public class QuoteProcurementController {
             else if(parentLine.SBQQ__Product__r.Family == Constant_Util.COMMERCIAL){
                 lineOfBusiness = 'C';
             }
-            
+
             if(parentLine.Vendor__r.Vendor_Business_Unit__c != null )
                 {
                     businessUnit = parentLine.Vendor__r.Vendor_Business_Unit__c;
                 }
-            
-            
+
+
             if(parentLine.Vendor__r.FacilityCode__c != null){
                 MASDetails = [SELECT MAS_Library__c, MAS_Company_Code__c, MAS_Line_of_Business__c, Bypass_Price_Review__c
                       FROM MAS_Setup_Detail__c
-                      Where (Facility_Id__c =:parentLine.Vendor__r.FacilityCode__c and 
-                            MAS_Line_of_Business__c =:lineOfBusiness and 
-                            Valid_For_New_Service__c =:newServiceCase) 
+                      Where (Facility_Id__c =:parentLine.Vendor__r.FacilityCode__c and
+                            MAS_Line_of_Business__c =:lineOfBusiness and
+                            Valid_For_New_Service__c =:newServiceCase)
                       GROUP BY MAS_Library__c, MAS_Company_Code__c, MAS_Line_of_Business__c, Bypass_Price_Review__c];
             }
 
@@ -602,58 +601,38 @@ public class QuoteProcurementController {
     
     @AuraEnabled
     public static Boolean updateVendorDetails(HeaderWrapper headerRecord) {
-        
-        Boolean success;
-        
-        List<SBQQ__QuoteLine__c> QuoteLines = [SELECT Id, Vendor__c,sCode__c
-                                               FROM SBQQ__QuoteLine__c
-                                               WHERE Id =: headerRecord.parentId OR SBQQ__RequiredBy__c =: headerRecord.parentId OR
-                                               SBQQ__RequiredBy__r.SBQQ__RequiredBy__c =: headerRecord.parentId];
-        
+        // Refactored to use QuoteProcurementDMLService
         system.debug('Selected s-code is: ' + headerRecord.sCode);
         system.debug('Selected vendor is: ' + headerRecord.vendorName);
-        
-        for (SBQQ__QuoteLine__c QuoteLine: QuoteLines) {
-            QuoteLine.Vendor__c = headerRecord.vendorId;
-            QuoteLine.sCode__c = headerRecord.sCode;
+
+        QuoteProcurementDMLService.DMLResult result =
+            QuoteProcurementDMLService.getInstance().updateVendorDetails(
+                headerRecord.parentId,
+                headerRecord.vendorId,
+                headerRecord.sCode
+            );
+
+        if (!result.isSuccess) {
+            system.debug(result.message);
         }
-        
-        try{
-            update QuoteLines;
-            success = true;
-        } catch (exception e) {
-            system.debug(e.getMessage());
-            success = false;
-        }
-        
-        return success;
-        
+
+        return result.isSuccess;
     }
     
     @AuraEnabled
     public static Boolean updateCompanyCategories(HeaderWrapper headerRecord) {
-        
-        Boolean success;
-        
-        List<SBQQ__QuoteLine__c> QuoteLines = [SELECT Id, CompanyCategoryCode__c
-                                               FROM SBQQ__QuoteLine__c
-                                               WHERE Id =: headerRecord.parentId OR SBQQ__RequiredBy__c =: headerRecord.parentId OR
-                                               SBQQ__RequiredBy__r.SBQQ__RequiredBy__c =: headerRecord.parentId];
-        
-        for (SBQQ__QuoteLine__c QuoteLine: QuoteLines) {
-            QuoteLine.CompanyCategoryCode__c = headerRecord.companyCategory;
+        // Refactored to use QuoteProcurementDMLService
+        QuoteProcurementDMLService.DMLResult result =
+            QuoteProcurementDMLService.getInstance().updateCompanyCategories(
+                headerRecord.parentId,
+                headerRecord.companyCategory
+            );
+
+        if (!result.isSuccess) {
+            system.debug(result.message);
         }
-        
-        try{
-            update QuoteLines;
-            success = true;
-        } catch (exception e) {
-            system.debug(e.getMessage());
-            success = false;
-        }
-        
-        return success;
-        
+
+        return result.isSuccess;
     }
     
     //The Lightning Component will return the HeaderWrapper portion of the total
@@ -661,65 +640,11 @@ public class QuoteProcurementController {
     //This will update every quote line with the same MAS details for consistency.
     @AuraEnabled
     public static MASResponseWrapper writeMASDetails(HeaderWrapper headerRecord) {
-        
-        Boolean success;
-        
-        List<SBQQ__QuoteLine__c> QuoteHeaders = [SELECT Id, MASLibrary__c, MASCompany__c, MASAccount__c, MASCustomerUniqueId__c, MASServiceLine__c, 
-                                                 MASBox__c, BypassPriceReview__c, BypassMASServiceChange__c, SetupComment__c, DoNotCreateMASTicket__c,
-                                                 DoNotCreateTaskGridTickets__c,//added DoNotCreateTaskGridTickets__c for SDT 29392
-                                                 // Commented 'SetupComment__c' field reference for story SDT-25787 to change the DataType from 'Text(255)' to 'Long Text(1500)' Will uncomment after DataType is changed
-                                                 //MASBox__c, BypassPriceReview__c, BypassMASServiceChange__c, DoNotCreateMASTicket__c,
-                                                 VCRCode__c
-                                                 FROM SBQQ__QuoteLine__c
-                                                 WHERE Id =: headerRecord.parentId OR SBQQ__RequiredBy__c =: headerRecord.parentId OR
-                                                 SBQQ__RequiredBy__r.SBQQ__RequiredBy__c =: headerRecord.parentId];
-        
-        for (SBQQ__QuoteLine__c QuoteHeader: QuoteHeaders ) {
-            if(!String.isBlank(headerRecord.MAS.MASLibrary))
-                QuoteHeader.MASLibrary__c = headerRecord.MAS.MASLibrary;
-            if(!String.isBlank(headerRecord.MAS.MASCompany))
-                QuoteHeader.MASCompany__c = headerRecord.MAS.MASCompany;
-            if(headerRecord.MAS.MASAccount != null)
-                QuoteHeader.MASAccount__c = headerRecord.MAS.MASAccount;
-            if(headerRecord.MAS.MASUniqueId != null)
-                QuoteHeader.MASCustomerUniqueId__c = headerRecord.MAS.MASUniqueId;
-            if(headerRecord.MAS.MASServiceLine != null)
-                QuoteHeader.MASServiceLine__c = headerRecord.MAS.MASServiceLine;
-            if(!String.isBlank(headerRecord.MAS.MASBox))
-                QuoteHeader.MASBox__c = headerRecord.MAS.MASBox;
-            // Commented 'SetupComment__c' field reference for story SDT-25787 to change the DataType from 'Text(255)' to 'Long Text(1500)' Will uncomment after DataType is changed
-            if(!String.isBlank(headerRecord.MAS.MASComment))
-                QuoteHeader.SetupComment__c = headerRecord.MAS.MASComment;
-            QuoteHeader.BypassPriceReview__c = headerRecord.MAS.MASBypassPrice;
-            QuoteHeader.DoNotCreateMASTicket__c = headerRecord.MAS.MASDoNotCreate;
-            //SDT 29392 start
-            QuoteHeader.DoNotCreateTaskGridTickets__c = headerRecord.MAS.DoNotCreateTaskGridTickets;
-            //SDT 29392 end
-            if(!String.isBlank(headerRecord.MAS.VCRCode))
-                QuoteHeader.VCRCode__c = headerRecord.MAS.VCRCode;
-        }
-        
-        MASResponseWrapper response = new MASResponseWrapper();
-        SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE, QuoteHeaders);
-        try{
-            //update QuoteHeaders;
-            if(decision.getRemovedFields().size() > 0){
-                response.ErrorMessage='You do not have access to MAS fields';
-                response.IsSuccess = false;
-                return response;
-            }
-            else{
-                update decision.getRecords();
-                response.IsSuccess = true;
-            }
-        } catch (exception e) {
-            system.debug(e.getMessage());
-            response.IsSuccess = false;
-            response.ErrorMessage= e.getMessage();
-        }
-        
-        return response;
-        
+        // Refactored to use QuoteProcurementMASService
+        return QuoteProcurementMASService.updateMASDetails(
+            headerRecord.parentId,
+            headerRecord.MAS
+        );
     }
 /*
   	 * @Name          getBypassPriceReview
@@ -734,49 +659,8 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static boolean bypassPriceReview(id quoteLineId, string masLibrary){
-        boolean byPassReviewFlag;
-        List<SBQQ__QuoteLine__c> quoteLineList = [SELECT Id,SBQQ__RequiredBy__c,BypassPriceReview__c,sCode__c,Vendor__r.Parent_Vendor_ID__c,SBQQ__Quote__r.Name, Name,
-                                                 (SELECT id, AAV_APIRequestOutput__c from Asset_Availabilities__r) 
-                                                  FROM SBQQ__QuoteLine__c
-                                                  WHERE Id =:quoteLineId ];
-
-          for(SBQQ__QuoteLine__c quoteLine : quoteLineList)
-          {
-            if(quoteLine.SBQQ__RequiredBy__c == null)
-            {
-                byPassReviewFlag = quoteLine.BypassPriceReview__c;
-                for(AAV_Asset_Availability__c availabilityOutput : quoteLine.Asset_Availabilities__r)
-                {
-                    if(availabilityOutput!=null){
-                        AvailabilityAPIJsonDeserialize availabilityData ;
-                        try{
-                        availabilityData = AvailabilityAPIJsonDeserialize.parse(availabilityOutput.AAV_APIRequestOutput__c);
-                            if(availabilityData.data != null && availabilityData.data.suppliers != null && availabilityData.data.suppliers.size() > 0){
-                        AvailabilityAPIJsonDeserialize.cls_suppliers supplier = availabilityData.data.suppliers[0];
-                        if(supplier!=null){
-                            if(supplier.contractType!=null ){
-                             
-                            return byPassReviewFlag = PricingRequestSTPProcess.getBypassPriceReview( supplier.contractType, quoteline.Vendor__r.Parent_Vendor_ID__c, masLibrary );
-                            }
-                        }
-                            }
-                        }catch(Exception ex){
-                            
-                            String appName = 'QuoteProcurementController By Pass Review Availiability parser failed for Quote '+ quoteLine.SBQQ__Quote__r.Name + ' QuoteLine '+ quoteLine.Name;
-                            STPExceptionUtil.setStepByStepExceptionObj('bypassPriceReview', appName,ex.getMessage());
-                        }
-                        
-                        
-                        
-                    }
-                   
-                }
-                if(quoteline.sCode__c == 'FRCH'){
-                        return byPassReviewFlag = PricingRequestSTPProcess.getBypassPriceReview( 'WM Franchise',  quoteline.Vendor__r.Parent_Vendor_ID__c, masLibrary );
-                    }
-            }
-        }
-        return byPassReviewFlag;
+        // Refactored to use QuoteProcurementMASService
+        return QuoteProcurementMASService.shouldBypassPriceReview(quoteLineId, masLibrary);
     }
     
     //STARTING HERE - Utility classes that are utilized to construct the wrapper class
@@ -872,27 +756,13 @@ public class QuoteProcurementController {
     
     @AuraEnabled
     public static List<Quote_Order__c> getOrders (Id quoteLineId) {
-        
-        List<Quote_Order__c> quoteOrders = new List<Quote_Order__c>();
-        
-        quoteOrders = [SELECT Id, Service_Date__c, Service_Type__c, Instructions__c, Acorn_Instructions__c,
-                      Quote_Line__r.Location_Position_Name__r.Container_Position__c, Quote_Line__r.Location_Position_Name__r.AlternateStreet__c
-                      FROM Quote_Order__c
-                      WHERE Quote_Line__c =:quoteLineId];
-        
-        return quoteOrders;
-        
+        // Refactored to use QuoteProcurementOrderService
+        return QuoteProcurementOrderService.getQuoteOrders(quoteLineId);
     }
     @AuraEnabled
     public static string deleteQuoteOrders(List<Quote_Order__c> quoteOrders){
-        string fResult = 'SUCCESS';
-        try{
-            delete quoteOrders;
-        }
-        catch(exception ex){
-            fResult = ex.getMessage();
-        }
-        return fResult;
+        // Refactored to use QuoteProcurementDMLService
+        return QuoteProcurementOrderService.deleteQuoteOrders(quoteOrders);
     }
     
     //SDT-20085 - Yeshas K
@@ -1198,64 +1068,20 @@ public class QuoteProcurementController {
     //accommodate this request.
    @AuraEnabled
     public static List<Account> searchVendors(String searchString) {
-        
-        List<Account> vendorList = new List<Account>();
-        
-        List<List<SObject>> searchList = [FIND :searchString
-                                          IN ALL FIELDS
-                                          RETURNING Account(Id, Name, AccountNumber, Vendor_Business_Unit__c, ShippingState, ShippingCity,FacilityCode__c, Parent_Vendor_Id__c, Status__c 
-                                                            WHERE RecordType.Name = 'Vendor')];
-        
-        vendorList = (Account[])searchList[0];
-        
-        return vendorList;
-        
+        // Refactored to use QuoteProcurementSearchService
+        return QuoteProcurementSearchService.searchVendors(searchString);
     }
     
     @AuraEnabled
     public static List<Account_Position__c> allPositions(QuoteProcurementController.HeaderWrapper header) {
-        
-        List<Account_Position__c> ALP = new List<Account_Position__c>();
-        List<Account_Position__c> ALPDefault = new List<Account_Position__c>();
-        List<Account_Position__c> ALPOther = new List<Account_Position__c>();
-        
-        ALPDefault = [SELECT Id, Name, Container_Position__c, AlternateStreet__c,
-               AlternateCity__c, AlternateState__c, AlternatePostalCode__c
-               FROM Account_Position__c
-               WHERE AccountId__c =: header.locationId and Container_Position__c = 'Default'];
-
-        ALPOther = [SELECT Id, Name, Container_Position__c, AlternateStreet__c,
-               AlternateCity__c, AlternateState__c, AlternatePostalCode__c
-               FROM Account_Position__c
-               WHERE AccountId__c =: header.locationId and Container_Position__c != 'Default' ORDER BY Container_Position__c ASC];
-        
-        ALP.addAll(ALPDefault);
-        ALP.addAll(ALPOther);
-
-        return ALP;
-        
+        // Refactored to use QuoteProcurementSearchService
+        return QuoteProcurementSearchService.getAllPositions(header.locationId);
     }
     
     @AuraEnabled
     public static List<Account_Position__c> searchPositions(QuoteProcurementController.HeaderWrapper header, String searchString) {
-        
-        List<Account_Position__c> ALP = new List<Account_Position__c>();
-        
-        if(!String.isBlank(searchString))
-        {
-            List<List<SObject>> searchList = [FIND :searchString
-                                            IN ALL FIELDS
-                                            RETURNING Account_Position__c(Id, Name, Container_Position__c, AlternateStreet__c,
-                                                                        AlternateCity__c, AlternateState__c, AlternatePostalCode__c
-                                                                        WHERE AccountId__c =: header.locationId ORDER BY Container_Position__c ASC)];
-            ALP = (Account_Position__c[])searchList[0];
-        }
-        else
-        {
-            ALP = allPositions(header);
-        }
-        return ALP;
-        
+        // Refactored to use QuoteProcurementSearchService
+        return QuoteProcurementSearchService.searchPositions(header.locationId, searchString);
     }
     
     /*@AuraEnabled
@@ -1323,65 +1149,14 @@ public class QuoteProcurementController {
     @AuraEnabled
     public static String storeOnsite(QuoteProcurementController.HeaderWrapper header, String positionName)
     {
-        //System.debug('In storeOnsite');
-        String result;
-        if(validatePosition(header.locationId, positionName))
-        {
-            Account_Position__c accPosition = new Account_Position__c();
-            accPosition.AccountId__c = header.locationId;
-            accPosition.Container_Position__c = positionName;
-
-            insert accPosition;
-
-            updateALPOnQuoteLine(header, accPosition.Id, positionName, false);
-
-            result = 'Success';
-        }
-        else
-        {
-            result = 'Duplicate';
-        }
-
-        return result;
+        // Refactored to use QuoteProcurementPositionService
+        return QuoteProcurementPositionService.createOnsitePosition(header.locationId, positionName);
     }
     @AuraEnabled
     public static String storeOffsite(QuoteProcurementController.HeaderWrapper header, String OffsitePosition , string street, string city,string state ,string postal)
     {
-        //System.debug('In storeOffsite');
-        String result;
-        
-        Account_Position__c accPosition = new Account_Position__c();
-        accPosition.AccountId__c = header.locationId;
-        accPosition.AlternateStreet__c	 = !String.isBlank(street) ? street : Constant_Util.EMPTY_STRING;
-        accPosition.AlternateCity__c = !String.isBlank(city) ? city : Constant_Util.EMPTY_STRING;
-        accPosition.AlternateState__c = !String.isBlank(state) ? state : Constant_Util.EMPTY_STRING;
-        accPosition.AlternatePostalCode__c = !String.isBlank(postal) ? postal : Constant_Util.EMPTY_STRING;
-
-        accPosition.Container_Position__c = Constant_Util.OFFSITE + Constant_Util.COLON + Constant_Util.BLANKSPACE + OffsitePosition;
-        if(!String.isBlank(street) || !String.isBlank(city) || !String.isBlank(state) || !String.isBlank(postal))
-        {
-            accPosition.Container_Position__c += 
-            ' at ' + 
-            accPosition.AlternateStreet__c + Constant_Util.BLANKSPACE + 
-            accPosition.AlternateCity__c + Constant_Util.BLANKSPACE + 
-            accPosition.AlternateState__c + Constant_Util.BLANKSPACE + 
-            accPosition.AlternatePostalCode__c;
-        }
-        
-
-        if(validatePosition(header.locationId, accPosition.Container_Position__c))
-        {
-            insert accPosition;
-
-            updateALPOnQuoteLine(header, accPosition.Id, accPosition.Container_Position__c, true);
-            
-            result = 'Success';
-        }
-        else
-        {
-            result = 'Duplicate';
-        }
-        return result;
+        // Refactored to use QuoteProcurementPositionService
+        return QuoteProcurementPositionService.createOffsitePosition(header.locationId, OffsitePosition, street, city, state, postal);
     }
 
     private static Boolean validatePosition(Id locationId, String containerPosition)
@@ -1410,50 +1185,15 @@ public class QuoteProcurementController {
     @AuraEnabled
     public static List<SBQQ__QuoteLine__c> showLocationPosition(Id quoteLineId)
     {
-        String result;
-        List<SBQQ__QuoteLine__c> quoteLines = new List<SBQQ__QuoteLine__c>();    
-        quoteLines = [SELECT Id,LocationPositionName__c,Location_Position_Name__c,Location_Position_Name__r.Name, Location_Position_Name__r.Container_Position__c   FROM SBQQ__QuoteLine__c
-                      WHERE id =: quoteLineId order by createddate desc];
-        
-        // if(!quoteLines.isEmpty() && quoteLines.size()>0){ 
-        //     for (SBQQ__QuoteLine__c ql : quoteLines){ 
-        //         if(ql.Location_Position_Name__c!=null)
-        //         {
-        //             result = ql.Location_Position_Name__c;
-        //         }}}
-        return quoteLines;
+        // Refactored to use QuoteProcurementPositionService
+        return QuoteProcurementPositionService.getQuoteLinePositions(quoteLineId);
     }
    
     @AuraEnabled
     public static void updateALPOnQuoteLine(QuoteProcurementController.HeaderWrapper header, Id ALPId, String setupComments, Boolean isOffsite)
     {
-        List<SBQQ__QuoteLine__c> upsertQLLIst = new List<SBQQ__QuoteLine__c>();
-        //Changes for SDT-29968
-        List<SBQQ__QuoteLine__c> detailQuoteLines = QuoteLineServices.getQuoteLinesForPosition(header.parentId);
-        if(detailQuoteLines.size() > 0 && !detailQuoteLines.isEmpty())
-        {
-            for(SBQQ__QuoteLine__c qLine : detailQuoteLines)
-            {
-                SBQQ__QuoteLine__c sql = new SBQQ__QuoteLine__c();
-                sql.Id = qLine.Id;
-                sql.Location_Position_Name__c = ALPId;
-                sql.LocationPositionName__c = setupComments;
-                // Commented 'SetupComment__c' field reference for story SDT-25787 to change the DataType from 'Text(255)' to 'Long Text(1500)' Will uncomment after DataType is changed
-                if(isOffsite){
-                    sql.SetupComment__c = setupComments;
-                }
-                upsertQLLIst.add(sql);
-            }
-        }
-
-        if(upsertQLLIst.size() > 0 && !upsertQLLIst.isEmpty()){
-            System.debug('upsert list -- ' + upsertQLLIst);
-            try{
-                update upsertQLLIst;
-            }catch(Exception e){
-                System.debug('Exception caught -- ' + e.getMessage());
-            }
-        }
+        // Refactored to use QuoteProcurementDMLService
+        QuoteProcurementDMLService.getInstance().updatePositionOnQuoteLines(header.parentId, ALPId, setupComments, isOffsite);
     }
 
     @AuraEnabled
@@ -1520,6 +1260,7 @@ public class QuoteProcurementController {
     }
     @AuraEnabled
     public static Map<String, String> getSizes(Id productId, Boolean returnAll) {
+        // Delegates to QuoteFavoritesController
         return QuoteFavoritesController.getSizes(productId, returnAll);
     }
     // Added for SDT-20583
@@ -1777,151 +1518,41 @@ public class QuoteProcurementController {
     //Added for SDT-20939
     @AuraEnabled
     public static List<String> getPicklistSchema(){
-        List<String> options = new List<String>();
-        Schema.DescribeFieldResult fieldResult = Quote_Order__c.Service_Type__c.getDescribe();
-        List<Schema.PicklistEntry> pList = fieldResult.getPicklistValues();
-        for (Schema.PicklistEntry p: pList) {
-            options.add(p.getValue());
-		}
-        return options;
+        // Refactored to use QuoteProcurementUIService
+        return QuoteProcurementUIService.getPicklistSchema();
     }
 
     //Added for story SDT-21065
      @AuraEnabled
-    public static MASWrapper getMasDetails(Id quoteLineId) { //
-        MASWrapper masWrapper = new MASWrapper();
-        List<SBQQ__QuoteLine__c> quoteLines = getQuoteLineMASDetails(quoteLineId);
-        //system.debug('getMasDetails quoteLines'+ quoteLines);
-        if(!quoteLines.isEmpty() && quoteLines.size()>0)
-        {
-            SBQQ__QuoteLine__c parentLine = quoteLines[0];
-            masWrapper.MASLibrary = parentLine.MASLibrary__c;
-            masWrapper.MASCompany = parentLine.MASCompany__c;
-            masWrapper.MASAccount = parentLine.MASAccount__c;
-            masWrapper.MASUniqueId = parentLine.MASCustomerUniqueId__c;
-            masWrapper.MASServiceLine = parentLine.MASServiceLine__c;
-            masWrapper.MASBox = parentLine.MASBox__c;
-            // Commented 'SetupComment__c' field reference for story SDT-25787 to change the DataType from 'Text(255)' to 'Long Text(1500)' Will uncomment after DataType is changed
-            masWrapper.MASComment = parentLine.SetupComment__c;
-            masWrapper.MASBypassPrice = parentLine.BypassPriceReview__c;
-            masWrapper.MASDoNotCreate = parentLine.DoNotCreateMASTicket__c;
-            //SDT 29392 start
-            masWrapper.DoNotCreateTaskGridTickets = parentLine.DoNotCreateTaskGridTickets__c;
-            
-            // DoNotCreateTaskGridTicket CheckBox will be visible for all other case record type except New Service Because in New service case, Acorn will consider this as True
-            if(parentLine.SBQQ__Quote__r.SBQQ__Opportunity2__r.Case__r.RecordType.Name != Constant_Util.New_Service_Case)
-                masWrapper.IsDoNotCreateTaskGridTicketVisible = true;
-            
-                //SDT 29392 end
-            // Changes for SDT-25787
-            masWrapper.MASCommentSize = Schema.SObjectType.SBQQ__QuoteLine__c.fields.SetupComment__c.getLength();
-            //masWrapper.VCRCode = quoteLines[0].VCRCode__c;
-        }
-        return masWrapper;
+    public static MASWrapper getMasDetails(Id quoteLineId) {
+        // Refactored to use QuoteProcurementMASService
+        return QuoteProcurementMASService.getMASWrapper(quoteLineId);
     }
     //Story 21060
     //Fetch the data from parent quoteline to store on Financial detail component.
     @AuraEnabled
     public static FinancialDetailWrapper getQLFinancialDetail(Id quoteLineId)
     {
-        FinancialDetailWrapper fdWrapper = new FinancialDetailWrapper();
-        try
-        {
-        List <SBQQ__QuoteLine__c> qlData = [SELECT Id, SBQQ__Quote__c, CompanyCategoryCode__c, ClientGLAccount__c, ClientCostCenter__c, SBQQ__Quote__r.Quote_Only__c
-                                    FROM  SBQQ__QuoteLine__c
-                                    WHERE Id =:  quoteLineId LIMIT 1];
-        if(!qlData.isEmpty())
-        {
-            fdWrapper.quoteOnly = qlData[0].SBQQ__Quote__r.Quote_Only__c;
-            fdWrapper.companyCategory = qlData[0].CompanyCategoryCode__c;
-            fdWrapper.clientGLNo = qlData[0].ClientGLAccount__c;
-            fdWrapper.customerCostCenter = qlData[0].ClientCostCenter__c;
-        }
-        }
-        catch (exception ex) {
-            system.debug('exception from getQLFinancialDetail call '+ ex.getMessage());
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),UTIL_ErrorConstants.ERROR_APPLICATION,LoggingLevel.ERROR);
-        }
-
-        return fdWrapper;
+        // Refactored to use QuoteProcurementUIService
+        return QuoteProcurementUIService.getFinancialDetails(quoteLineId);
     }
     //Story 21060
     //Save the data fetched from Financial detail component to save on respective quotelines.
     @AuraEnabled
     public static string updateFinancialDetail(Id quoteLineId, Boolean isQuoteOnly, String companyCategory,String companyCategoryName, String generalLedgerNo, String customerCostCenter)
     {
-        //List<SBQQ__QuoteLine__c> quoteLinelst = new List<SBQQ__QuoteLine__c>();
-        SBQQ__QuoteLine__c qlHdr = new SBQQ__QuoteLine__c();
-        SBQQ__Quote__c qRecord = new SBQQ__Quote__c();
-        List<sObject> quoteUpdate = new list<sObject>();
-        system.debug('isQuoteOnly--->'+ isQuoteOnly);
-        String returnMessage = 'Failed';
-        try
-        {
-        List<SBQQ__QuoteLine__c> qlRecords = [SELECT Id, SBQQ__Quote__c, CompanyCategoryCode__c,CompanyCategoryName__c, ClientGLAccount__c, ClientCostCenter__c
-                                    FROM  SBQQ__QuoteLine__c
-                                    WHERE SBQQ__RequiredBy__c =:  quoteLineId];
-        if(!qlRecords.isEmpty())
-        {
-            for(SBQQ__QuoteLine__c ql : qlRecords)
-            {
-                if(String.isNotBlank(companyCategoryName) && String.isNotBlank(companyCategory)){
-                    ql.CompanyCategoryCode__c = companyCategory;
-                    ql.CompanyCategoryName__c = companyCategoryName;
-                }
-		ql.ClientGLAccount__c = generalLedgerNo;
-                ql.ClientCostCenter__c = customerCostCenter;
-
-                quoteUpdate.add(ql);
-            }
-
-            qlHdr.Id = quoteLineId;
-            if(String.isNotBlank(companyCategoryName) && String.isNotBlank(companyCategory)){
-                qlHdr.CompanyCategoryCode__c = companyCategory;
-                qlHdr.CompanyCategoryName__c = companyCategoryName;
-            }
-            qlHdr.ClientGLAccount__c = generalLedgerNo;
-            qlHdr.ClientCostCenter__c = customerCostCenter;
-
-            quoteUpdate.add(qlHdr);
-
-            //update quoteLinelst;
-
-            qRecord.Id = qlRecords[0].SBQQ__Quote__c;
-            qRecord.Quote_Only__c = isQuoteOnly;
-            quoteUpdate.add(qRecord);
-
-            update quoteUpdate;
-
-            returnMessage = 'Success';
-        }                            
-    }
-    catch(exception ex){
-        system.debug('exception from updateFinancialDetail '+ex.getMessage());
-        UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),UTIL_ErrorConstants.ERROR_APPLICATION,LoggingLevel.ERROR);
-    }
-
-        return returnMessage;
+        // Refactored to use QuoteProcurementDMLService
+        QuoteProcurementDMLService.DMLResult result = QuoteProcurementDMLService.getInstance()
+            .updateFinancialDetails(quoteLineId, isQuoteOnly, companyCategory,
+                                   companyCategoryName, generalLedgerNo, customerCostCenter);
+        return result.success ? 'Success' : 'Failed';
     }
 	
     //Displays active projects
     @AuraEnabled
     public static List<Project_Code__c> getActiveProjects(Id quoteId, String searchString) {
-        List<SBQQ__Quote__c> currentQuote = [SELECT Id, Project__c,Project__r.Name, SBQQ__Account__c, SBQQ__Account__r.ParentId
-                                            FROM SBQQ__Quote__c
-                                            WHERE Id =: quoteId
-                                            LIMIT 1];
-        
-        List<List<SObject>> projectSOSL = [FIND :searchString
-                                          IN NAME FIELDS
-                                          RETURNING Project_Code__c(Id, Name, Project_Manager__r.Name, Program_Manager__r.Name, Effective_Date__c,
-                                          End_Date__c, Duration__c, Company_Category__c 
-                                          WHERE Client_Account__c =: currentQuote[0].SBQQ__Account__r.ParentId
-                                          ORDER BY Project_Manager__r.Name ASC, Effective_Date__c DESC)];
-        
-        List<Project_Code__c> activeProjects = projectSOSL[0];
-        
-        return activeProjects;
+        // Refactored to use QuoteProcurementSearchService
+        return QuoteProcurementSearchService.searchActiveProjects(quoteId, searchString);
     }
 
     @AuraEnabled
@@ -1953,93 +1584,51 @@ public class QuoteProcurementController {
         return limitingRule;
     }
     @AuraEnabled
+    // Refactored to use QuoteProcurementUIService
     public static SBQQ__Quote__c getQuoteStatusDetails(Id quoteId) {
-        //SDT - 30089 - added 2 fields - Special_Handling__c, Special_Handling_Reason__c
-        //TCS-pkulkarn-SDT-41184-Added SBQQ__Type__c to the SOQL
-        SBQQ__Quote__c q = [SELECT Id, SBQQ__Status__c, Assigned_To__r.Name, Quote_Only__c,SBQQ__Opportunity2__r.Case__r.RecordType.Name,// SDT-29101 : Added recordType Name for Case 
-                            SBQQ__PrimaryContact__r.Name, SBQQ__PrimaryContact__r.Phone, SBQQ__Opportunity2__r.Case__c, 
-                            Project__c,Project__r.Name, Project_Services_Request__c, QuoteProcuredStatus__c, Special_Handling__c, Special_Handling_Reason__c, Special_Handling_Reason_Details__c, SBQQ__Type__c,
-                            SBQQ__Opportunity2__r.Case__r.Vendor_Service_Id__c,SBQQ__Opportunity2__r.Case__r.Chargeable__c //SDT-42651  //SDT-41538
-                            FROM SBQQ__Quote__c
-                            WHERE Id =: quoteId
-                            LIMIT 1];
-        
-        return q;
+        return QuoteProcurementUIService.getQuoteStatusDetails(quoteId);
     }
     //SDT-30072 : Check Asset Availability Permission
+    // Refactored to use QuoteProcurementUIService
     @AuraEnabled
     public static Boolean hasAssetAvailabilityPermission(){
-        return FeatureManagement.checkPermission(Constant_Util.ASSET_AVAILABILITY_CUSTOM_PERMISSION); 
+        return QuoteProcurementUIService.hasAssetAvailabilityPermission();
     }
     // - 41624
+    // Refactored to use QuoteProcurementUIService
     @AuraEnabled
     public static Boolean hasAssetAvailabilityPermissionWithHaulAway(Id caseId){
-        Boolean isHaul = false;
-        isHaul = HaulAwayService.getIsHaulAwayService(caseId);
-        return FeatureManagement.checkPermission(Constant_Util.ASSET_AVAILABILITY_CUSTOM_PERMISSION) && !isHaul; 
+        return QuoteProcurementUIService.hasAssetAvailabilityPermissionWithHaulAway(caseId);
     } // - 41624
     
     //SDT-29101 : get Asset Availability response
     @AuraEnabled
     public static AAV_Asset_Availability__c getAvailabilityResponse(String quoteLineId){
-        return AAV_APIIntegration.getAvailabilityResponse(quoteLineId);
+        // Refactored to use QuoteProcurementIntegrationService
+        return QuoteProcurementIntegrationService.getAvailabilityResponse(quoteLineId);
     }
     //SDT-30864 - Asset Availability: get Delivery Override Reasons Picklist Values
+    // Refactored to use QuoteProcurementUIService
     @AuraEnabled
     public static List<String> getDeliveryOverrideReasons() {
-        List<String> deliveryOverrideReasons = new List<String>();
-        for (Schema.PicklistEntry pick : SBQQ__QuoteLine__c.AAV_Delivery_Override_Reason__c.getDescribe().getPicklistValues()) 
-        {
-            if(pick.isActive())
-                deliveryOverrideReasons.add(pick.getValue());
-        }
-        return deliveryOverrideReasons;
+        return QuoteProcurementUIService.getDeliveryOverrideReasons();
     }
     //SDT-30963 : update new Equipement size and related fields
     @AuraEnabled
     public static Boolean updateAlternateProduct(HeaderWrapper productWrapper) {
-        try{
-            if(productWrapper.parentId!=null){
-                List<SBQQ__QuoteLine__c> qlList = QuoteLineServices.getQuoteLinesByParentId(productWrapper.parentId);
-                for(SBQQ__QuoteLine__c ql : qlList) {
-                    ql.Equipment_Size__c = productWrapper.equipmentSize;
-                    ql.SLA_Override_Reason__c ='';
-                    ql.SLA_Override_Comment__c ='';
-                    ql.SBQQ__StartDate__c = null;
-                    ql.AAV_Delivery_Override_Reason__c='';//SDT-30864
-                    ql.AAV_Delivery_Override_Comment__c='';//SDT-30864
-                }    
-                update qlList;
-                return true;
-            }
-        }
-        catch(exception e){
-            system.debug('updateAlternateProduct Error->'+e.getMessage());
-            throw new AuraHandledException(e.getMessage());
-        }
-        return false;
+        // Refactored to use QuoteProcurementIntegrationService
+        return QuoteProcurementIntegrationService.updateAlternateProduct(productWrapper);
     }
     @AuraEnabled
     public static SBQQ__Quote__c getQuoteForOrders(Id quoteId) {
-        SBQQ__Quote__c targetQuote = new SBQQ__Quote__c();
-
-        targetQuote = [SELECT Id, Name, Project__c, Project_Services_Request__c
-                        FROM SBQQ__Quote__c
-                        WHERE Id =: quoteId];
-
-        return targetQuote;
+        // Refactored to use QuoteProcurementUIService
+        return QuoteProcurementUIService.getQuoteForOrders(quoteId);
     }
     
     @AuraEnabled
     public static Boolean updateQuoteForOrders(SBQQ__Quote__c updatedQuote) {
-        
-        try {
-            update updatedQuote;
-            return true;
-        } catch (exception e) {
-            return false;
-        }
-
+        // Refactored to use QuoteProcurementUIService
+        return QuoteProcurementUIService.updateQuoteForOrders(updatedQuote);
     }
 
     public static List<SBQQ__ErrorCondition__c> getProductRules(Id productId){
@@ -2113,6 +1702,11 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static SBQQ__QuoteLine__c getQuoteLineForOrders(Id qlid) {
+        // NOTE: QuoteProcurementContextGetter.getQuoteLineForOrders exists but queries different fields
+        // This method queries order-specific fields (Profile_Number__c, Landfill_Tickets__c, etc.)
+        // Service method queries general fields (SBQQ__ProductName__c, Schedule_Frequency__c, etc.)
+        // Keep as-is until a dedicated service method is created for these specific fields
+
         SBQQ__QuoteLine__c targetQuoteLine = new SBQQ__QuoteLine__c();
 
         targetQuoteLine = [SELECT Id, Profile_Number__c, Landfill_Tickets__c, Special_Disposal_Description__c,
@@ -2143,31 +1737,8 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static qLineWrapper getQuoteLineForOrdersWrapper(Id qlid) {
-        SBQQ__QuoteLine__c targetQuoteLine = new SBQQ__QuoteLine__c();
-
-        targetQuoteLine = [SELECT Id, Profile_Number__c, Landfill_Tickets__c, Special_Disposal_Description__c,
-                            Service_Start_Time__c, Service_End_Time__c, Gate_Code__c, Certificate_of_Destruction__c, Certificate_of_Disposal__c,
-                           Restriction_Details__c, Location_Position_Name__c, SLA_Override_Comment__c, SLA_Override_Reason__c,Equipment_Size__c,
-                           AssetId__r.Equipment_Size__c,SBQQ__Quantity__c,AssetId__r.Quantity__c //SDT-29381 - Harun - Added Equipment_Size__c,AssetId__r.Equipment_Size__c,SBQQ__Quantity__c,AssetId__r.Quantity__c
-                            FROM SBQQ__QuoteLine__c
-                            WHERE Id =: qlid];
-        qLineWrapper wrap = new qLineWrapper();
-        wrap.cQLine = targetQuoteLine;
-        wrap.serviceStartTime = string.valueOf(targetQuoteLine.Service_Start_Time__c);
-        wrap.serviceEndTime = string.valueOf(targetQuoteLine.Service_End_Time__c);
-        //Changes for SDT-26541
-        //SDT-27107 - PavanK - Converted from single object to List of Objects
-        List<SBQQ__QuoteLine__c> deliveryLine = [SELECT Id, SBQQ__Product__r.Name,SBQQ__Product__r.ProductCode, SBQQ__RequiredBy__c FROM SBQQ__QuoteLine__c WHERE SBQQ__RequiredBy__c =: qlid AND SBQQ__Product__r.Name =: Constant_Util.ServiceType_Delivery Limit 1];
-        if(deliveryLine.size() > 0 && !deliveryLine.isempty())
-            wrap.hasDelivery = true;
-            
-        string quoteLineEquipsize =  getPicklistLabel(targetQuoteLine.Equipment_Size__c);
-        //SDT-29381 - Harun - added two conditions comparing asset equipment size and quantity with its quoteline size and quantity .
-        if((quoteLineEquipsize != targetQuoteLine.AssetId__r.Equipment_Size__c)||(targetQuoteLine.SBQQ__Quantity__c > targetQuoteLine.AssetId__r.Quantity__c))  
-            wrap.hasDelivery = true;
-        
-        //SDT-27107 - End
-        return wrap;
+        // Refactored to use QuoteProcurementUIService
+        return QuoteProcurementUIService.getQuoteLineForOrdersWrapper(qlid);
     }
     public class  qLineWrapper{
         @AuraEnabled public SBQQ__QuoteLine__c cQLine{set;get;}
@@ -2178,6 +1749,10 @@ public class QuoteProcurementController {
     }
     @Auraenabled
     public static Boolean updateQuoteLineForOrders(SBQQ__QuoteLine__c updatedQuoteLine) {
+        // TODO: Complex quote line update logic - candidate for future service extraction
+        // Contains DML, location position handling, and special handling updates
+        // Calls updateSpecialHandling() method which also needs to be extracted
+
         try {
             // DateTime SLADateTime = QuoteFavoritesController.determineSLAforProjectcodeentitlements(updatedQuoteLine.Id);
             // updatedQuoteLine.SBQQ__StartDate__c = SLADateTime.date();
@@ -2242,85 +1817,8 @@ public class QuoteProcurementController {
 	* **************************************************/
     @AuraEnabled
     public static void addCommentForSLAOverride(String caseId, String slaComment, String slaReason) {
-        
-        try {
-            String commentBody;
-            String trackingNumber;
-            String caseNumber;
-
-                //creating a  map of metadata records of Comment_Log_Detail__mdt type and getting the SLA_Override record
-                Map<String , Comment_Log_Detail__mdt> commentLogTemplateData = new Map<String , Comment_Log_Detail__mdt>();
-                for(Comment_Log_Detail__mdt c : Comment_Log_Detail__mdt.getAll().values()){
-                    commentLogTemplateData.put(c.DeveloperName , c);
-                }
-                Comment_Log_Detail__mdt slaOverrideCommentTemplate = commentLogTemplateData.get('SLA_Override');
-                
-                Id recordTypeId = Schema.getGlobalDescribe().get('Comment__c').getDescribe().getRecordTypeInfosByDeveloperName().get('Acorn_Ticket_Comment').getRecordTypeId();
-            
-            //when called from MIF flow
-            if(String.isNotEmpty(slaComment) && String.isNotEmpty(slaReason)) {
-                commentBody = slaOverrideCommentTemplate.Comment__c.replaceAll('<Reason__x>', slaReason);
-                commentBody = commentBody.replaceAll('<Comment__c>', slaComment);
-                List<Case> csList = [Select Id, CaseNumber, Tracking_Number__c from Case where Id =: caseId limit 1];
-                if(csList.size() > 0) {
-                    caseNumber = csList[0].CaseNumber;
-                    trackingNumber = csList[0].Tracking_Number__c;
-                }
-            }
-            
-            else {
-                //querying the quoteline
-                list<SBQQ__QuoteLine__c> ql = [Select Id, SLA_Override_Reason__c, SLA_Override_Comment__c, sbqq__Quote__r.SBQQ__Opportunity2__r.Case__c, 
-                                            SBQQ__Quote__r.SBQQ__Opportunity2__r.Case__r.CaseNumber, SBQQ__Quote__r.SBQQ__Opportunity2__r.Case__r.Tracking_Number__c
-                                            FROM SBQQ__QuoteLine__c WHERE sbqq__Quote__r.SBQQ__Opportunity2__r.Case__c =: caseId AND SBQQ__Requiredby__c =: null
-                                            AND SLA_Override_Reason__c != null limit 1];
-                if(ql.size() > 0) {
-                //Decimal acornUserId = [select Acorn_SUser_ID__c from User where ID =: System.UserInfo.getUserId()].Acorn_SUser_ID__c;
-                
-                    String overrideReason = ql[0].SLA_Override_Reason__c;
-                    String overrideComment = ql[0].SLA_Override_Comment__c;
-                    commentBody = slaOverrideCommentTemplate.Comment__c.replaceAll('<Reason__x>', overrideReason);
-                    commentBody = commentBody.replaceAll('<Comment__c>', overrideComment);
-                    
-                    caseNumber = ql[0].SBQQ__Quote__r.SBQQ__Opportunity2__r.Case__r.CaseNumber;
-                    if (String.isNotEmpty(ql[0].SBQQ__Quote__r.SBQQ__Opportunity2__r.Case__r.Tracking_Number__c))  {
-                        trackingNumber = ql[0].SBQQ__Quote__r.SBQQ__Opportunity2__r.Case__r.Tracking_Number__c;
-                    }
-                    
-                    //insert comment;
-                    
-                }
-            }
-                
-                 //creating a Comment__c record
-            if(String.isNotBlank(commentBody)) // SDT-48501
-	    {
-                Comment__c comment = new Comment__c();
-                comment.recordTypeId = recordTypeId;
-                comment.Comment__c = commentBody;
-                comment.is_Log__c = true;
-                comment.Workflow_TeamUser__c = System.UserInfo.getName();
-                //comment.Acorn_SUser_ID__c = acornUserId;
-                comment.Communication_Log_Type_Name__c = 'Internal';
-            	comment.Case__c = caseId;
-		comment.Type__c = Constant_Util.OBJECT_CASE;
-            	comment.Case_Number__c = caseNumber;
-            	comment.Acorn_Tracking_Number__c = trackingNumber;
-                
-                insert comment;
-	    }
-            
-            
-        }catch(Exception ex){
-            //Changes related to SDT-48086
-            UTIL_LoggingService.logHandledExceptionWithClass(ex, UserInfo.getOrganizationId(),
-                                                            UTIL_ErrorConstants.CONFIRM_CONFIGURATION_ACTION,
-                                                            System.LoggingLevel.Error,
-                                                            UTIL_ErrorConstants.QUOTEPROCUREMNTCONTROLLER_CLASSNAME,
-                                                            UTIL_ErrorConstants.ADDCOMMENTFORSLAOVERRIDE_METHODNAME,
-                                                            null);
-        }
-        
+        // Refactored to use QuoteProcurementIntegrationService
+        QuoteProcurementIntegrationService.addCommentForSLAOverride(caseId, slaComment, slaReason);
     }
 
 	
@@ -2329,36 +1827,15 @@ public class QuoteProcurementController {
 	// It also sends back a map of Product Option Id and Optional SKU ID 
     @AuraEnabled
     public static  Map<String,List<Object>> getAccessoriesWithSelection(Id productId, Id quoteId) {
-         List<Id> selectedAccessoryList = new List<Id>();
-		 List<Id> disabledAccessoryList = new List<Id>();
-         Map<Id,Id> mapOptionIdAndOptionSKUId = new Map<Id,Id>();
-        QuoteLineSelector.getProductOptionForQuote(quoteId,selectedAccessoryList,mapOptionIdAndOptionSKUId, disabledAccessoryList);
-        
-        Map<String,List<Object>> mapSelectedAndAvailableAssesory = new Map<String,List<Object>>();
-        
-        // Get All the relevant accesories for the product
-        //mapSelectedAndAvailableAssesory.put('AllAccessory', getAccessories(productId));
-		// added for SDT-32086
-		mapSelectedAndAvailableAssesory.put('AllAccessory', ProductServices.filterProductOptions(productId,quoteId));
-        mapSelectedAndAvailableAssesory.put('SelectedAccessory', selectedAccessoryList);
-        mapSelectedAndAvailableAssesory.put('mapOptionIdAndOptionSKUId',new List<Object>{mapOptionIdAndOptionSKUId});
-        // Changes for SDT-31752
-        mapSelectedAndAvailableAssesory.put('disabledAccessoryList', disabledAccessoryList);
-        return mapSelectedAndAvailableAssesory;
+        // Refactored to use QuoteProcurementProductService
+        return QuoteProcurementProductService.getAccessoriesWithSelection(productId, quoteId);
     }
     
 
     @AuraEnabled
     public static List<SBQQ__ProductOption__c> getAccessories(Id productId) {
-
-        List<SBQQ__ProductOption__c> accessoryList = new List<SBQQ__ProductOption__c>();
-        //SDT-23055: adding few more fields in query and setting order by SBQQ__Number__c DESC
-        accessoryList = [SELECT Id, SBQQ__ConfiguredSKU__r.Name, SBQQ__OptionalSKU__c,SBQQ__OptionalSKU__r.Name, SBQQ__QuantityEditable__c, SBQQ__Quantity__c
-                        FROM SBQQ__ProductOption__c
-                        WHERE SBQQ__ConfiguredSKU__c =: productId AND SBQQ__Feature__r.Name IN ('Additional Services','General Accessories') ORDER BY SBQQ__Number__c DESC];
-
-        return accessoryList;
-
+        // Refactored to use QuoteProcurementProductService
+        return QuoteProcurementProductService.getAccessories(productId);
     }
 
     /*
@@ -2369,94 +1846,14 @@ public class QuoteProcurementController {
      */
     @AuraEnabled
     public static List<SBQQ__ProductOption__c> getPadlockKeys(List<Id> padLockIdList){
-        List<SBQQ__ProductOption__c> accessoryList = new List<SBQQ__ProductOption__c>();
-
-        accessoryList = [SELECT Id, SBQQ__ConfiguredSKU__r.Name, SBQQ__ConfiguredSKU__c, SBQQ__OptionalSKU__c,SBQQ__OptionalSKU__r.Name, SBQQ__QuantityEditable__c, SBQQ__Quantity__c
-                        FROM SBQQ__ProductOption__c
-                        WHERE SBQQ__ConfiguredSKU__c IN: padLockIdList];
-        if(!accessoryList.isEmpty()){
-            return accessoryList;
-        }
-        return null;
+        // Refactored to use QuoteProcurementProductService
+        return QuoteProcurementProductService.getPadlockKeys(padLockIdList);
     }
     
     @AuraEnabled
     public static List<SBQQ__ConfigurationAttribute__c> getConfigAttributes(Id productId, String quoteLineId) {
-        /*SDT-22447-START*/
-        //Create MAP to store product specific equipment style values which are not required to display on UI.
-        Map<String,Set<String>> equipmentStyleValuesWithProduct = new Map<String,Set<String>>();
-        equipmentStyleValuesWithProduct.put('Dumpster',new Set<String>{'Apartment Style','Pre-Crusher','Horizontal','Vertical'});
-        equipmentStyleValuesWithProduct.put('Compactor',new Set<String>{'Slant Top','Tall','Split Container','Cathedral','Loading Dock','Slant-Top'});
-        
-        String currentProductName; 
-        if(String.isNotBlank(productId)){
-            Product2 productObj = [SELECT Id, Name FROM Product2 WHERE Id =: productId LIMIT 1]; 
-            if(productObj != null){
-                currentProductName = productObj.Name;
-            }
-        }    
-        /*SDT-22447-END*/
-        
-        List<SBQQ__ConfigurationAttribute__c> attributeList = new List<SBQQ__ConfigurationAttribute__c>();
-
-        attributeList = [SELECT Id, SBQQ__TargetField__c, SBQQ__ApplyToProductOptions__c, SBQQ__Product__r.Name, SBQQ__ColumnOrder__c, SBQQ__DisplayOrder__c,
-                        SBQQ__Feature__r.Name, Picklist_Values__c, Name
-                        FROM SBQQ__ConfigurationAttribute__c
-                        WHERE SBQQ__Product__c =: productId AND SBQQ__TargetField__c NOT IN('Equipment_Size__c', 'Duration', 'Occurrence_Type__c',
-                                                                                            'Certificate_of_Destruction__c', 'Certificate_of_Disposal__c',
-                                                                                            'Description_of_Waste__c', 'Profile_Number__c', 'Vendor__c')
-                        ORDER BY SBQQ__Feature__r.Name ASC, SBQQ__DisplayOrder__c ASC, SBQQ__ColumnOrder__c ASC];
-        
-        system.debug('attributeList--->'+ attributeList);
-
-        String configList = '';
-        for (SBQQ__ConfigurationAttribute__c conf: attributeList) {
-            if (configList == '') {
-                configList = conf.SBQQ__TargetField__c;
-            } else {
-                configList += ', ' + conf.SBQQ__TargetField__c;
-            }
-        }
-
-        String queryString = 'SELECT Id, ' + configList + ' FROM SBQQ__QuoteLine__c WHERE Id=: quoteLineId LIMIT 1';
-        SBQQ__QuoteLine__c targetQL = database.query(queryString);
-        
-        for (SBQQ__ConfigurationAttribute__c conf : attributeList) {
-            List<PicklistSelect> picklistOptions = new List<PicklistSelect>();
-            Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
-            system.debug('gd-->' + gd);
-            Schema.SObjectType t = gd.get('SBQQ__QuoteLine__c');
-            
-            system.debug('t-->' + t);
-            Schema.DescribeSObjectResult dsr = t.getDescribe();
-            system.debug('dsr-->' + dsr);
-            Map<String, Schema.SObjectField> fieldMap = dsr.fields.getMap();
-            Schema.DescribeFieldResult dfr = fieldMap.get(conf.SBQQ__TargetField__c).getDescribe();
-            List<Schema.PicklistEntry> ple = dfr.getPicklistValues();
-            for(Schema.PicklistEntry p : ple) {
-                PicklistSelect ps = new PicklistSelect(); 
-                ps.value = p.getValue();
-                ps.label = p.getLabel();
-                ps.selected = (p.getValue() == targetQL.get(conf.SBQQ__TargetField__c)) ? true : false;
-                system.debug('Target Field Value is: ' + targetQL.get(conf.SBQQ__TargetField__c));
-                /*SDT-22447-START*/
-                if(conf.SBQQ__TargetField__c.equalsIgnoreCase('Equipment_Style__c')){
-                    Boolean isOptionValid = isEquipmentStyleOptionValidByProductName(equipmentStyleValuesWithProduct, currentProductName, conf.SBQQ__TargetField__c, ps.value);
-                    if(isOptionValid){
-                        picklistOptions.add(ps); 
-                    }  
-                }
-                else{
-                    picklistOptions.add(ps);
-                }
-                /*SDT-22447-END*/  
-            }
-            System.debug('>>>picklistOptions'+picklistOptions);
-            conf.Picklist_Values__c = String.valueOf(JSON.serialize(picklistOptions));
-        }
- 
-        return attributeList;
- 
+        // Refactored to use QuoteProcurementProductService
+        return QuoteProcurementProductService.getConfigAttributes(productId, quoteLineId);
     }
 
     /*SDT-22447-START*/
@@ -2475,30 +1872,15 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static string updateConfigAttribute(Id quoteLineId, String fieldName, String fieldValue, Id quoteId){
-        String queryString = 'SELECT Id, SBQQ__Quote__c, ' + String.escapeSingleQuotes(fieldName) + ' FROM SBQQ__QuoteLine__c WHERE SBQQ__Quote__c =: quoteId ';
-        List<SBQQ__QuoteLine__c> quoteLines = Database.query(queryString);
-        for(SBQQ__QuoteLine__c ql: quoteLines)
-        {
-            if(fieldName == 'Ownership__c')
-            {
-                ql.Ownership__c=fieldValue;
-            }
-            else if(ql.Id == quoteLineId)
-            {
-                ql.put(fieldName, fieldValue);
-            }
-        }
-        try{
-            update quoteLines;
-            return 'SUCCESS';
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        // Refactored to use QuoteProcurementProductService
+        return QuoteProcurementProductService.updateConfigAttribute(quoteLineId, fieldName, fieldValue, quoteId);
     }
 
     @AuraEnabled
     public static string addProductOption(Id quoteLineId, Id productOptionId){
-        
+        // TODO: Complex product option logic - candidate for future service extraction
+        // Contains DML, SOQL, and business rules for adding product options to quote lines
+
         List<SBQQ__QuoteLine__c> quoteLines = [SELECT Id, SBQQ__Number__c, SBQQ__StartDate__c, Equipment_Size__c,
                                               SBQQ__Quote__c, SID__c
                                               FROM SBQQ__QuoteLine__c
@@ -2551,10 +1933,12 @@ public class QuoteProcurementController {
     // ProductionOptionId is the Id of the Optional SKU on the product option, This is to remove the option Id
     @AuraEnabled
     public static string removeProductOption(Id quoteLineId, Id productOptionId) {
-               
+        // TODO: Complex product option removal logic - candidate for future service extraction
+        // Contains DML for removing product options from quote lines
+
         SBQQ__QuoteLine__c quoteLine = [SELECT Id
                                         FROM SBQQ__QuoteLine__c
-                                        WHERE SBQQ__RequiredBy__c =: quoteLineId 
+                                        WHERE SBQQ__RequiredBy__c =: quoteLineId
                                         AND SBQQ__ProductOption__r.SBQQ__OptionalSKU__c =: productOptionId
                                         LIMIT 1];
         
@@ -2575,7 +1959,9 @@ public class QuoteProcurementController {
      */
     @AuraEnabled
     public static string removeProductOption(Id quoteLineId, Id productOptionId, Id keyOptionId) {
-        
+        // TODO: Complex product option removal logic (overloaded version) - candidate for future service extraction
+        // Contains DML for removing product options and associated keys from quote lines
+
         List<SBQQ__QuoteLine__c> quoteLine = [SELECT Id
                                         FROM SBQQ__QuoteLine__c
                                         WHERE (SBQQ__RequiredBy__c =: quoteLineId AND SBQQ__ProductOption__r.SBQQ__OptionalSKU__c =: productOptionId) OR
@@ -2593,11 +1979,14 @@ public class QuoteProcurementController {
      * SDT-23055
      * Dev: Rishi
      * Description: Created this method to update keys Quantity on qls
-     * 
+     *
      */
 
     @AuraEnabled
     public static string updateKeysQuantity(Id parentId, List<KeyMapWrapper> keyObj){
+        // TODO: Complex keys quantity update logic - candidate for future service extraction
+        // Contains DML and logic for updating padlock key quantities on quote lines
+
         Set<String> idSet= new Set<String>();
         Map<String,String> keyMap= new Map<String,String>();
         for(KeyMapWrapper obj:keyObj){
@@ -3336,13 +2725,8 @@ public class QuoteProcurementController {
 
     @AuraEnabled
     public static List<String> getSLAOverrideReasons() {
-        List<String> slaReasons = new List<String>();
-        Schema.DescribeFieldResult slaPicklistField = SBQQ__QuoteLine__c.SLA_Override_Reason__c.getDescribe();
-        List<Schema.PicklistEntry> slaPicklistValues = slaPicklistField.getPicklistValues();
-        for (Schema.PicklistEntry pck : slaPicklistValues) {
-            slaReasons.add(pck.getValue());
-        }
-        return slaReasons;
+        // Refactored to use QuoteProcurementUIService
+        return QuoteProcurementUIService.getSLAOverrideReasons();
     }
 
     @AuraEnabled
@@ -3907,35 +3291,31 @@ public class QuoteProcurementController {
     }
 
      // method to get the products
-     @AuraEnabled 
+     @AuraEnabled
      public static List<Product2> getProducts()
      {
+         // Delegates to QuoteFavoritesController
          return QuoteFavoritesController.getProducts();
      }
 
      //method to get the selected Products
      @AuraEnabled
     public static Product2 getPreselectedProduct(string selectedProductName){
+        // Delegates to QuoteFavoritesController
         return QuoteFavoritesController.getPreselectedProduct(selectedProductName);
     }
 
     //get the materials by product
     @AuraEnabled
     public static List<SBQQ__ProductOption__c> getWasteStreams(Id productId) {
+        // Delegates to QuoteFavoritesController
         return QuoteFavoritesController.getWasteStreams(productId);
     }
 
+    // Refactored to use QuoteProcurementUIService
     @AuraEnabled
     public static Map<String, String> getDurations() {
-        Map<String, String> durationMap = new Map<String, String>();
-        List<Schema.PicklistEntry> durationEntries = Schema.SObjectType.SBQQ__QuoteLine__c.fields.Duration__c.getPicklistValues();
-        for(Schema.PicklistEntry pe :durationEntries){
-            if(pe.value!='SEAS')
-            {
-                durationMap.put(pe.value, pe.label);
-            }
-        }
-        return durationMap;
+        return QuoteProcurementUIService.getDurations();
     }
     @AuraEnabled
     public static SBQQ__QuoteLine__c getParentQlineRec(Id parentId)

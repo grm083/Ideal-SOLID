@@ -115,6 +115,25 @@ public with sharing class QuoteProcurementUIService {
     }
 
     /**
+     * @description Get durations picklist values (excluding SEAS)
+     * Refactored from: getDurations() in QuoteProcurementController
+     * @return Map<String, String> Duration value to label map
+     */
+    @AuraEnabled
+    public static Map<String, String> getDurations() {
+        Map<String, String> durationMap = new Map<String, String>();
+        List<Schema.PicklistEntry> durationEntries = Schema.SObjectType.SBQQ__QuoteLine__c.fields.Duration__c.getPicklistValues();
+
+        for (Schema.PicklistEntry pe : durationEntries) {
+            if (pe.value != 'SEAS') {
+                durationMap.put(pe.value, pe.label);
+            }
+        }
+
+        return durationMap;
+    }
+
+    /**
      * @description Convert picklist label to API name
      * Refactored from: getPicklistAPIName() in QuoteProcurementController
      * @param labelName The picklist label
