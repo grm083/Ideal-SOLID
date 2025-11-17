@@ -294,10 +294,11 @@ public with sharing class GetCaseInformation {
     @AuraEnabled
     public static String initiateWorkOrder(String caseId, List<String> caseIdList){
         try {
-            return CaseBusinessRuleService.initiateWorkOrderCreation(caseId, caseIdList);
+            // REFACTORED (Phase 5E): Delegate to CaseWorkOrderService
+            return CaseWorkOrderService.initiateWorkOrderCreation(caseId, caseIdList);
         } catch (Exception ex) {
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION,
                                                     LoggingLevel.ERROR);
             return Constant_Util.Failure;
         }
@@ -462,166 +463,20 @@ public with sharing class GetCaseInformation {
         
     } 
     
-    @AuraEnabled    
+    /**
+     * @description Creates Opportunity and Quote from Case
+     * @deprecated Use CaseCPQService.createQuoteFromCase() instead (Phase 5C refactoring)
+     * This method is maintained for backward compatibility only.
+     * All CPQ logic has been moved to CaseCPQService.
+     *
+     * @param CaseId Case ID
+     * @return Quote ID of created quote
+     */
+    @Deprecated
+    @AuraEnabled
     public static String createOppQuote(String CaseId) {
-        
-        
-        //system.debug('createOppQuote--->');
-        Opportunity opp = new Opportunity();
-        String quoteStatus;
-        
-        //SDT38061 Case_Reason__c
-        Case c = [SELECT Id, Status,AssetId, Asset.Duration__c, Location__c, ContactId, CaseNumber, Service_Date__c,Case_Sub_Type__c,Case_Reason__c, Reference_Number__c, Tracking_Number__c, Integrate_with_Acorn__c, Case_Type__c,
-                  Case_Record_Type__c,Quote_Only__c,Is_Haul_Away_Service__c,Haul_Away_information__c, Haul_Away_Vendor__c //SDT-41473
-                  FROM Case
-                  WHERE Id =: CaseId];
-        
-        Account loc = [SELECT Id, Primary_Segment__c,ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode
-                       FROM Account
-                       WHERE Id =: c.Location__c];
-        
-        
-        opp.Name = c.CaseNumber;
-        opp.AccountId = loc.Id;
-        opp.StageName = Constant_Util.PRODUCT_CONFIGURATION;
-        opp.CloseDate = date.today() + 4;
-        opp.SBQQ__QuotePricebookId__c = [SELECT Id FROM PriceBook2 WHERE Name = 'Standard Price Book' LIMIT 1].Id;
-        opp.Case__c = c.Id;
-        
-        //SDT-41473
-        Boolean isHaulAway = HaulAwayService.getIsHaulAwayService(c);
-        
-        // Changes for SDT-25790
-        if(isHaulAway)  //SDT-41473
-            opp.Duration__c = 'Temporary';       
-        else if(!String.isempty(c.Case_Type__c) && c.Case_Type__c == Constant_Util.NEW_SERVICE)
-            opp.Duration__c = c.Case_Sub_Type__c;
-        else
-            opp.Duration__c = c.Asset.Duration__c !=null ? c.Asset.Duration__c : c.Case_Sub_Type__c;
-        //system.debug('Opp--->'+ opp);
-        
-        try {
-            // Modified for SDT-33453 Start
-            if(opp != null){               
-                insert opp;
-            }
-            // Modified for SDT-33453 End
-            //system.debug('Opp1--->'+ opp);
-            
-        } catch (dmlException e) {
-            system.debug(e.getMessage());
-        }
-        
-        SBQQ__Quote__c q = new SBQQ__Quote__c();
-        q.SBQQ__Opportunity2__c = opp.Id;
-        q.SBQQ__Account__c = loc.Id;
-        q.SBQQ__Primary__c = true;
-        /* if (loc.Primary_Segment__c == Constant_Util.Broker){
-q.SBQQ__ExpirationDate__c = date.today() + 30;
-}
-else {
-q.SBQQ__ExpirationDate__c = date.today() + 60;
-} */
-        q.SBQQ__StartDate__c = c.Service_Date__c;
-        q.SBQQ__ShippingStreet__c = loc.ShippingStreet;
-        q.SBQQ__ShippingCity__c = loc.ShippingCity;
-        q.SBQQ__ShippingState__c = loc.ShippingState;
-        q.SBQQ__ShippingPostalCode__c = loc.ShippingPostalCode;
-        q.SBQQ__PrimaryContact__c = c.ContactId;
-        q.Duration__c = opp.Duration__c;
-        
-        //Added by jatan for SDT-40344 IVR
-        q.Quote_Only__c = c.Quote_Only__c;
-        
-        //pkulkarn-TCS-7-Mar-23-Added for SDT-26868-Start
-        String quoteTypeConst = ''; 
-        Schema.DescribeFieldResult quoteTypeDesc = SBQQ__Quote__c.SBQQ__Type__c.getDescribe();
-        List<Schema.PicklistEntry> quoteTypes = quoteTypeDesc.getPicklistValues();
-        
-        Map<String, String> TypePLMap = new Map<String, String>();
-        for(Schema.PicklistEntry plEntry : quoteTypes)
-            if(plEntry.isActive())
-            TypePLMap.put(plEntry.getValue(), plEntry.getLabel());
-        
-        //SDT 38061 adding 2nd if condition
-        boolean isInternalCorrectionsTeamUser=UserServices.isInternalCorrectionTeamUser(UserInfo.getUserId());
-        
-        //SDT-41473
-        if((c.Case_Record_Type__c == Constant_Util.New_Service_Case)||(c.Is_Haul_Away_Service__c))
-            quoteTypeConst = Constant_Util.QUOTE;
-        else if(c.Case_Record_Type__c == Constant_Util.MODIFY_EXISTING_SERVICE_CASE && c.Case_Type__c == Constant_Util.Change_Service 
-                && c.Case_Sub_Type__c == Constant_Util.Change_Correction && c.Case_Reason__c == Constant_Util.CASE_REASON_DAYSOFSERVICE && !isInternalCorrectionsTeamUser)
-            quoteTypeConst = Constant_Util.QUOTE_TYPE_AMEND;
-        else if(c.Case_Record_Type__c == Constant_Util.UPDATE_ASSET_CASE)
-            quoteTypeConst = Constant_Util.QUOTE_TYPE_AMEND;
-        else if(c.Case_Record_Type__c == Constant_Util.MODIFY_EXISTING_SERVICE_CASE && c.Case_Type__c == Constant_Util.Change_Service && c.Case_Sub_Type__c == Constant_Util.Change_Correction)
-            quoteTypeConst = Constant_Util.QUOTE_TYPE_CORRECTION;
-        else if(c.Case_Record_Type__c == Constant_Util.MODIFY_EXISTING_SERVICE_CASE && c.Case_Type__c == Constant_Util.Change_Service && (c.Case_Sub_Type__c == Constant_Util.WASTE_STREAM || c.Case_Sub_Type__c == Constant_Util.Decrease || c.Case_Sub_Type__c == Constant_Util.Increase || c.Case_Sub_Type__c == Constant_Util.Rightsizing_Load_Max ||  c.Case_Sub_Type__c == Constant_Util.VENDOR))
-            quoteTypeConst = Constant_Util.QUOTE_TYPE_AMEND;
-        else
-            quoteTypeConst = Constant_Util.KEYWORD_EXCEPTION;
-        if(TypePLMap.containsKey(quoteTypeConst))
-            q.SBQQ__Type__c = TypePLMap.get(quoteTypeConst);
-        //pkulkarn-TCS-7-Mar-23-Added for SDT-26868-End
-        
-        try {
-            // Modified for SDT-33453 Start
-            if(q != null){
-                insert q;
-            }
-            // Modified for SDT-33453 End
-            SBQQ__Quote__c quote = [Select Id, Name from SBQQ__Quote__c Where Id =: q.Id];
-            
-            String sComments = 'SFDC Quote: '+ quote.Name +'\n';
-            if (c.Tracking_Number__c != Null){
-                sComments += 'SFDC Case: '+ c.CaseNumber + ' - Tracking Number: '+ c.Tracking_Number__c+'\n';
-            }
-            else {
-                sComments += 'SFDC Case: '+ c.CaseNumber +'\n';
-            }
-            sComments += 'SFDC Reference #: '+ c.Reference_Number__c +'\n';
-            
-            q.Case_Comments__c = sComments;
-            
-            // Modified for SDT-33453 Start
-            if(q != null){
-                update q; 
-            }
-            // Modified for SDT-33453 End
-            c.IsOpportunity_Created__c = true;
-            c.Integrate_with_Acorn__c = false; //21433
-            c.Status = Constant_Util.OPEN; //21433
-            //c.Status = Constant_Util.PENDING; //21433
-            //SDT-26868 - Start - Set field 'Master_Intake_Complete__c' of case as True - by dojha
-            c.Master_Intake_Complete__c = true;
-            //SDT-26868 - End
-            //Haul Away SDT 42654 Seema
-            if(isHaulAway){
-                c.Material_Grade__c = 'No Grade'; //Need to check where we use it
-                c.Material_Type__c = Constant_Util.BULK_MATERIAL_PRODUCTCODE;
-                c.Equipment_Type_Code__c = 'UNK';
-                c.Equipment_Size_Code__c = 'UNK';
-                c.Service_Occurrence_Type_Code__c = 'OC';
-                // c.Origin = 'SFDC Default'; //Comment as a part of SDT-47951
-            }
-            // Modified for SDT-33453 Start
-            if(c != null){
-                update c;
-                //Haul Away SDT 42654 Seema
-                if(isHaulAway){
-                    Map<String,sobject>  returnMap = new Map<String,sobject>();
-                    returnMap.put(String.valueof(c.Id),(SObject)c);
-                    returnMap.put(String.valueof(q.Id),(sObject)q);
-                    QuoteLineCreationHandler.execute(returnMap);
-                }
-            }
-            // Modified for SDT-33453 End
-        } catch (Exception e) {	//TCS-SDT-41546-Changed exception type from DmlException to Exception
-            system.debug(e.getMessage());
-            throw e;	//TCS-SDT-41546-Added
-        }
-        
-        return q.Id;  
+        // REFACTORED (Phase 5C): Delegate to CaseCPQService
+        return CaseCPQService.createQuoteFromCase(CaseId);
     }
     
     @AuraEnabled

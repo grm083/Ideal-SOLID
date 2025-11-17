@@ -323,21 +323,23 @@ public with sharing class CaseAttributeService {
         if (caseNewMap == null || caseNewMap.isEmpty()) {
             return;
         }
-        
+
         try {
             Map<Id, String> contactANIMap = new Map<Id, String>();
-            
+
             for (Case newCase : caseNewMap.values()) {
                 Case oldCase = oldCaseMap != null ? oldCaseMap.get(newCase.Id) : null;
-                
-                // Check if ANI changed and ContactId is populated
-                if (newCase.ContactId != null && 
-                    String.isNotBlank(newCase.Contact.ANI__c) &&
-                    (oldCase == null || newCase.Contact.ANI__c != oldCase.Contact.ANI__c)) {
-                        contactANIMap.put(newCase.ContactId, newCase.Contact.ANI__c);
+
+                // FIX: Check if Case ANI changed and ContactId is populated
+                // Previously tried to access newCase.Contact.ANI__c without querying Contact
+                // Now correctly reads from Case.ANI__c and syncs to Contact
+                if (newCase.ContactId != null &&
+                    String.isNotBlank(newCase.ANI__c) &&
+                    (oldCase == null || newCase.ANI__c != oldCase.ANI__c)) {
+                        contactANIMap.put(newCase.ContactId, newCase.ANI__c);
                     }
             }
-            
+
             if (!contactANIMap.isEmpty()) {
                 List<Contact> contactsToUpdate = new List<Contact>();
                 for (Id contactId : contactANIMap.keySet()) {
@@ -347,14 +349,14 @@ public with sharing class CaseAttributeService {
                     );
                     contactsToUpdate.add(con);
                 }
-                
+
                 Database.SaveResult[] results = Database.update(contactsToUpdate, false);
-                UTIL_LoggingService.logDmlResults(results, null, contactsToUpdate, '', 
-                                                  UTIL_ErrorConstants.CASE_TRIGGER_CLASS, '', 
+                UTIL_LoggingService.logDmlResults(results, null, contactsToUpdate, '',
+                                                  UTIL_ErrorConstants.CASE_TRIGGER_CLASS, '',
                                                   UTIL_ErrorConstants.CASE_TRIGGER, LoggingLevel.ERROR);
             }
         } catch (Exception ex) {
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
                                                     UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
         }
     }

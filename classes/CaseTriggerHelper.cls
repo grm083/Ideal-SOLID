@@ -18,10 +18,36 @@ public without sharing class CaseTriggerHelper {
     
     // Static counters maintained for backward compatibility
     public static Integer runCount = 0;
-    
-    // Public maps maintained for backward compatibility with other classes that may reference them
+
+    /**
+     * @deprecated ARCHITECTURAL ANTI-PATTERN: Static variables violate SOLID principles and create hidden coupling.
+     * These maps are used for inter-class communication which makes code difficult to test and understand.
+     *
+     * MIGRATION GUIDE:
+     * - Instead of writing to these static maps, pass data through method parameters
+     * - Use service layer methods that return the data you need
+     * - For Asset data: Use CaseContextGetter or query directly in your method
+     * - For Location data: Use CaseContextGetter.getLocationsByCaseIds()
+     *
+     * These variables are maintained for backward compatibility with external code (controllers, etc.)
+     * but should NOT be used in new development. They will be removed in a future release.
+     *
+     * REFACTORING STATUS:
+     * - CaseTriggerHandler: Still sets these for backward compatibility (lines 125-126, 273-274)
+     * - SLACalculationUtility: REFACTORED - no longer writes to casewithLocation
+     * - CaseTriggerHelper.fetchSLA: REFACTORED - no longer uses Entitlement_Utility static variables
+     * - Entitlement_Utility: REFACTORED - static variables deprecated, parameter-based methods added
+     */
+    @Deprecated
     public static Map<Id,Asset> casewithContainer = new Map<Id,Asset>();
+
+    /**
+     * @deprecated See casewithContainer deprecation notice above. Same anti-pattern applies.
+     */
+    @Deprecated
     public static Map<Id,Account> casewithLocation = new Map<Id,Account>();
+
+    // Other static collections (not yet deprecated, need further analysis)
     public static Map<String,Integer> caseWorkOrderCount = new Map<String,Integer>();
     public static Map<String,Id> businessIdMap = new Map<String,Id>();
     public static Set<Id> locationIdSet = new Set<Id>();
@@ -77,6 +103,9 @@ public without sharing class CaseTriggerHelper {
     
 	/*******************************************************************************************************
     * @description Fetches applicable SLA/Entitlement for cases
+    * REFACTORED: No longer uses static variables - Entitlement_Utility now extracts
+    * accountIds and service dates directly from Case records.
+    *
     * @param caseMap Map of cases keyed by composite key
     * @return Map<string,Entitlement> Matched entitlements
     */
@@ -86,27 +115,17 @@ public without sharing class CaseTriggerHelper {
             Set<Id> caseIds = new Set<Id>();
             for (Case c : caseMap.values()) {
                 caseIds.add(c.Id);
-                // Populate static sets for Entitlement_Utility
-                if (c.Client__c != null) {
-                    Entitlement_Utility.accountIdSet.add(c.Client__c);
-                }
+                // Track service subtypes for internal use
                 if (c.Case_Sub_Type__c != null) {
                     serviceset.add(c.Case_Sub_Type__c);
                 }
             }
-            
-            // Set minimum service date for entitlement filtering
-            Date minServiceDate = Date.today();
-            for (Case c : caseMap.values()) {
-                if (c.Service_Date__c != null && c.Service_Date__c < minServiceDate) {
-                    minServiceDate = c.Service_Date__c;
-                }
-            }
-            Entitlement_Utility.minimumServiceDate = minServiceDate;
-            
-            // Use refactored Entitlement_Utility method
+
+            // REFACTORED: Entitlement_Utility.getPrioritizedEntitlements now extracts
+            // accountIds and minimumServiceDate directly from Case records.
+            // No need to set static variables anymore!
             Map<String, Entitlement> prioritizedEntitlements = Entitlement_Utility.getPrioritizedEntitlements(caseIds);
-            
+
             // Convert back to the expected format (composite key to Entitlement)
             // The original method used a composite key, but the refactored version uses Case IDs
             // We need to maintain backward compatibility by creating the composite keys
@@ -117,11 +136,11 @@ public without sharing class CaseTriggerHelper {
                     result.put(compositeKey, prioritizedEntitlements.get(c.Id));
                 }
             }
-            
+
             return result;
-            
+
         } catch(Exception e) {
-            UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(), 
+            UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(),
                 UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
             return new Map<String, Entitlement>();
         }

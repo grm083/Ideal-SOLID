@@ -1480,83 +1480,19 @@ public without sharing class CaseBusinessRuleService {
     
     /**
      * @description Initiates work order creation process for one or more cases
+     * @deprecated Use CaseWorkOrderService.initiateWorkOrderCreation() instead (Phase 5E refactoring)
+     * This method is maintained for backward compatibility only.
+     * All work order orchestration logic has been moved to CaseWorkOrderService.
+     *
      * @param caseId Primary case ID that triggered the work order request
      * @param caseIdList List of case IDs to create work orders for (may be multi-case)
      * @return SUCCESS or FAILURE status string
      */
+    @Deprecated
     public static String initiateWorkOrderCreation(String caseId, List<String> caseIdList) {
-        try {
-            if (String.isBlank(caseId) || caseIdList == null || caseIdList.isEmpty()) {
-                return Constant_Util.Failure;
-            }
-            
-            // Validate all cases are ready for work order creation
-            Set<Id> caseIdsToValidate = new Set<Id>();
-            caseIdsToValidate.add(Id.valueOf(caseId));
-            for (String cId : caseIdList) {
-                caseIdsToValidate.add(Id.valueOf(cId));
-            }
-            
-            // Validate each case
-            Boolean allCasesValid = true;
-            for (Id validationCaseId : caseIdsToValidate) {
-                Map<String, Object> validationResult = validateCaseReadyForWorkOrder(validationCaseId);
-                if (!(Boolean)validationResult.get('isValid')) {
-                    UTIL_LoggingService.logHandledException(
-                        new CustomException('Case validation failed: ' + validationResult.get('messages')),
-                        UserInfo.getOrganizationId(),
-                        UTIL_ErrorConstants.CASE_TRIGGER_CLASS,
-                        LoggingLevel.ERROR
-                    );
-                    allCasesValid = false;
-                }
-            }
-            
-            if (!allCasesValid) {
-                return Constant_Util.Failure;
-            }
-            
-            // Get case records for work order creation
-            List<Case> casesToProcess = [
-                SELECT Id, Status, Case_Sub_Status__c, AssetId, ContactId, 
-                       Case_Type__c, Case_Sub_Type__c, Service_Date__c,
-                       Location__c, Client__c, Reference_Number__c, 
-                       SLA_Service_Date_Time__c, Is_Multivendor__c,
-                       Site_Contact__c, Site_Contact_Phone__c,
-                       User_Input_Work_Order_Instructions__c
-                FROM Case
-                WHERE Id IN :caseIdsToValidate
-            ];
-            
-            // Call work order creation logic (delegating to appropriate handler)
-            // This would integrate with your existing WorkOrderCreation service/class
-            Boolean workOrderCreated = WorkOrderCreation.createWorkOrders(casesToProcess);
-            
-            if (workOrderCreated) {
-                // Update case statuses via CaseDMLService
-                List<Case> casesToUpdate = new List<Case>();
-                for (Case c : casesToProcess) {
-                    c.Status = Constant_Util.OPEN;
-                    c.Case_Sub_Status__c = Constant_Util.PENDING_SERVICE_INTEGRATION;
-                    casesToUpdate.add(c);
-                }
-                
-                CaseDMLService.DMLResult updateResult = CaseDMLService.getInstance().updateCases(casesToUpdate);
-                
-                if (updateResult.isAllSuccess()) {
-                    return Constant_Util.SUCCESS;
-                } else {
-                    return Constant_Util.Failure;
-                }
-            }
-            
-            return Constant_Util.Failure;
-            
-        } catch (Exception ex) {
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
-                UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
-            return Constant_Util.Failure;
-        }
+        // REFACTORED (Phase 5E): Delegate to CaseWorkOrderService
+        // All logic moved to proper service layer
+        return CaseWorkOrderService.initiateWorkOrderCreation(caseId, caseIdList);
     }
     
     /**
@@ -1606,7 +1542,228 @@ public without sharing class CaseBusinessRuleService {
                 UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
         }
     }
-    
+
+    // ========================================================================
+    // UI BUTTON VISIBILITY BUSINESS RULES
+    // Moved from CaseUIService - Phase 2 Refactoring
+    // These methods contain business logic for determining button visibility
+    // ========================================================================
+
+    /**
+     * @description Determines if Progress Case button should be visible based on business rules
+     * Moved from CaseUIService.shouldShowProgressCaseButton (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record to evaluate
+     * @param isCPQUser Whether current user has CPQ access
+     * @param isUpdateAssetActiveUser Whether current user can update assets
+     * @param caseInfo Current case information/validation message
+     * @param workOrderCreation Whether work order creation is enabled
+     * @param isAssetMandatory Whether asset is mandatory
+     * @param isCaseInfoReady Whether case info is ready
+     * @return True if Progress Case button should be visible
+     */
+    public static Boolean shouldShowProgressCaseButton(
+        Case caseRecord,
+        Boolean isCPQUser,
+        Boolean isUpdateAssetActiveUser,
+        String caseInfo,
+        Boolean workOrderCreation,
+        Boolean isAssetMandatory,
+        Boolean isCaseInfoReady
+    ) {
+        if (caseRecord.Status == 'Closed') {
+            return false;
+        }
+
+        // REFACTORED: Use CaseContextGetter for metadata query (Phase 3)
+        String buttonName = 'Progress Case';
+        Case_Highlight_Panel_Button__mdt metadata = CaseContextGetter.getButtonVisibilityMetadata(
+            caseRecord.RecordType.Name,
+            caseRecord.Case_Type__c,
+            caseRecord.Case_Sub_Type__c,
+            caseRecord.Case_Reason__c,
+            buttonName,
+            isCPQUser,
+            isUpdateAssetActiveUser
+        );
+
+        if (metadata != null && metadata.Visibility__c) {
+            return evaluateProgressCaseVisibility(
+                caseRecord,
+                caseInfo,
+                workOrderCreation,
+                isAssetMandatory,
+                isCaseInfoReady
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * @description Evaluates the detailed business logic for Progress Case button visibility
+     * Moved from CaseUIService.progressCaseVisibilityLogicCheck (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record
+     * @param caseInfo Current case information message
+     * @param workOrderCreation Whether work order creation is enabled
+     * @param isAssetMandatory Whether asset is mandatory
+     * @param isCaseInfoReady Whether case info is ready
+     * @return True if visibility conditions are met
+     */
+    private static Boolean evaluateProgressCaseVisibility(
+        Case caseRecord,
+        String caseInfo,
+        Boolean workOrderCreation,
+        Boolean isAssetMandatory,
+        Boolean isCaseInfoReady
+    ) {
+        if (caseRecord.Case_Type__c != 'New Service' && caseInfo != null &&
+            ((caseInfo.contains('Ready') || !isCaseInfoReady) ||
+             caseInfo == Constant_Util.PROGRESS_CASE ||
+             (caseInfo != Constant_Util.ASSET_NOT_ACTIVE &&
+              workOrderCreation && !isAssetMandatory &&
+              caseRecord.ContactId != null))) {
+            return true;
+        } else if (caseRecord.Case_Type__c == 'New Service' && caseInfo == null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @description Determines if Add Quote button should be visible based on business rules
+     * Moved from CaseUIService.shouldShowAddQuoteButton (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record to evaluate
+     * @param isCPQUser Whether current user has CPQ access
+     * @param isUpdateAssetActiveUser Whether current user can update assets
+     * @param caseInfo Current case information/validation message
+     * @param isOpportunityCreated Whether opportunity has been created
+     * @return True if Add Quote button should be visible
+     */
+    public static Boolean shouldShowAddQuoteButton(
+        Case caseRecord,
+        Boolean isCPQUser,
+        Boolean isUpdateAssetActiveUser,
+        String caseInfo,
+        Boolean isOpportunityCreated
+    ) {
+        // Check for Haul Away service
+        Boolean isHaulAway = HaulAwayService.getIsHaulAwayService(caseRecord);
+        if (isHaulAway && !isOpportunityCreated &&
+            caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New)) {
+            return true;
+        } else if (isHaulAway && isOpportunityCreated) {
+            return false;
+        }
+
+        // REFACTORED: Use CaseContextGetter for metadata query (Phase 3)
+        String buttonName = 'Add Quote';
+        Case_Highlight_Panel_Button__mdt metadata = CaseContextGetter.getButtonVisibilityMetadata(
+            caseRecord.RecordType.Name,
+            caseRecord.Case_Type__c,
+            caseRecord.Case_Sub_Type__c,
+            caseRecord.Case_Reason__c,
+            buttonName,
+            isCPQUser,
+            isUpdateAssetActiveUser
+        );
+
+        if (metadata != null && metadata.Visibility__c) {
+            return evaluateAddQuoteVisibility(
+                caseRecord,
+                caseInfo,
+                isOpportunityCreated
+            );
+        } else {
+            // Check UCC code for fallback logic
+            return evaluateAddQuoteByUserCategory(
+                caseRecord,
+                isCPQUser,
+                caseInfo,
+                isOpportunityCreated
+            );
+        }
+    }
+
+    /**
+     * @description Evaluates the detailed business logic for Add Quote button visibility
+     * Moved from CaseUIService.addQuoteVisibilityLogicCheck (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record
+     * @param caseInfo Current case information message
+     * @param isOpportunityCreated Whether opportunity has been created
+     * @return True if visibility conditions are met
+     */
+    private static Boolean evaluateAddQuoteVisibility(
+        Case caseRecord,
+        String caseInfo,
+        Boolean isOpportunityCreated
+    ) {
+        if (caseRecord.ContactId != null &&
+            caseInfo != null &&
+            caseInfo != '' &&
+            caseInfo != Constant_Util.ASSET_NOT_ACTIVE &&
+            !isOpportunityCreated &&
+            (caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New) ||
+             caseRecord.Status.equalsIgnoreCase(Constant_Util.Case_Open_Status))) {
+
+            if (caseRecord.Case_Type__c == 'New Service' &&
+                caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New)) {
+                return true;
+            } else if (caseRecord.Case_Type__c != 'New Service' && caseRecord.AssetId != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @description Evaluates Add Quote visibility based on User Categorization Code
+     * Moved from CaseUIService.getUserUCCDetail (Phase 2 refactoring)
+     *
+     * @param caseRecord The Case record
+     * @param isCPQUser Whether current user has CPQ access
+     * @param caseInfo Current case information message
+     * @param isOpportunityCreated Whether opportunity has been created
+     * @return True if visibility conditions are met based on UCC
+     */
+    private static Boolean evaluateAddQuoteByUserCategory(
+        Case caseRecord,
+        Boolean isCPQUser,
+        String caseInfo,
+        Boolean isOpportunityCreated
+    ) {
+        // REFACTORED: Use CaseContextGetter for user query (Phase 3)
+        User u = CaseContextGetter.getCurrentUserWithPermissions();
+
+        if (u.User_categorization_code__c != null &&
+            (u.User_categorization_code__c == Constant_Util.CSRES ||
+             u.User_categorization_code__c == Constant_Util.CSDTRES ||
+             u.User_categorization_code__c == Constant_Util.SPCOR) &&
+            isCPQUser) {
+
+            if ((caseRecord.Status.equalsIgnoreCase(Constant_Util.STATUS_New) ||
+                 caseRecord.Status.equalsIgnoreCase(Constant_Util.Case_Open_Status) ||
+                 caseRecord.Status != Constant_Util.CLOSED) &&
+                caseRecord.ContactId != null &&
+                caseRecord.Case_Type__c != null &&
+                caseRecord.Case_Sub_Type__c != null ||
+                (caseRecord.Case_Reason__c != null && caseRecord.Case_Type__c != 'Standard Case')) {
+
+                // REFACTORED: Use CaseContextGetter for metadata query (Phase 3)
+                Add_Quote__mdt metadata = CaseContextGetter.getAddQuoteMetadataByUCC(u.User_categorization_code__c);
+
+                if (metadata != null && metadata.Visibility__c) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // Custom exception class for better error handling
     private class CustomException extends Exception {}
 }
