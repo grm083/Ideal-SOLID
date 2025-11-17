@@ -147,30 +147,33 @@ public class SLACalculationUtility {
     public class NoEntitlementException extends Exception {}
     
     
+    /**
+     * REFACTORED: No longer writes to static CaseTriggerHelper.casewithLocation variable.
+     * Callers should use the returned Map instead of accessing static variables.
+     * This eliminates hidden coupling and improves testability.
+     */
     public static Map<Case, Account> buildCaseLocationMap(List<Case> caseList) {
         Map<Case, Account> caseLocationMap = new Map<Case, Account>();
-        Map<Id, Account> casewithLocationMap = new Map<Id, Account>();
         Set<Id> caseLocationSet = new Set<Id>();
-        
+
         for (Case c : caseList) {
-            
             caseLocationSet.add(c.Location__c);
-            
         }
-        
+
         Map<Id, Account> locationMap = new Map<Id, Account>(
             [SELECT Id, tz__UTF_Offset__c FROM Account WHERE Id IN :caseLocationSet]
         );
-        
+
         for (Case c : caseList) {
             Account acc = locationMap.get(c.Location__c);
             if (acc != null) {
                 caseLocationMap.put(c, acc);
-                casewithLocationMap.put(c.Id, acc);
             }
         }
-        
-        CaseTriggerHelper.casewithLocation.putAll(casewithLocationMap);
+
+        // REFACTORED: Removed static variable write
+        // Old code: CaseTriggerHelper.casewithLocation.putAll(casewithLocationMap);
+        // Callers should use the returned map directly
         return caseLocationMap;
     }
     

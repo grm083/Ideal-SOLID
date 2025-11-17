@@ -18,10 +18,22 @@ public class Entitlement_Utility {
     static final String IND_STANDARD = 'Industry Standard';
     static final String CUST_ENTITLEMENT = 'Customer Specific Entitlement';
 
-    // Global Set variable in which to house the Account Ids for the Entitlement query
-    // Entitlements without customer identifiers are always returned, thus the set is instantiated with a null value
-    // A date should return the minimum requested service date as well to ensure that all entitlements returned are within range
+    /**
+     * @deprecated Static variables violate SOLID principles and create hidden coupling.
+     * Use the parameter-based methods instead (getPrioritizedEntitlements, getRelevantEntitlements).
+     * These static variables will be removed in a future release.
+     * Migration: Extract accountIds and minimumServiceDate from your records and pass them as parameters.
+     */
+    @Deprecated
     public static Set<Id> accountIdSet = new Set<Id>{ null };
+
+    /**
+     * @deprecated Static variables violate SOLID principles and create hidden coupling.
+     * Use the parameter-based methods instead (getPrioritizedEntitlements, getRelevantEntitlements).
+     * These static variables will be removed in a future release.
+     * Migration: Extract accountIds and minimumServiceDate from your records and pass them as parameters.
+     */
+    @Deprecated
     public static Date minimumServiceDate;
 
     /**
@@ -39,9 +51,40 @@ public class Entitlement_Utility {
     }
 
     /**
+     * Result wrapper for Case details gathering
+     */
+    private class CaseDetailsResult {
+        Map<String, List<priorityFields>> priorityFieldsMap { get; set; }
+        Set<Id> accountIds { get; set; }
+        Date minimumServiceDate { get; set; }
+
+        CaseDetailsResult() {
+            this.priorityFieldsMap = new Map<String, List<priorityFields>>();
+            this.accountIds = new Set<Id>();
+            this.minimumServiceDate = Date.today();
+        }
+    }
+
+    /**
+     * Result wrapper for Quote details gathering
+     */
+    private class QuoteDetailsResult {
+        Map<String, List<priorityFields>> priorityFieldsMap { get; set; }
+        Set<Id> accountIds { get; set; }
+
+        QuoteDetailsResult() {
+            this.priorityFieldsMap = new Map<String, List<priorityFields>>();
+            this.accountIds = new Set<Id>();
+        }
+    }
+
+    /**
      * NEW PRIVATE HELPER METHOD
      * Performs the common logic to gather all necessary fields and potential
      * entitlements for a set of target records.
+     *
+     * REFACTORED: Now extracts accountIds and minimumServiceDate from records
+     * instead of relying on static variables.
      */
     private static CommonEntitlementData getCommonEntitlementData(Set<Id> targetRecords) {
         //System.debug('In getCommonEntitlementData():: ');
@@ -62,17 +105,31 @@ public class Entitlement_Utility {
         }
         //System.debug('caseIdSet:: '+caseIdSet);
 		//System.debug('quoteIdSet:: '+quoteIdSet);
-        
-        if (!caseIdSet.isEmpty()) { 
-            priorityFieldsMap.putAll(getCaseDetails(caseIdSet, priorityFieldsMap, fieldMapping));System.debug('63.priorityFieldsMap'+priorityFieldsMap);
+
+        // REFACTORED: Collect accountIds and minimumServiceDate from records
+        Set<Id> collectedAccountIds = new Set<Id>{ null };  // Include null for industry standard entitlements
+        Date minServiceDate = Date.today();
+
+        if (!caseIdSet.isEmpty()) {
+            CaseDetailsResult caseResult = getCaseDetailsWithMetadata(caseIdSet, priorityFieldsMap, fieldMapping);
+            priorityFieldsMap.putAll(caseResult.priorityFieldsMap);
+            collectedAccountIds.addAll(caseResult.accountIds);
+            if (caseResult.minimumServiceDate < minServiceDate) {
+                minServiceDate = caseResult.minimumServiceDate;
+            }
+            System.debug('63.priorityFieldsMap'+priorityFieldsMap);
         }
         if (!quoteIdSet.isEmpty()) {
-            priorityFieldsMap.putAll(getQuoteDetails(quoteIdSet, priorityFieldsMap, fieldMapping));
+            QuoteDetailsResult quoteResult = getQuoteDetailsWithMetadata(quoteIdSet, priorityFieldsMap, fieldMapping);
+            priorityFieldsMap.putAll(quoteResult.priorityFieldsMap);
+            collectedAccountIds.addAll(quoteResult.accountIds);
         }
         //System.debug('priorityFieldsMap:: '+priorityFieldsMap);
 
-        // This map holds all potential entitlements (e.g., 'entitlementMap2' from original)
-        Map<String, List<Entitlement>> allEntitlementsMap = getEntitlements(priorityFieldsMap, fieldMapping);
+        // REFACTORED: Pass accountIds and minimumServiceDate as parameters
+        Map<String, List<Entitlement>> allEntitlementsMap = getEntitlementsWithParams(
+            priorityFieldsMap, fieldMapping, collectedAccountIds, minServiceDate
+        );
 		//System.debug('71. allEntitlementsMap:'+allEntitlementsMap);
         for (List<priorityFields> fieldList : priorityFieldsMap.values()) {
             priorityFieldList.addAll(fieldList);
@@ -162,6 +219,194 @@ public class Entitlement_Utility {
 
     }
 
+    /**
+     * REFACTORED: New version that returns account IDs and minimum service date
+     * instead of using static variables.
+     */
+    private static CaseDetailsResult getCaseDetailsWithMetadata(
+        Set<Id> caseIdSet,
+        Map<String, List<priorityFields>> casePriorityFields,
+        List<Entitlement_Field_Mapping__mdt> fieldMapping
+    ) {
+        CaseDetailsResult result = new CaseDetailsResult();
+
+        // Build query string
+        String queryString = QUERY_INTRO;
+        Set<String> targetFields = new Set<String>();
+
+        for (Entitlement_Field_Mapping__mdt field : fieldMapping) {
+            if (field.Case__c != null) {
+                targetFields.add(field.Case__c);
+            }
+        }
+
+        for (String s : targetFields) {
+            queryString += ', ' + s;
+        }
+
+        queryString += ', Location__r.tz__UTF_Offset__c';
+        queryString += ' FROM Case WHERE Id IN :caseIdSet';
+        system.debug(queryString);
+
+        List<Case> caseList = (List<Case>) Database.query(queryString);
+
+        for (Case qCase : caseList) {
+            List<priorityFields> caseFields = new List<priorityFields>();
+
+            // REFACTORED: Collect account IDs into result instead of static variable
+            if (qCase.Client__c != null) {
+                result.accountIds.add(qCase.Client__c);
+            }
+
+            // REFACTORED: Track minimum service date in result
+            if (qCase.Service_Date__c != null && qCase.Service_Date__c < result.minimumServiceDate) {
+                result.minimumServiceDate = qCase.Service_Date__c;
+            }
+
+            for (Entitlement_Field_Mapping__mdt field : fieldMapping) {
+                priorityFields priorityInstance = new priorityFields();
+                priorityInstance.recordId = qCase.Id;
+
+                Integer countOfRelationships = -1;
+                if (field.Case__c != null) {
+                    countOfRelationships = field.Case__c.countMatches('.');
+                } else {
+                    continue;
+                }
+
+                switch on countOfRelationships {
+                    when 0 {
+                        priorityInstance.priorityLevel = field.Priority_Value__c;
+                        priorityInstance.commonName = field.MasterLabel;
+                        priorityInstance.entitlementField = field.Entitlement__c;
+                        priorityInstance.objectValue = String.valueOf(qCase.get(field.Case__c));
+                    }
+                    when 1 {
+                        String[] splitString = field.Case__c.split('\\.', 2);
+                        priorityInstance.priorityLevel = field.Priority_Value__c;
+                        priorityInstance.commonName = field.MasterLabel;
+                        priorityInstance.entitlementField = field.Entitlement__c;
+                        try {
+                            priorityInstance.objectValue = String.valueOf(qCase.getSobject(splitString[0]).get(splitString[1]));
+                        } catch (exception e) {
+                            // Ignore null relationship
+                        }
+                    }
+                    when 2 {
+                        String[] splitString = field.Case__c.split('\\.', 2);
+                        priorityInstance.priorityLevel = field.Priority_Value__c;
+                        priorityInstance.commonName = field.MasterLabel;
+                        priorityInstance.entitlementField = field.Entitlement__c;
+                        try {
+                            priorityInstance.objectValue = String.valueOf(qCase.getSobject(splitString[0]).getSobject(splitString[1]).get(splitString[2]));
+                        } catch (exception e) {
+                            // Ignore null relationship
+                        }
+                    }
+                    when 3 {
+                        String[] splitString = field.Case__c.split('\\.', 2);
+                        priorityInstance.priorityLevel = field.Priority_Value__c;
+                        priorityInstance.commonName = field.MasterLabel;
+                        priorityInstance.entitlementField = field.Entitlement__c;
+                        try {
+                            priorityInstance.objectValue = String.valueOf(qCase.getSobject(splitString[0]).getSobject(splitString[1]).getSobject(splitString[2]).get(splitString[3]));
+                        } catch (exception e) {
+                            // Ignore null relationship
+                        }
+                    }
+                    when else {
+                        continue;
+                    }
+                }
+
+                caseFields.add(priorityInstance);
+            }
+            result.priorityFieldsMap.put(qCase.Id, caseFields);
+        }
+
+        System.debug('getCaseDetailsWithMetadata result: ' + result.priorityFieldsMap);
+        return result;
+    }
+
+    /**
+     * REFACTORED: New version that returns account IDs instead of using static variables
+     */
+    private static QuoteDetailsResult getQuoteDetailsWithMetadata(
+        Set<Id> quoteIdSet,
+        Map<String, List<priorityFields>> quotePriorityFields,
+        List<Entitlement_Field_Mapping__mdt> fieldMapping
+    ) {
+        QuoteDetailsResult result = new QuoteDetailsResult();
+        QuoteProcurementController.ProductsWrapper productDesignations = new QuoteProcurementController.ProductsWrapper();
+
+        for (String quoteId : quoteIdSet) {
+            productDesignations = QuoteProcurementController.buildQuoteWrapper(quoteId);
+            List<priorityFields> quoteFields = new List<priorityFields>();
+
+            for (QuoteProcurementController.HeaderWrapper hw : productDesignations.configuredProducts) {
+                for (Entitlement_Field_Mapping__mdt field : fieldMapping) {
+                    priorityFields priorityInstance = new priorityFields();
+                    priorityInstance.priorityLevel = field.Priority_Value__c;
+                    priorityInstance.recordId = hw.quoteID;
+                    priorityInstance.commonName = field.MasterLabel;
+                    priorityInstance.entitlementField = field.Entitlement__c;
+                    priorityInstance.objectValue = (String) hw.getField(field.Quote__c);
+                    quoteFields.add(priorityInstance);
+                }
+                // REFACTORED: Collect account IDs into result instead of static variable
+                if (hw.clientId != null) {
+                    result.accountIds.add(hw.clientId);
+                }
+            }
+            result.priorityFieldsMap.put(quoteId, quoteFields);
+        }
+
+        return result;
+    }
+
+    /**
+     * REFACTORED: New version that accepts accountIds and minimumServiceDate as parameters
+     * instead of using static variables.
+     */
+    private static Map<String, List<Entitlement>> getEntitlementsWithParams(
+        Map<String, List<priorityFields>> priorityFields,
+        List<Entitlement_Field_Mapping__mdt> mappedFields,
+        Set<Id> paramAccountIdSet,
+        Date paramMinimumServiceDate
+    ) {
+        Map<String, List<Entitlement>> entitlementMap = new Map<String, List<Entitlement>>();
+        List<Entitlement> entitlementList = new List<Entitlement>();
+
+        String approved = 'Approved';
+        String queryString = QUERY_INTRO;
+        Set<String> targetFields = new Set<String>();
+
+        for (Entitlement_Field_Mapping__mdt field : mappedFields) {
+            targetFields.add(field.Entitlement__c);
+        }
+
+        targetFields.add('Name');
+        String STATUS_EXPIRED = 'Expired';
+
+        for (String s : targetFields) {
+            queryString += ', ' + s ;
+        }
+
+        // REFACTORED: Use parameters instead of static variables
+        queryString += ' FROM Entitlement WHERE AccountId IN :paramAccountIdSet AND StartDate <= :paramMinimumServiceDate AND Status__c = :approved AND Status !=:STATUS_EXPIRED LIMIT 49999 ';
+        entitlementList = Database.Query(queryString);
+
+        entitlementMap = filterEntitlementsByTime(priorityFields, entitlementList);
+
+        return entitlementMap;
+    }
+
+    /**
+     * @deprecated This method uses static variables which violate SOLID principles.
+     * Use getCaseDetailsWithMetadata instead, or use the public getPrioritizedEntitlements method.
+     * This method is maintained for backward compatibility only and will be removed in a future release.
+     */
+    @Deprecated
     public static Map<String, List<priorityFields>> getCaseDetails(Set<Id> caseIdSet,Map<String, List<priorityFields>> casePriorityFields,List<Entitlement_Field_Mapping__mdt> fieldMapping) {
 
         //As part of this acivity we want to construct a very specific query to return a case record with appropriate lookups
@@ -270,6 +515,12 @@ public class Entitlement_Utility {
 
     }
 
+    /**
+     * @deprecated This method uses static variables which violate SOLID principles.
+     * Use getQuoteDetailsWithMetadata instead, or use the public getPrioritizedEntitlements method.
+     * This method is maintained for backward compatibility only and will be removed in a future release.
+     */
+    @Deprecated
     public static Map<String, List<priorityFields>> getQuoteDetails(
         Set<Id> quoteIdSet,Map<String, List<priorityFields>> quotePriorityFields,List<Entitlement_Field_Mapping__mdt> fieldMapping) {
 
@@ -297,7 +548,12 @@ public class Entitlement_Utility {
 
     }
 
-    //The method to return all entitlements given the collection of accounts and minimum service dates
+    /**
+     * @deprecated This method uses static variables (accountIdSet, minimumServiceDate) which violate SOLID principles.
+     * Use getEntitlementsWithParams instead, or use the public getPrioritizedEntitlements method.
+     * This method is maintained for backward compatibility only and will be removed in a future release.
+     */
+    @Deprecated
     public static Map<String, List<Entitlement>> getEntitlements(Map<String, List<priorityFields>> priorityFields, List<Entitlement_Field_Mapping__mdt> mappedFields) {
 
         //System.debug('In getEntitlements():: ');
