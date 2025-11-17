@@ -28,14 +28,48 @@ public class CaseWorkOrderService {
 
     /**
      * @description Creates WorkOrders from Cases
+     * REFACTORED (Phase 5E): Implemented to delegate to WorkOrderCreation
+     *
      * @param caseIds Set of Case Ids to create work orders from
      * @return Map of Case Id to WorkOrder Id
      */
     public static Map<Id, Id> createWorkOrdersFromCases(Set<Id> caseIds) {
         Map<Id, Id> caseToWorkOrderMap = new Map<Id, Id>();
 
-        // TODO: Implement work order creation logic
-        // This should be extracted from CaseTriggerHelper or other locations
+        if (caseIds == null || caseIds.isEmpty()) {
+            return caseToWorkOrderMap;
+        }
+
+        // Query cases with required fields for work order creation
+        List<Case> casesToProcess = [
+            SELECT Id, Status, Case_Sub_Status__c, AssetId, ContactId,
+                   Case_Type__c, Case_Sub_Type__c, Service_Date__c,
+                   Location__c, Client__c, Reference_Number__c,
+                   SLA_Service_Date_Time__c, Is_Multivendor__c,
+                   Site_Contact__c, Site_Contact_Phone__c,
+                   User_Input_Work_Order_Instructions__c
+            FROM Case
+            WHERE Id IN :caseIds
+        ];
+
+        // Delegate to WorkOrderCreation for actual creation
+        Boolean success = WorkOrderCreation.createWorkOrders(casesToProcess);
+
+        if (success) {
+            // Query created work orders and map them back to cases
+            List<WorkOrder> createdWorkOrders = [
+                SELECT Id, CaseId
+                FROM WorkOrder
+                WHERE CaseId IN :caseIds
+                ORDER BY CreatedDate DESC
+            ];
+
+            for (WorkOrder wo : createdWorkOrders) {
+                if (!caseToWorkOrderMap.containsKey(wo.CaseId)) {
+                    caseToWorkOrderMap.put(wo.CaseId, wo.Id);
+                }
+            }
+        }
 
         return caseToWorkOrderMap;
     }
@@ -48,6 +82,77 @@ public class CaseWorkOrderService {
     public static Id createWorkOrderFromCase(Id caseId) {
         Map<Id, Id> results = createWorkOrdersFromCases(new Set<Id>{caseId});
         return results.get(caseId);
+    }
+
+    /**
+     * @description Initiates work order creation with validation
+     * REFACTORED (Phase 5E): Moved from CaseBusinessRuleService
+     * This is the main entry point for UI-triggered work order creation
+     *
+     * @param caseId Primary case ID
+     * @param caseIdList List of case IDs to create work orders for
+     * @return SUCCESS or FAILURE status string
+     */
+    @AuraEnabled
+    public static String initiateWorkOrderCreation(String caseId, List<String> caseIdList) {
+        try {
+            if (String.isBlank(caseId) || caseIdList == null || caseIdList.isEmpty()) {
+                return Constant_Util.Failure;
+            }
+
+            // Build set of all case IDs to process
+            Set<Id> caseIdsToProcess = new Set<Id>();
+            caseIdsToProcess.add(Id.valueOf(caseId));
+            for (String cId : caseIdList) {
+                caseIdsToProcess.add(Id.valueOf(cId));
+            }
+
+            // Validate all cases are ready for work order creation
+            for (Id validationCaseId : caseIdsToProcess) {
+                ValidationResult validationResult = validateWorkOrderCreation(validationCaseId);
+                if (!validationResult.isValid) {
+                    UTIL_LoggingService.logHandledException(
+                        new CustomException('Work Order validation failed: ' + validationResult.errorMessage),
+                        UserInfo.getOrganizationId(),
+                        UTIL_ErrorConstants.CASE_TRIGGER_CLASS,
+                        LoggingLevel.ERROR
+                    );
+                    return Constant_Util.Failure;
+                }
+            }
+
+            // Create work orders
+            Map<Id, Id> createdWorkOrders = createWorkOrdersFromCases(caseIdsToProcess);
+
+            if (createdWorkOrders.isEmpty()) {
+                return Constant_Util.Failure;
+            }
+
+            // Update case statuses
+            List<Case> casesToUpdate = [
+                SELECT Id, Status, Case_Sub_Status__c
+                FROM Case
+                WHERE Id IN :caseIdsToProcess
+            ];
+
+            for (Case c : casesToUpdate) {
+                c.Status = Constant_Util.OPEN;
+                c.Case_Sub_Status__c = Constant_Util.PENDING_SERVICE_INTEGRATION;
+            }
+
+            CaseDMLService.DMLResult updateResult = CaseDMLService.getInstance().updateCases(casesToUpdate);
+
+            return updateResult.isSuccess ? Constant_Util.SUCCESS : Constant_Util.Failure;
+
+        } catch (Exception ex) {
+            UTIL_LoggingService.logHandledException(
+                ex,
+                UserInfo.getOrganizationId(),
+                UTIL_ErrorConstants.ERROR_APPLICATION,
+                LoggingLevel.ERROR
+            );
+            return Constant_Util.Failure;
+        }
     }
 
     // ========================================================================
@@ -79,17 +184,23 @@ public class CaseWorkOrderService {
 
     /**
      * @description Validates if a Case can create a WorkOrder
-     * @param caseRecord The Case record to validate
+     * REFACTORED (Phase 5E): Delegates to CaseBusinessRuleService for validation logic
+     *
+     * @param caseId The Case ID to validate
      * @return ValidationResult indicating if WO creation is allowed
      */
-    public static ValidationResult validateWorkOrderCreation(Case caseRecord) {
+    public static ValidationResult validateWorkOrderCreation(Id caseId) {
         ValidationResult result = new ValidationResult();
-        result.isValid = true;
 
-        // TODO: Add validation rules
-        // - Check case status
-        // - Check required fields
-        // - Check business rules
+        // Delegate to CaseBusinessRuleService for business rule validation
+        Map<String, Object> businessRuleValidation = CaseBusinessRuleService.validateCaseReadyForWorkOrder(caseId);
+
+        result.isValid = (Boolean) businessRuleValidation.get('isValid');
+        List<String> messages = (List<String>) businessRuleValidation.get('messages');
+
+        if (messages != null && !messages.isEmpty()) {
+            result.errorMessage = String.join(messages, '; ');
+        }
 
         return result;
     }

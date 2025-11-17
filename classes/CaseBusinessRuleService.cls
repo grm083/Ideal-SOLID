@@ -1480,83 +1480,19 @@ public without sharing class CaseBusinessRuleService {
     
     /**
      * @description Initiates work order creation process for one or more cases
+     * @deprecated Use CaseWorkOrderService.initiateWorkOrderCreation() instead (Phase 5E refactoring)
+     * This method is maintained for backward compatibility only.
+     * All work order orchestration logic has been moved to CaseWorkOrderService.
+     *
      * @param caseId Primary case ID that triggered the work order request
      * @param caseIdList List of case IDs to create work orders for (may be multi-case)
      * @return SUCCESS or FAILURE status string
      */
+    @Deprecated
     public static String initiateWorkOrderCreation(String caseId, List<String> caseIdList) {
-        try {
-            if (String.isBlank(caseId) || caseIdList == null || caseIdList.isEmpty()) {
-                return Constant_Util.Failure;
-            }
-            
-            // Validate all cases are ready for work order creation
-            Set<Id> caseIdsToValidate = new Set<Id>();
-            caseIdsToValidate.add(Id.valueOf(caseId));
-            for (String cId : caseIdList) {
-                caseIdsToValidate.add(Id.valueOf(cId));
-            }
-            
-            // Validate each case
-            Boolean allCasesValid = true;
-            for (Id validationCaseId : caseIdsToValidate) {
-                Map<String, Object> validationResult = validateCaseReadyForWorkOrder(validationCaseId);
-                if (!(Boolean)validationResult.get('isValid')) {
-                    UTIL_LoggingService.logHandledException(
-                        new CustomException('Case validation failed: ' + validationResult.get('messages')),
-                        UserInfo.getOrganizationId(),
-                        UTIL_ErrorConstants.CASE_TRIGGER_CLASS,
-                        LoggingLevel.ERROR
-                    );
-                    allCasesValid = false;
-                }
-            }
-            
-            if (!allCasesValid) {
-                return Constant_Util.Failure;
-            }
-            
-            // Get case records for work order creation
-            List<Case> casesToProcess = [
-                SELECT Id, Status, Case_Sub_Status__c, AssetId, ContactId, 
-                       Case_Type__c, Case_Sub_Type__c, Service_Date__c,
-                       Location__c, Client__c, Reference_Number__c, 
-                       SLA_Service_Date_Time__c, Is_Multivendor__c,
-                       Site_Contact__c, Site_Contact_Phone__c,
-                       User_Input_Work_Order_Instructions__c
-                FROM Case
-                WHERE Id IN :caseIdsToValidate
-            ];
-            
-            // Call work order creation logic (delegating to appropriate handler)
-            // This would integrate with your existing WorkOrderCreation service/class
-            Boolean workOrderCreated = WorkOrderCreation.createWorkOrders(casesToProcess);
-            
-            if (workOrderCreated) {
-                // Update case statuses via CaseDMLService
-                List<Case> casesToUpdate = new List<Case>();
-                for (Case c : casesToProcess) {
-                    c.Status = Constant_Util.OPEN;
-                    c.Case_Sub_Status__c = Constant_Util.PENDING_SERVICE_INTEGRATION;
-                    casesToUpdate.add(c);
-                }
-                
-                CaseDMLService.DMLResult updateResult = CaseDMLService.getInstance().updateCases(casesToUpdate);
-                
-                if (updateResult.isAllSuccess()) {
-                    return Constant_Util.SUCCESS;
-                } else {
-                    return Constant_Util.Failure;
-                }
-            }
-            
-            return Constant_Util.Failure;
-            
-        } catch (Exception ex) {
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
-                UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
-            return Constant_Util.Failure;
-        }
+        // REFACTORED (Phase 5E): Delegate to CaseWorkOrderService
+        // All logic moved to proper service layer
+        return CaseWorkOrderService.initiateWorkOrderCreation(caseId, caseIdList);
     }
     
     /**

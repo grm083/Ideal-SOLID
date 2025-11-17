@@ -294,10 +294,11 @@ public with sharing class GetCaseInformation {
     @AuraEnabled
     public static String initiateWorkOrder(String caseId, List<String> caseIdList){
         try {
-            return CaseBusinessRuleService.initiateWorkOrderCreation(caseId, caseIdList);
+            // REFACTORED (Phase 5E): Delegate to CaseWorkOrderService
+            return CaseWorkOrderService.initiateWorkOrderCreation(caseId, caseIdList);
         } catch (Exception ex) {
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION,
                                                     LoggingLevel.ERROR);
             return Constant_Util.Failure;
         }
