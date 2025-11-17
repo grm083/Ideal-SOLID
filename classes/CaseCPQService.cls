@@ -27,18 +27,162 @@ public class CaseCPQService {
     // ========================================================================
 
     /**
-     * @description Creates Opportunity and Quote from Case (Lightning-enabled wrapper)
-     * This method wraps the legacy createOppQuote logic from GetCaseInformation
-     * for backward compatibility while providing the proper service layer structure.
+     * @description Creates Opportunity and Quote from Case
+     * REFACTORED (Phase 5C): Moved from GetCaseInformation.createOppQuote()
+     * This method contains the full CPQ quote creation logic that was previously
+     * scattered in GetCaseInformation.
      *
      * @param caseId The Case Id to create quote from
      * @return Quote Id of the created quote
+     * @throws Exception if quote creation fails
      */
     @AuraEnabled
     public static String createQuoteFromCase(String caseId) {
-        // Delegate to GetCaseInformation for now (maintains backward compatibility)
-        // TODO: Refactor to move all CPQ logic into this service class
-        return GetCaseInformation.createOppQuote(caseId);
+        Opportunity opp = new Opportunity();
+        String quoteStatus;
+
+        // Query Case with all required fields
+        Case c = [
+            SELECT Id, Status, AssetId, Asset.Duration__c, Location__c, ContactId,
+                   CaseNumber, Service_Date__c, Case_Sub_Type__c, Case_Reason__c,
+                   Reference_Number__c, Tracking_Number__c, Integrate_with_Acorn__c,
+                   Case_Type__c, Case_Record_Type__c, Quote_Only__c,
+                   Is_Haul_Away_Service__c, Haul_Away_information__c, Haul_Away_Vendor__c
+            FROM Case
+            WHERE Id = :caseId
+        ];
+
+        // Query Location details
+        Account loc = [
+            SELECT Id, Primary_Segment__c, ShippingStreet, ShippingCity,
+                   ShippingState, ShippingPostalCode
+            FROM Account
+            WHERE Id = :c.Location__c
+        ];
+
+        // Check if this is Haul Away service
+        Boolean isHaulAway = HaulAwayService.getIsHaulAwayService(c);
+
+        // Build Opportunity
+        opp.Name = c.CaseNumber;
+        opp.AccountId = loc.Id;
+        opp.StageName = Constant_Util.PRODUCT_CONFIGURATION;
+        opp.CloseDate = Date.today() + 4;
+        opp.SBQQ__QuotePricebookId__c = [
+            SELECT Id
+            FROM PriceBook2
+            WHERE Name = 'Standard Price Book'
+            LIMIT 1
+        ].Id;
+        opp.Case__c = c.Id;
+
+        // Set Duration based on service type
+        if (isHaulAway) {
+            opp.Duration__c = 'Temporary';
+        } else if (!String.isEmpty(c.Case_Type__c) && c.Case_Type__c == Constant_Util.NEW_SERVICE) {
+            opp.Duration__c = c.Case_Sub_Type__c;
+        } else {
+            opp.Duration__c = c.Asset.Duration__c != null ? c.Asset.Duration__c : c.Case_Sub_Type__c;
+        }
+
+        // Insert Opportunity
+        try {
+            if (opp != null) {
+                insert opp;
+            }
+        } catch (DmlException e) {
+            System.debug('Error creating Opportunity: ' + e.getMessage());
+            throw e;
+        }
+
+        // Build Quote
+        SBQQ__Quote__c q = new SBQQ__Quote__c();
+        q.SBQQ__Opportunity2__c = opp.Id;
+        q.SBQQ__Account__c = loc.Id;
+        q.SBQQ__Primary__c = true;
+        q.SBQQ__StartDate__c = c.Service_Date__c;
+        q.SBQQ__ShippingStreet__c = loc.ShippingStreet;
+        q.SBQQ__ShippingCity__c = loc.ShippingCity;
+        q.SBQQ__ShippingState__c = loc.ShippingState;
+        q.SBQQ__ShippingPostalCode__c = loc.ShippingPostalCode;
+        q.SBQQ__PrimaryContact__c = c.ContactId;
+        q.Duration__c = opp.Duration__c;
+        q.Quote_Only__c = c.Quote_Only__c;
+
+        // Determine Quote Type
+        String quoteTypeConst = determineQuoteType(c);
+
+        // Get Quote Type picklist values
+        Schema.DescribeFieldResult quoteTypeDesc = SBQQ__Quote__c.SBQQ__Type__c.getDescribe();
+        List<Schema.PicklistEntry> quoteTypes = quoteTypeDesc.getPicklistValues();
+
+        Map<String, String> typePLMap = new Map<String, String>();
+        for (Schema.PicklistEntry plEntry : quoteTypes) {
+            if (plEntry.isActive()) {
+                typePLMap.put(plEntry.getValue(), plEntry.getLabel());
+            }
+        }
+
+        if (typePLMap.containsKey(quoteTypeConst)) {
+            q.SBQQ__Type__c = typePLMap.get(quoteTypeConst);
+        }
+
+        // Insert Quote
+        try {
+            if (q != null) {
+                insert q;
+            }
+
+            // Query back the Quote to get Name
+            SBQQ__Quote__c quote = [
+                SELECT Id, Name
+                FROM SBQQ__Quote__c
+                WHERE Id = :q.Id
+            ];
+
+            // Build case comments
+            String sComments = buildQuoteComments(c, quote.Name);
+            q.Case_Comments__c = sComments;
+
+            // Update Quote with comments
+            if (q != null) {
+                update q;
+            }
+
+            // Update Case
+            c.IsOpportunity_Created__c = true;
+            c.Integrate_with_Acorn__c = false;
+            c.Status = Constant_Util.OPEN;
+            c.Master_Intake_Complete__c = true;
+
+            // Haul Away specific fields
+            if (isHaulAway) {
+                c.Material_Grade__c = 'No Grade';
+                c.Material_Type__c = Constant_Util.BULK_MATERIAL_PRODUCTCODE;
+                c.Equipment_Type_Code__c = 'UNK';
+                c.Equipment_Size_Code__c = 'UNK';
+                c.Service_Occurrence_Type_Code__c = 'OC';
+            }
+
+            // Update Case
+            if (c != null) {
+                update c;
+
+                // Haul Away quote line creation
+                if (isHaulAway) {
+                    Map<String, SObject> returnMap = new Map<String, SObject>();
+                    returnMap.put(String.valueOf(c.Id), (SObject) c);
+                    returnMap.put(String.valueOf(q.Id), (SObject) q);
+                    QuoteLineCreationHandler.execute(returnMap);
+                }
+            }
+
+        } catch (Exception e) {
+            System.debug('Error creating Quote: ' + e.getMessage());
+            throw e;
+        }
+
+        return q.Id;
     }
 
     /**
