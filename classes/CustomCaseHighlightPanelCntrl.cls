@@ -1,34 +1,49 @@
 /**
 * @author Accenture
 * @date 2/28/2019
-* @description : Apex class CustomCaseHighlightPanelCntrl  
+* @description : Apex class CustomCaseHighlightPanelCntrl
+*
+* REFACTORED (Phase 5A):
+* - Removed static variable anti-patterns (myCases, myCasesList, POProfileReqMap)
+* - Converted to method-scoped variables for thread safety and testability
+* - Removed writes to deprecated CaseTriggerHelper static maps (Phase 4)
 **/
 public without sharing class CustomCaseHighlightPanelCntrl {
-    private static Case myCases = new case();
-    private static List<Case> myCasesList = new List<case>();
-    private static Map<String,Boolean> POProfileReqMap = new Map<String,Boolean>();
-  
+
+    /**
+     * REFACTORED: Removed static variables - now method-scoped for proper encapsulation
+     * OLD CODE (Anti-pattern):
+     *   private static Case myCases = new case();
+     *   private static List<Case> myCasesList = new List<case>();
+     *   private static Map<String,Boolean> POProfileReqMap = new Map<String,Boolean>();
+     */
+
     //Method created to extract Custom Metadata  SDT-20936 . Custom Metadata controls visiblity of PO/Profile based on Case Type.
     public static Map<String,Boolean> getMetadata(){
-        
-        List<POProfileDisable__mdt> lstPOProfileReq = POProfileDisable__mdt.getAll().values();        
-         for(POProfileDisable__mdt poPF :lstPOProfileReq){ 
-           POProfileReqMap.put(poPF.CaseType__c,poPF.IsEnable__c);            
-     }    
-        return POProfileReqMap;
+        // REFACTORED: Made method-scoped instead of static class variable
+        Map<String,Boolean> poProfileReqMap = new Map<String,Boolean>();
+
+        List<POProfileDisable__mdt> lstPOProfileReq = POProfileDisable__mdt.getAll().values();
+         for(POProfileDisable__mdt poPF :lstPOProfileReq){
+           poProfileReqMap.put(poPF.CaseType__c,poPF.IsEnable__c);
+     }
+        return poProfileReqMap;
    }
          
 /**
 * @author Accenture
 * @date 2/28/2019
 * @description : Apex method getCaseHighlightDetails to display the case details in highlight panel
-**/ 
+* REFACTORED (Phase 5A): Made myCases method-scoped instead of static class variable
+**/
     @AuraEnabled
     public static Wrapper getCaseHighlightDetails(Id caseId){
         Wrapper wrapperClass = new Wrapper();
         Boolean POFlag ;
-      
-    
+
+        // REFACTORED: Made method-scoped instead of static class variable
+        Case myCases;
+
       try{
             myCases = [SELECT Id, Client__c,accountId,CaseNumber,Reference_Number__c,Profile_Number__c,Override_Profile_Number_Task__c,Location__c,Supplier__c,Supplier__r.Name,Location__r.Name,ContactId,Contact.Name, Contact_Title__c,Case_Type__c,Case_Sub_type__c,
             Invoice_Number__c,Disputed_Amount__c,//SDT 39047           
@@ -91,18 +106,21 @@ public without sharing class CustomCaseHighlightPanelCntrl {
             }
             /*if(string.IsBlank(wrapperClass.reqInfo)){
                 wrapperClass.caseInfo = Constant_Util.READY;
-            } */           
-            List<String> processSet = System.Label.Process_List.split(Constant_Util.COMMA);
-            List<Task> tskLst = [SELECT Id, WhatId, Process__c, status FROM Task WHERE WhatId =: caseId  
-                                        AND status =: Constant_Util.OPEN AND Process__c IN: processSet];                                   
-            if((!tskLst.isEmpty() && tskLst != null) || myCases.Case_Sub_Status__c == Constant_Util.INTEGRATION_ERROR) {
+            } */
+
+            // REFACTORED (Phase 5F): Use CaseTaskService instead of direct SOQL query
+            // OLD CODE: List<Task> tskLst = [SELECT ... FROM Task WHERE ...];
+            Integer openTaskCount = CaseTaskService.getOpenTaskCount(caseId);
+            if(openTaskCount > 0 || myCases.Case_Sub_Status__c == Constant_Util.INTEGRATION_ERROR) {
                 wrapperClass.isOpenTask = true;
             }
-      
+
+
        //Setting IsPOProfileDisable flag to disable PO/Profile -- SDT-20936
-            POProfileReqMap = getMetadata();       
-          if(POProfileReqMap.get(myCases.Case_Type__c) != null){
-           wrapperClass.IsPOProfileDisable = POProfileReqMap.get(myCases.Case_Type__c);     
+            // REFACTORED: Use method-scoped variable instead of static
+            Map<String,Boolean> poProfileReqMap = getMetadata();
+          if(poProfileReqMap.get(myCases.Case_Type__c) != null){
+           wrapperClass.IsPOProfileDisable = poProfileReqMap.get(myCases.Case_Type__c);
           }
                        
            
@@ -119,7 +137,8 @@ public without sharing class CustomCaseHighlightPanelCntrl {
 * @author Accenture
 * @date 2/28/2019
 * @description : Apex method to get po/profileNumber/psi information
-**/ 
+* REFACTORED (Phase 5A): Made myCasesList method-scoped instead of static class variable
+**/
     public static List<String> getRequiredInformation(Case myCases) {
         String reqInfo = '';
         set<Id> accountIdset = new set<Id>();
@@ -127,21 +146,34 @@ public without sharing class CustomCaseHighlightPanelCntrl {
         set<string> ServiceTypeSet = new Set<string>();
         set<Id> relatedCaseIdSet = new set<Id>();
         set<Id> recordTypeIdSet = new set<Id>();
-        accountIdset.add(myCases.Client__c); 
+        accountIdset.add(myCases.Client__c);
         requestTypeSet.add(myCases.Case_Type__c);
         ServiceTypeSet.add(myCases.Case_Sub_type__c);
         List<String> resultList = new List<String>();
+
+        // REFACTORED: Made method-scoped instead of static class variable
+        List<Case> myCasesList = new List<Case>();
+
         // for po/profile/psi
             myCasesList.add(myCases);
             map<Id,Business_Rule__c> reqInfomap = new map<Id,Business_Rule__c>();
+
+            // REFACTORED (Phase 5A): Create local maps instead of writing to deprecated static variables
+            // OLD CODE (Anti-pattern): CaseTriggerHelper.casewithContainer.put() - DEPRECATED in Phase 4
+            // OLD CODE (Anti-pattern): CaseTriggerHelper.casewithLocation.put() - DEPRECATED in Phase 4
+            Map<Id,Asset> localAssetMap = new Map<Id,Asset>();
+            Map<Id,Account> localLocationMap = new Map<Id,Account>();
+
             if(myCases.Status.equals(Constant_Util.STATUS_New) || myCases.Status.equals(Constant_Util.PENDING) || (myCases.Status.equals(Constant_Util.OPEN) && myCases.Case_Record_Type__c == Constant_Util.New_Service_Case)){
             for(Asset a : [SELECT Id,Product2.ProductTypeSelected__c,Duration__c,Material_Type__c,Project_Code__c,Active__c,Sensitivity_Code__c,End_Date_Based_on_Project_code__c
                            FROM Asset WHERE Id =: myCases.AssetId LIMIT 49999]){
-                               CaseTriggerHelper.casewithContainer.put(a.Id,a);
+                               // REFACTORED: Use local map instead of deprecated static variable
+                               localAssetMap.put(a.Id,a);
                            }
-            for(Account loc: [SELECT Id,Brand__c,Geography__c,Division__c,Location_Type__c 
+            for(Account loc: [SELECT Id,Brand__c,Geography__c,Division__c,Location_Type__c
                               FROM Account WHERE Id =: myCases.Location__c LIMIT 49999]){
-                                  CaseTriggerHelper.casewithLocation.put(loc.Id,Loc);
+                                  // REFACTORED: Use local map instead of deprecated static variable
+                                  localLocationMap.put(loc.Id,loc);
                               }
                 Id reqInfoRecTypeId = Schema.SObjectType.Business_Rule__c.getRecordTypeInfosByName().get(Constant_Util.REQUIRED_INFORMATION).getRecordTypeId();
                 if(myCases.Status.equals(Constant_Util.STATUS_New) || myCases.Status.equals(Constant_Util.OPEN)){
@@ -162,7 +194,8 @@ public without sharing class CustomCaseHighlightPanelCntrl {
                         }
                 	}
                 }else{
-                    List<BusinessRuleHelper.BusinessRulewrapper> businessRulewrapperlst = BusinessRuleHelper.businessRuleSelection(myCasesList,recordTypeIdSet,accountIdset,requestTypeSet,ServiceTypeSet,CaseTriggerHelper.casewithContainer,CaseTriggerHelper.casewithLocation);
+                    // REFACTORED (Phase 5A): Pass local maps instead of deprecated static variables
+                    List<BusinessRuleHelper.BusinessRulewrapper> businessRulewrapperlst = BusinessRuleHelper.businessRuleSelection(myCasesList,recordTypeIdSet,accountIdset,requestTypeSet,ServiceTypeSet,localAssetMap,localLocationMap);
                     //List<BusinessRuleHelper.BusinessRulewrapper> businessRulewrapperlst = BusinessRuleHelper.businessRuleSelection(myCases.Id,recordTypeIdSet);
                     if(businessRulewrapperlst != null && businessRulewrapperlst.size() > 0){
                         for(BusinessRuleHelper.BusinessRulewrapper brw : businessRulewrapperlst){
