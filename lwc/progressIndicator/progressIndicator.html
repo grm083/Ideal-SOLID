@@ -1,0 +1,42 @@
+<template>
+    <!-- Progress Indicator / Wizard Stepper Component -->
+    <div class="slds-progress">
+        <ol class="slds-progress__list">
+            <template for:each={stepsWithStatus} for:item="step">
+                <li key={step.id} class={step.liClass}>
+                    <template if:true={step.isClickable}>
+                        <a href="javascript:void(0);" class="slds-progress__link" data-step={step.id} onclick={handleStepClick}>
+                            <span class="slds-progress__marker">
+                                <template if:true={step.isCompleted}>
+                                    <lightning-icon icon-name="utility:check" size="x-small" alternative-text="Completed"></lightning-icon>
+                                </template>
+                                <template if:false={step.isCompleted}>
+                                    <span class="slds-assistive-text">{step.statusText}</span>
+                                </template>
+                            </span>
+                            <span class="slds-progress__label">{step.label}</span>
+                        </a>
+                    </template>
+                    <template if:false={step.isClickable}>
+                        <div class="slds-progress__marker">
+                            <template if:true={step.isCompleted}>
+                                <lightning-icon icon-name="utility:check" size="x-small" alternative-text="Completed"></lightning-icon>
+                            </template>
+                            <template if:false={step.isCompleted}>
+                                <span class="slds-assistive-text">{step.statusText}</span>
+                            </template>
+                        </div>
+                        <span class="slds-progress__label">{step.label}</span>
+                    </template>
+                </li>
+            </template>
+        </ol>
+        <template if:true={showProgressBar}>
+            <div class="slds-progress-bar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercentage} role="progressbar">
+                <span class="slds-progress-bar__value" style={progressBarStyle}>
+                    <span class="slds-assistive-text">Progress: {progressPercentage}%</span>
+                </span>
+            </div>
+        </template>
+    </div>
+</template>
