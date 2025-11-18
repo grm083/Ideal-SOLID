@@ -331,7 +331,8 @@
      * Generic method to open modals - replaces 10+ individual modal open methods
      */
     openModal: function(component, modalType, dynamicComponent, targetDiv, params) {
-        const modalState = component.get("v.modalState");
+        // Clone modalState to ensure proper reactivity
+        const modalState = Object.assign({}, component.get("v.modalState"));
         modalState.isOpen = (modalType !== 'serviceDate' && modalType !== 'caseType' && modalType !== 'customerInfo' && modalType !== 'closeCasePop' && modalType !== 'contact' && modalType !== 'location');
         modalState['is' + modalType.charAt(0).toUpperCase() + modalType.slice(1)] = true;
         component.set("v.modalState", modalState);
@@ -397,11 +398,14 @@
     handleHoverEnter: function(component, event, entityType) {
         const hoverDelay = parseInt($A.get("$Label.c.HoverDelay")) || 300;
         const timer = setTimeout($A.getCallback(() => {
+            // Clone hoverState and nested entity object for proper reactivity
             const hoverState = component.get('v.hoverState');
             if (!hoverState[entityType].showCard) {
-                hoverState[entityType].isHovering = true;
-                hoverState[entityType].showCard = true;
-                component.set("v.hoverState", hoverState);
+                const newHoverState = Object.assign({}, hoverState);
+                newHoverState[entityType] = Object.assign({}, hoverState[entityType]);
+                newHoverState[entityType].isHovering = true;
+                newHoverState[entityType].showCard = true;
+                component.set("v.hoverState", newHoverState);
                 this.hovercall(component, entityType.charAt(0).toUpperCase() + entityType.slice(1), entityType + 'Comp');
             }
         }), hoverDelay);
@@ -420,9 +424,12 @@
             if (component.isValid()) {
                 const hoverState = component.get('v.hoverState');
                 if (hoverState[entityType].showCard) {
-                    hoverState[entityType].isHovering = false;
-                    hoverState[entityType].showCard = false;
-                    component.set("v.hoverState", hoverState);
+                    // Clone hoverState and nested entity object for proper reactivity
+                    const newHoverState = Object.assign({}, hoverState);
+                    newHoverState[entityType] = Object.assign({}, hoverState[entityType]);
+                    newHoverState[entityType].isHovering = false;
+                    newHoverState[entityType].showCard = false;
+                    component.set("v.hoverState", newHoverState);
                 }
             }
         });
@@ -432,15 +439,21 @@
      * Mouse hover/out handlers for persistent cards
      */
     handleMouseHover: function(component, event, entityType) {
+        // Clone hoverState and nested entity object for proper reactivity
         const hoverState = component.get('v.hoverState');
-        hoverState[entityType].showCard = false;
-        component.set("v.hoverState", hoverState);
+        const newHoverState = Object.assign({}, hoverState);
+        newHoverState[entityType] = Object.assign({}, hoverState[entityType]);
+        newHoverState[entityType].showCard = false;
+        component.set("v.hoverState", newHoverState);
     },
 
     handleMouseHoverOut: function(component, event, entityType) {
+        // Clone hoverState and nested entity object for proper reactivity
         const hoverState = component.get('v.hoverState');
-        hoverState[entityType].showCard = false;
-        hoverState[entityType].isHovering = false;
-        component.set("v.hoverState", hoverState);
+        const newHoverState = Object.assign({}, hoverState);
+        newHoverState[entityType] = Object.assign({}, hoverState[entityType]);
+        newHoverState[entityType].showCard = false;
+        newHoverState[entityType].isHovering = false;
+        component.set("v.hoverState", newHoverState);
     }
 })
