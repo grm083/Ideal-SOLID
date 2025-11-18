@@ -1,0 +1,72 @@
+/* Case Wizard Stepper Styles */
+
+.wizard-container {
+    position: relative;
+}
+
+.step-content {
+    margin-top: 1.5rem;
+    min-height: 20rem;
+}
+
+.slds-card {
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.slds-card__header {
+    padding: 1rem;
+}
+
+.slds-border_bottom {
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-card__body_inner {
+    padding: 1.5rem 1rem;
+}
+
+.slds-text-heading_medium {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+.slds-text-body_small {
+    font-size: 0.8125rem;
+}
+
+.slds-text-color_weak {
+    color: rgb(116, 116, 116);
+}
+
+.slds-m-top_x-small {
+    margin-top: 0.5rem;
+}
+
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+/* Navigation buttons */
+.slds-grid {
+    display: flex;
+}
+
+.slds-grid_align-spread {
+    justify-content: space-between;
+}
+
+/* Loading spinner overlay */
+lightning-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.8);
+}
