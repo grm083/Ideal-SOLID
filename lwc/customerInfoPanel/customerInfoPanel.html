@@ -1,0 +1,166 @@
+<template>
+    <!-- Customer Info Panel Component -->
+    <div class="customer-info-panel-container">
+        <div class="slds-card">
+            <div class="slds-card__header slds-border_bottom">
+                <h3 class="slds-text-heading_small">Customer Information</h3>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- Business Rule Requirements Display -->
+                <template if:true={hasBusinessRules}>
+                    <div class="slds-m-bottom_medium">
+                        <div class="slds-notify slds-notify_alert slds-alert_info" role="alert">
+                            <lightning-icon icon-name="utility:info" size="x-small" variant="info" class="slds-m-right_x-small"></lightning-icon>
+                            <div>
+                                <h2><strong>Required Information</strong></h2>
+                                <ul class="slds-list_dotted">
+                                    <template if:true={isPORequired}>
+                                        <li>Purchase Order Number is required</li>
+                                    </template>
+                                    <template if:true={isProfileNumberRequired}>
+                                        <li>Profile Number is required</li>
+                                    </template>
+                                    <template if:true={isPSIRequired}>
+                                        <li>PSI is required</li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Form Fields -->
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <!-- Purchase Order Number -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            label="Purchase Order Number"
+                            value={customerInfo.purchaseOrderNumber}
+                            onchange={handlePONumberChange}
+                            data-field="purchaseOrderNumber"
+                            required={isPORequired}
+                            disabled={isLoading}>
+                        </lightning-input>
+                        <template if:true={isPORequired}>
+                            <div class="slds-form-element__help">
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Override PO Create Task"
+                                    checked={customerInfo.overridePOCreateTask}
+                                    onchange={handleOverridePOChange}
+                                    disabled={isLoading}>
+                                </lightning-input>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Profile Number -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            label="Profile Number"
+                            value={customerInfo.profileNumber}
+                            onchange={handleProfileNumberChange}
+                            data-field="profileNumber"
+                            required={isProfileNumberRequired}
+                            disabled={isLoading}>
+                        </lightning-input>
+                        <template if:true={isProfileNumberRequired}>
+                            <div class="slds-form-element__help">
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Override Profile Number Task"
+                                    checked={customerInfo.overrideProfileNumberTask}
+                                    onchange={handleOverrideProfileChange}
+                                    disabled={isLoading}>
+                                </lightning-input>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- PSI -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            type="number"
+                            label="PSI"
+                            value={customerInfo.psi}
+                            onchange={handlePSIChange}
+                            data-field="psi"
+                            required={isPSIRequired}
+                            disabled={isLoading}
+                            formatter="decimal"
+                            step="0.01">
+                        </lightning-input>
+                    </div>
+
+                    <!-- PSI Override Reason -->
+                    <template if:true={showPSIOverride}>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input
+                                label="PSI Override Reason"
+                                value={customerInfo.psiOverrideReason}
+                                onchange={handlePSIOverrideReasonChange}
+                                data-field="psiOverrideReason"
+                                disabled={isLoading}>
+                            </lightning-input>
+                        </div>
+                    </template>
+
+                    <!-- PSI Comments -->
+                    <template if:true={showPSIComments}>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-textarea
+                                label="PSI Comments"
+                                value={customerInfo.psiComments}
+                                onchange={handlePSICommentsChange}
+                                data-field="psiComments"
+                                disabled={isLoading}>
+                            </lightning-textarea>
+                        </div>
+                    </template>
+
+                    <!-- Company Category -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            label="Company Category"
+                            value={customerInfo.companyCategory}
+                            onchange={handleCompanyCategoryChange}
+                            data-field="companyCategory"
+                            disabled={isLoading}>
+                        </lightning-input>
+                        <div class="slds-form-element__help">
+                            <lightning-input
+                                type="checkbox"
+                                label="Override Company Category Task"
+                                checked={customerInfo.overrideCompanyCategoryTask}
+                                onchange={handleOverrideCompanyCategoryChange}
+                                disabled={isLoading}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="slds-m-top_medium slds-text-align_right">
+                    <lightning-button
+                        label="Reset"
+                        onclick={handleReset}
+                        variant="neutral"
+                        disabled={isLoading}>
+                    </lightning-button>
+                    <lightning-button
+                        label="Save"
+                        onclick={handleSave}
+                        variant="brand"
+                        disabled={isSaveDisabled}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

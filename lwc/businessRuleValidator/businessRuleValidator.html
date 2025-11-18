@@ -1,0 +1,32 @@
+<template>
+    <!-- Business Rule Validator Component -->
+    <div class="business-rule-validator-container">
+        <template if:true={hasMessages}>
+            <c-validation-message-bar messages={allMessages}></c-validation-message-bar>
+        </template>
+
+        <template if:true={hasBusinessRules}>
+            <div class="slds-card">
+                <div class="slds-card__header slds-border_bottom">
+                    <h3 class="slds-text-heading_small">Business Rule Status</h3>
+                </div>
+                <div class="slds-card__body slds-card__body_inner">
+                    <dl class="slds-list_horizontal slds-wrap">
+                        <dt class="slds-item_label">PO Required:</dt>
+                        <dd class="slds-item_detail">
+                            <lightning-icon icon-name={poIcon} size="x-small" variant={poVariant}></lightning-icon>
+                        </dd>
+                        <dt class="slds-item_label">Profile Number Required:</dt>
+                        <dd class="slds-item_detail">
+                            <lightning-icon icon-name={profileIcon} size="x-small" variant={profileVariant}></lightning-icon>
+                        </dd>
+                        <dt class="slds-item_label">PSI Required:</dt>
+                        <dd class="slds-item_detail">
+                            <lightning-icon icon-name={psiIcon} size="x-small" variant={psiVariant}></lightning-icon>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
