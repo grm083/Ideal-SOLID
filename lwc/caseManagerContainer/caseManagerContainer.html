@@ -1,0 +1,138 @@
+<template>
+    <!-- Case Manager Container - Main Orchestrator -->
+    <div class="case-manager-container">
+        <!-- Wizard Stepper (for new/edit mode) -->
+        <template if:true={showWizard}>
+            <c-case-wizard-stepper
+                current-step={currentPhase}
+                show-progress-text={true}
+                allow-navigation={true}
+                onstepchange={handlePhaseChange}>
+            </c-case-wizard-stepper>
+        </template>
+
+        <!-- Main Content Area -->
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="large"></lightning-spinner>
+            </template>
+
+            <!-- Wizard Content -->
+            <template if:false={isLoading}>
+                <!-- Phase 1: Caller Identification -->
+                <template if:true={isPhase1}>
+                    <div class="phase-container">
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+                            Step 1: Caller Identification
+                        </h2>
+                        <p class="slds-text-body_regular slds-m-bottom_medium">
+                            Select the entity (Location, Vendor, or Client) and contact person for this case.
+                        </p>
+
+                        <!-- Entity Selector and Contact Selector would go here -->
+                        <div class="slds-text-color_weak">
+                            Phase 1 components: entitySelector, contactSelector
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Phase 2: Intent Configuration -->
+                <template if:true={isPhase2}>
+                    <div class="phase-container">
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+                            Step 2: Intent Configuration
+                        </h2>
+                        <p class="slds-text-body_regular slds-m-bottom_medium">
+                            Select the asset and configure the case type, sub-type, and reason.
+                        </p>
+
+                        <!-- Asset Selector and Case Type Configurator would go here -->
+                        <div class="slds-text-color_weak">
+                            Phase 2 components: assetSelector, caseTypeConfigurator
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Phase 3: Details & Validation -->
+                <template if:true={isPhase3}>
+                    <div class="phase-container">
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+                            Step 3: Details & Validation
+                        </h2>
+                        <p class="slds-text-body_regular slds-m-bottom_medium">
+                            Enter customer information, service date, and verify business rules.
+                        </p>
+
+                        <!-- Customer Info, Service Date, Business Rules would go here -->
+                        <div class="slds-text-color_weak">
+                            Phase 3 components: customerInfoPanel, serviceDateSelector, businessRuleValidator
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Phase 4: Review & Submit -->
+                <template if:true={isPhase4}>
+                    <div class="phase-container">
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+                            Step 4: Review & Submit
+                        </h2>
+                        <p class="slds-text-body_regular slds-m-bottom_medium">
+                            Review all information and submit the case.
+                        </p>
+
+                        <!-- Case Summary and Work Order Preview would go here -->
+                        <div class="slds-text-color_weak">
+                            Phase 4 components: caseSummaryCard, workOrderPreview
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Navigation Buttons -->
+                <div class="slds-m-top_large">
+                    <lightning-button
+                        if:false={isFirstPhase}
+                        label="Previous"
+                        variant="neutral"
+                        onclick={handlePrevious}
+                        class="slds-m-right_small">
+                    </lightning-button>
+
+                    <lightning-button
+                        if:false={isLastPhase}
+                        label="Next"
+                        variant="brand"
+                        onclick={handleNext}>
+                    </lightning-button>
+
+                    <lightning-button
+                        if:true={isLastPhase}
+                        label="Submit"
+                        variant="brand"
+                        onclick={handleSubmit}
+                        disabled={isSubmitting}>
+                    </lightning-button>
+                </div>
+            </template>
+        </div>
+
+        <!-- Persistent Panels (for existing case view) -->
+        <template if:true={showPersistentPanels}>
+            <div class="persistent-panels-container slds-m-top_large">
+                <!-- Case Highlight Strip -->
+                <c-case-highlight-strip
+                    case-id={caseId}
+                    onfieldedit={handleFieldEdit}>
+                </c-case-highlight-strip>
+
+                <!-- Action Messages Panel -->
+                <div class="slds-m-top_medium">
+                    <c-action-messages-panel
+                        case-id={caseId}
+                        onaction={handleAction}>
+                    </c-action-messages-panel>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

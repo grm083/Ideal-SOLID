@@ -1,129 +1,47 @@
 <template>
-    <!-- Case Wizard Stepper Component -->
-    <div class="wizard-container">
-        <!-- Progress Indicator -->
-        <c-progress-indicator
-            steps={wizardSteps}
-            current-step={currentStepId}
-            allow-navigation={allowStepNavigation}
-            show-progress-bar={showProgressBar}
-            variant="base"
-            onstepchange={handleStepChange}>
-        </c-progress-indicator>
+    <!-- Case Wizard Stepper - Progress Indicator -->
+    <div class="wizard-stepper-container">
+        <lightning-progress-indicator
+            current-step={currentStep}
+            type="path"
+            variant="base">
 
-        <!-- Validation Messages -->
-        <template if:true={hasValidationMessages}>
-            <c-validation-message-bar
-                messages={validationMessages}
-                variant="error"
-                dismissible={true}
-                onclosemessage={handleCloseMessage}>
-            </c-validation-message-bar>
-        </template>
+            <!-- Step 1: Caller -->
+            <lightning-progress-step
+                label="Caller"
+                value="caller"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
 
-        <!-- Step Content -->
-        <div class="step-content">
-            <!-- Phase 1: Caller Identification -->
-            <template if:true={isCallerPhase}>
-                <div class="slds-card">
-                    <div class="slds-card__header slds-border_bottom">
-                        <h2 class="slds-text-heading_medium">Caller Identification</h2>
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                            Select the location/vendor/client and contact for this case
-                        </p>
-                    </div>
-                    <div class="slds-card__body slds-card__body_inner">
-                        <slot name="caller"></slot>
-                    </div>
-                </div>
-            </template>
+            <!-- Step 2: Intent -->
+            <lightning-progress-step
+                label="Intent"
+                value="intent"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
 
-            <!-- Phase 2: Intent Configuration -->
-            <template if:true={isIntentPhase}>
-                <div class="slds-card">
-                    <div class="slds-card__header slds-border_bottom">
-                        <h2 class="slds-text-heading_medium">Intent Configuration</h2>
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                            Select the asset and configure case type details
-                        </p>
-                    </div>
-                    <div class="slds-card__body slds-card__body_inner">
-                        <slot name="intent"></slot>
-                    </div>
-                </div>
-            </template>
+            <!-- Step 3: Details -->
+            <lightning-progress-step
+                label="Details"
+                value="details"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
 
-            <!-- Phase 3: Details & Validation -->
-            <template if:true={isDetailsPhase}>
-                <div class="slds-card">
-                    <div class="slds-card__header slds-border_bottom">
-                        <h2 class="slds-text-heading_medium">Details & Validation</h2>
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                            Provide customer information, service date, and review business rules
-                        </p>
-                    </div>
-                    <div class="slds-card__body slds-card__body_inner">
-                        <slot name="details"></slot>
-                    </div>
-                </div>
-            </template>
+            <!-- Step 4: Review -->
+            <lightning-progress-step
+                label="Review"
+                value="review"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
+        </lightning-progress-indicator>
 
-            <!-- Phase 4: Review & Submit -->
-            <template if:true={isReviewPhase}>
-                <div class="slds-card">
-                    <div class="slds-card__header slds-border_bottom">
-                        <h2 class="slds-text-heading_medium">Review & Submit</h2>
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                            Review all details before creating the case
-                        </p>
-                    </div>
-                    <div class="slds-card__body slds-card__body_inner">
-                        <slot name="review"></slot>
-                    </div>
-                </div>
-            </template>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div class="slds-m-top_medium slds-grid slds-grid_align-spread">
-            <div>
-                <lightning-button
-                    label="Previous"
-                    icon-name="utility:chevronleft"
-                    onclick={handlePrevious}
-                    disabled={isFirstStep}
-                    variant="neutral">
-                </lightning-button>
+        <!-- Progress Summary Text -->
+        <template if:true={showProgressText}>
+            <div class="progress-text slds-text-align_center slds-m-top_small">
+                <span class="slds-text-body_small slds-text-color_weak">
+                    Step {currentStepNumber} of {totalSteps}: {currentStepLabel}
+                </span>
             </div>
-            <div>
-                <template if:false={isLastStep}>
-                    <lightning-button
-                        label="Next"
-                        icon-name="utility:chevronright"
-                        icon-position="right"
-                        onclick={handleNext}
-                        variant="brand">
-                    </lightning-button>
-                </template>
-                <template if:true={isLastStep}>
-                    <lightning-button
-                        label={submitButtonLabel}
-                        icon-name="utility:check"
-                        icon-position="right"
-                        onclick={handleSubmit}
-                        variant="brand"
-                        disabled={isSubmitting}>
-                    </lightning-button>
-                </template>
-            </div>
-        </div>
-
-        <!-- Loading Spinner (during submission) -->
-        <template if:true={isSubmitting}>
-            <lightning-spinner
-                alternative-text="Submitting..."
-                size="medium">
-            </lightning-spinner>
         </template>
     </div>
 </template>
