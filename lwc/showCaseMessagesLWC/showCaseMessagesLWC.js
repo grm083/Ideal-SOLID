@@ -271,10 +271,6 @@ export default class ShowCaseMessagesLWC extends NavigationMixin(LightningElemen
                     this.showMultipleCaseLabel = true;
                     this.showOnRelatedMultiAssetCase = true;
 
-                    if (!this.isCapacityEligible) {
-                        this.viewCaseSummaryLabel = 'View Multi Asset Case Summary';
-                    }
-
                     const referenceNo = getFieldValue(caseData, CASE_REFERENCE_NUMBER);
                     this.multiAssetCaseReferenceNo = referenceNo;
                 }
