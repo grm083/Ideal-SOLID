@@ -1,0 +1,121 @@
+<template>
+    <!-- Case Highlight Strip - Persistent Panel -->
+    <div class="case-highlight-strip-container">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading case details..." size="small"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <!-- Row 1: Primary Case Fields -->
+            <div class="highlight-row">
+                <!-- Location -->
+                <div class={locationFieldClass} data-field="location" onclick={handleFieldClick}>
+                    <span class="field-label">Location:</span>
+                    <span class="field-value">{highlightData.locationName}</span>
+                </div>
+
+                <!-- Asset -->
+                <div class={assetFieldClass} data-field="asset" onclick={handleFieldClick}>
+                    <span class="field-label">Asset:</span>
+                    <span class="field-value">{highlightData.assetName}</span>
+                </div>
+
+                <!-- Contact -->
+                <div class={contactFieldClass} data-field="contact" onclick={handleFieldClick}>
+                    <span class="field-label">Contact:</span>
+                    <span class="field-value">{highlightData.contactName}</span>
+                </div>
+
+                <!-- SLA Date -->
+                <div class={serviceDateFieldClass} data-field="serviceDate" onclick={handleFieldClick}>
+                    <span class="field-label">SLA Date:</span>
+                    <span class="field-value">{formattedServiceDate}</span>
+                </div>
+
+                <!-- Record Type -->
+                <div class="highlight-field highlight-field_info" data-field="recordType" onclick={handleFieldClick}>
+                    <span class="field-label">Record Type:</span>
+                    <span class="field-value">{highlightData.recordTypeName}</span>
+                </div>
+
+                <!-- Case Type -->
+                <div class={caseTypeFieldClass} data-field="caseType" onclick={handleFieldClick}>
+                    <span class="field-label">Case Type:</span>
+                    <span class="field-value">{highlightData.caseType}</span>
+                </div>
+            </div>
+
+            <!-- Row 2: Secondary Case Fields -->
+            <div class="highlight-row">
+                <!-- Sub-Type -->
+                <div class="highlight-field highlight-field_info" data-field="caseSubType" onclick={handleFieldClick}>
+                    <span class="field-label">Sub-Type:</span>
+                    <span class="field-value">{highlightData.caseSubType}</span>
+                </div>
+
+                <!-- Reason -->
+                <div class="highlight-field highlight-field_info" data-field="caseReason" onclick={handleFieldClick}>
+                    <span class="field-label">Reason:</span>
+                    <span class="field-value">{highlightData.caseReason}</span>
+                </div>
+
+                <!-- Queue -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Queue:</span>
+                    <span class="field-value">{highlightData.queueName}</span>
+                </div>
+
+                <!-- Work Order -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Work Order:</span>
+                    <span class="field-value">{highlightData.workOrderNumber}</span>
+                </div>
+
+                <!-- Status -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Status:</span>
+                    <span class="field-value">{highlightData.status}</span>
+                </div>
+
+                <!-- Sub-Status -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Sub-Status:</span>
+                    <span class="field-value">{highlightData.subStatus}</span>
+                </div>
+            </div>
+
+            <!-- Row 3: Additional Case Fields -->
+            <div class="highlight-row">
+                <!-- Reference # -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Reference #:</span>
+                    <span class="field-value">{highlightData.referenceNumber}</span>
+                </div>
+
+                <!-- Material -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Material:</span>
+                    <span class="field-value">{highlightData.material}</span>
+                </div>
+
+                <!-- PO/Profile/PSI -->
+                <div class={customerInfoFieldClass} data-field="customerInfo" onclick={handleFieldClick}>
+                    <span class="field-label">PO/Profile/PSI:</span>
+                    <span class="field-value">{customerInfoSummary}</span>
+                </div>
+
+                <!-- Service Date -->
+                <div class={serviceDateFieldClass} data-field="serviceDate" onclick={handleFieldClick}>
+                    <span class="field-label">Service Date:</span>
+                    <span class="field-value">{formattedServiceDate}</span>
+                </div>
+
+                <!-- Tracking # -->
+                <div class="highlight-field highlight-field_info">
+                    <span class="field-label">Tracking #:</span>
+                    <span class="field-value">{highlightData.trackingNumber}</span>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,137 @@
+/* Action Messages Panel Component Styles */
+
+.action-messages-panel-container {
+    position: relative;
+}
+
+/* Card Body */
+.slds-card__body_inner {
+    padding: 1rem;
+}
+
+/* Message Section */
+.slds-notify {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+
+.slds-notify_alert {
+    border-left: 4px solid;
+}
+
+.slds-alert_info {
+    background-color: rgb(244, 246, 249);
+    border-left-color: rgb(22, 50, 92);
+}
+
+.slds-alert_warning {
+    background-color: rgb(254, 247, 234);
+    border-left-color: rgb(254, 184, 82);
+}
+
+.slds-alert_error {
+    background-color: rgb(254, 235, 235);
+    border-left-color: rgb(234, 0, 30);
+}
+
+.slds-theme_success {
+    background-color: rgb(227, 252, 239);
+    border-left-color: rgb(4, 132, 75);
+}
+
+/* Media Object */
+.slds-media {
+    display: flex;
+}
+
+.slds-media__figure {
+    margin-right: 0.75rem;
+}
+
+.slds-media__body {
+    flex: 1;
+}
+
+/* Button Group */
+.slds-button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Spacing */
+.slds-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-m-bottom_xx-small {
+    margin-bottom: 0.25rem;
+}
+
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+/* Text Styles */
+.slds-text-heading_small {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+/* Spinner Overlay */
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    border-radius: 0.25rem;
+}
+
+/* Loading Spinner */
+lightning-spinner {
+    position: relative;
+    min-height: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-button-group {
+        flex-direction: column;
+    }
+
+    .slds-button-group lightning-button {
+        width: 100%;
+    }
+}
+
+@media (min-width: 769px) {
+    .slds-button-group lightning-button {
+        flex: 0 0 auto;
+    }
+}
+
+/* Accessibility - focus states */
+lightning-button:focus {
+    outline: 2px solid rgb(0, 112, 210);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .spinner-overlay {
+        display: none;
+    }
+
+    .slds-button-group {
+        display: none;
+    }
+}
