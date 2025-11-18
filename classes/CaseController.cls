@@ -458,13 +458,13 @@ address= address+ acc.ShippingCountry + '';
         List<String> assetSelections = new List<String>();
         list<Case> caseList = new list<Case>();
         try{
-            currentCase = Database.query('select Id,AssetId,ParentId,RecordTypeId,Case_Sub_Status__c,Client__c,Location__c,Reference_Number__c,ContactId from case where id = :caseId limit 1'); 
+            currentCase = Database.query('select Id,AssetId,ParentId,RecordTypeId,Case_Sub_Status__c,Client__c,Location__c,Reference_Number__c,ContactId from case where id = :caseId limit 1');
             currentCase.Client__c = clientId;
             currentCase.Location__c = locationId;
             //Added By Saurav Dwivedi - SDT-11659 -- start
             Boolean isAvail = checkContactAvailableOnLocation(locationId, currentCase.ContactId);
             if(!isAvail){
-            	currentCase.ContactId = Null; 
+            	currentCase.ContactId = Null;
             }
             //Added by saurav -- end
             if(!assetId.isEmpty()){
@@ -482,11 +482,22 @@ address= address+ acc.ShippingCountry + '';
             //TCS-pkulkarn-SDT-42417-20-Nov-2024-Added to capture Selected Assets (quote creation) on Case
             currentCase.Selected_Asset_Header_Ids__c = AssetQuerySelector.covertStringArrayToDelimiterSeparatedString(assetId, ';');
             //TCS-pkulkarn-SDT-42417-20-Nov-2024-End
-            
+
             caseList.add(currentCase);
-            Database.UpsertResult[] srList = Database.upsert(caseList,false);
+
+            // REFACTORED: Use CaseDMLService instead of direct DML for proper refresh
+            // This ensures force:recordData properly detects changes
+            CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(caseList);
+
+            if(!result.isSuccess()) {
+                return Constant_Util.FAILURE;
+            }
+
             return Constant_Util.SUCCESS;
         }catch(exception ex){
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
+                                                   UTIL_ErrorConstants.ERROR_APPLICATION,
+                                                   LoggingLevel.ERROR);
             return Constant_Util.FAILURE;
         }
     }
@@ -498,7 +509,7 @@ address= address+ acc.ShippingCountry + '';
         Case caseObj = null;
         list<Case> caseList = new list<Case>();
         try{
-            currentCase = new Case(Id = caseId);     
+            currentCase = new Case(Id = caseId);
             if(recordType == 'Vendor'){
                 currentCase.Supplier__c = accountId;
             } else {
@@ -506,9 +517,20 @@ address= address+ acc.ShippingCountry + '';
                 currentCase.Client__c = accountId;
             }
             caseList.add(currentCase);
-            Database.UpsertResult[] srList = Database.upsert(caseList,false);
+
+            // REFACTORED: Use CaseDMLService instead of direct DML for proper refresh
+            // This ensures force:recordData properly detects changes
+            CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(caseList);
+
+            if(!result.isSuccess()) {
+                return Constant_Util.FAILURE;
+            }
+
             return Constant_Util.SUCCESS;
         }catch(exception ex){
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
+                                                   UTIL_ErrorConstants.ERROR_APPLICATION,
+                                                   LoggingLevel.ERROR);
             return Constant_Util.FAILURE;
         }
     }
