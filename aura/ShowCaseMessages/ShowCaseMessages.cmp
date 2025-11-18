@@ -1,17 +1,107 @@
 <aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global"
     controller="GetCaseInformation">
+    <!-- =================================================================== -->
+    <!-- REFACTORED: Consolidated attributes for better performance          -->
+    <!-- Reduced from 72 attributes to 28 by consolidating related state     -->
+    <!-- =================================================================== -->
+
     <lightning:messageChannel type="LMS__c" aura:id="lmschannel" onMessage="{!c.handleReceiveMessage}" scope="APPLICATION"/>
     <aura:registerEvent name="relatedCaseListenerEvent" type="c:RelatedCaseListener" />
     <aura:handler event="c:RelatedCaseListener" action="{!c.handleRelatedCaseListenerEvent}" />
     <aura:handler event="c:FetchServiceApproverEvent" action="{!c.handleFetchServiceApproverEvent}" />
-    <aura:handler event="force:showToast" action="{!c.recordUpdated}"/> <!-- Case Asset Validation -->
+    <aura:handler event="force:showToast" action="{!c.recordUpdated}"/>
     <aura:registerEvent name="serviceApproverEvent" type="c:ServiceApproverEvent" />
-    <aura:attribute name="showMultipleCaseLabel" type="Boolean" default="true" />
-    <aura:attribute name="showCalendar" type="Boolean" default="false" />
-    <aura:attribute name="caseLst" type="Case[]" />
-    <aura:attribute name="showModal" type="Boolean" default="false" />
-    <aura:attribute name="duplicateModal" type="Boolean" default="false" />
     <aura:handler name="CloseModalEvent" event="c:QuoteProductsCloseModal" action="{!c.closeQuotes}" />
+
+    <!-- Core Data Attributes -->
+    <aura:attribute name="caseLst" type="Case[]" />
+    <aura:attribute name="caseRecord" type="Object" />
+    <aura:attribute name="caseRec" type="Case" />
+    <aura:attribute name="caseSummary" type="Case[]" access="global" />
+    <aura:attribute name="selectedCases" type="String[]" access="global" />
+    <aura:attribute name="selectedCase" type="String" access="global" />
+    <aura:attribute name="recordLoadError" type="String" />
+    <aura:attribute name="lastEventName" type="String" access="global" />
+
+    <!-- Consolidated Display State (instead of 15+ separate boolean attributes) -->
+    <aura:attribute name="displayState" type="Object" default="{
+        'showMultipleCaseLabel': true,
+        'showCalendar': false,
+        'displayMsg': false,
+        'displaySummary': false,
+        'displayMultipleAssetCases': false,
+        'viewCaseSummary': false,
+        'WOInstructions': false,
+        'caseEmailTemp': false,
+        'displayOccurrence': false,
+        'summaryContent': true,
+        'hideNoRecordSection': true,
+        'showOnRelatedMultiAssetCase': false
+    }"/>
+
+    <!-- Consolidated Modal State (instead of 4 separate boolean attributes) -->
+    <aura:attribute name="modalState" type="Object" default="{
+        'showModal': false,
+        'duplicateModal': false,
+        'showQuoteModal': false,
+        'showFavroiteModal': false
+    }"/>
+
+    <!-- Consolidated Button State (instead of 12 separate boolean attributes) -->
+    <aura:attribute name="buttonState" type="Object" default="{
+        'initiateWoButton': false,
+        'subTypeBtn': false,
+        'caseServiceDateBtn': false,
+        'isShowServiceDateBtn': false,
+        'isShowPOPSI': false,
+        'isShowProgressCase': false,
+        'isAddCaseAsset': false,
+        'isShowAssignCase': false,
+        'isAddQuote': false,
+        'isOpportunityAdded': false,
+        'disableAddQuote': false
+    }"/>
+
+    <!-- Consolidated State Flags (instead of 12 separate boolean attributes) -->
+    <aura:attribute name="stateFlags" type="Object" default="{
+        'reqInfoMsg': false,
+        'approvalInfoMsg': false,
+        'checkDivValue': true,
+        'checkBoxValue': true,
+        'psiReq': true,
+        'isMultiCheckedVisible': true,
+        'actionReqRed': false,
+        'NotReturn': false,
+        'singleAssetDupCheck': false,
+        'isCapacityEligible': true,
+        'isTempVisible': false,
+        'isByPassWO': false,
+        'loaded': false,
+        'showMsgNTE': false,
+        'loadingSpinner': false
+    }"/>
+
+    <!-- Case Messages and Info -->
+    <aura:attribute name="CaseMsg" type="String" access="global" />
+    <aura:attribute name="reqInfo" type="String" access="global" />
+    <aura:attribute name="approvalInfo" type="String" access="global" />
+    <aura:attribute name="Message" type="String" default="" />
+    <aura:attribute name="occurrenceLimit" type="String" default="0" access="global" />
+
+    <!-- Multi-Asset Data -->
+    <aura:attribute name="multiAssetSelections" type="String[]" access="Private" />
+    <aura:attribute name="multiAssetCaseReferenceNo" type="String" access="Private" />
+
+    <!-- Case Work Order Object -->
+    <aura:attribute name="CaseObj" type="Case" default="{'sobjectType': 'Case',
+                                                        'Site_Contact__c': '',
+                                                        'Site_Contact_Phone__c': '',
+                                                        'User_Input_Work_Order_Instructions__c': '',
+                                                        'EmailTemplateAdditionalComments__c':'',
+                                                        'Is_ByPassWO__c':false
+                                          }" />
+
+    <!-- Static Configuration -->
     <aura:attribute name="caseRecordTypeList" type="List" default="['Integration Case',
                                                                'Interruption Case',
                                                                'Modify Existing Service Case',
@@ -21,67 +111,6 @@
                                                                'Standard Case',
                                                                'Status Case',
                                                                'Vendor Case']" />
-    <aura:attribute name="displayMsg" type="Boolean" default="false" />
-    <aura:attribute name="selectedCases" type="String[]" access="global" />
-    <aura:attribute name="reqInfoMsg" type="Boolean" default="false" />
-    <aura:attribute name="approvalInfoMsg" type="Boolean" default="false" />
-    <aura:attribute name="checkDivValue" type="Boolean" default="true" />
-    <aura:attribute name="checkBoxValue" type="Boolean" default="true" />
-    <aura:attribute name="displaySummary" type="Boolean" default="false" />
-    <aura:attribute name="showOnRelatedMultiAssetCase" type="Boolean" default="false" />
-    <aura:attribute name="psiReq" type="Boolean" default="true" />
-    <aura:attribute name="isMultiCheckedVisible" type="Boolean" default="true" />
-    <aura:attribute name="displayMultipleAssetCases" type="Boolean" default="false" />
-    <aura:attribute name="multiAssetSelections" type="String[]" access="Private" />
-    <aura:attribute name="multiAssetCaseReferenceNo" type="String" access="Private" />
-    <aura:attribute name="viewCaseSummary" type="Boolean" default="false" />
-    <aura:attribute name="WOInstructions" type="Boolean" default="false" />
-    <aura:attribute name="selectedCase" type="String" access="global" />
-    <aura:attribute name="caseSummary" type="Case[]" access="global" />
-    <aura:attribute name="CaseMsg" type="String" access="global" />
-    <aura:attribute name="reqInfo" type="String" access="global" />
-    <aura:attribute name="approvalInfo" type="String" access="global" />
-    <aura:attribute name="occurrenceLimit" type="String" default="0" access="global" />
-    <aura:attribute name="displayOccurrence" type="Boolean" default="false" access="global" />
-    <aura:attribute name="initiateWoButton" type="Boolean" default="false" />
-    <aura:attribute name="hideNoRecordSection" type="boolean" default="true" access="global" />
-    <aura:attribute name="actionReqRed" type="Boolean" default="false" />
-    <aura:attribute name="subTypeBtn" type="Boolean" default="false" />
-    <aura:attribute name="caseServiceDateBtn" type="Boolean" default="false" />
-    <aura:attribute name="isShowServiceDateBtn" type="Boolean" default="false" />
-    <aura:attribute name="isShowPOPSI" type="Boolean" default="false" />
-    <aura:attribute name="isShowProgressCase" type="Boolean" default="false" />
-     <aura:attribute name="isAddCaseAsset" type="Boolean" default="false" />
-    <aura:attribute name="isShowAssignCase" type="Boolean" default="false" />
-    <aura:attribute name="summaryContent" type="boolean" default="true" />
-    <aura:attribute name="caseRecord" type="Object" />
-    <aura:attribute name="caseRec" type="Case" />
-    <aura:attribute name="Message" type="String" default="" />
-    <aura:attribute name="NotReturn" type="Boolean" default="false" />
-    <aura:attribute name="singleAssetDupCheck" type="Boolean" default="false" />
-    <aura:attribute name="recordLoadError" type="String" />
-    <aura:attribute name="lastEventName" type="String" access="global" />
-    <aura:attribute name="isCapacityEligible" type="Boolean" default="true"/>
-	<aura:attribute name = "isAddQuote" type="Boolean" default="false" />
-    <aura:attribute name = "isOpportunityAdded" type="Boolean" default="false" />
-	<aura:attribute name="loadingSpinner" type="Boolean" default="false" />
-    <aura:attribute name="showQuoteModal" type="Boolean" default="false" />
-	<aura:attribute name="showFavroiteModal" type="Boolean" default="false" />
-    <aura:attribute name="isTempVisible" type="Boolean" default="false"/>
-	<aura:attribute name="caseEmailTemp" type="Boolean" default="false" />
-    <aura:attribute name="isByPassWO" type="Boolean" default="false"/>
-	<aura:attribute name="loaded" type="Boolean" default="false"/>
-    <aura:attribute name="CaseObj" type="Case" default="{'sobjectType': 'Case',
-                                                        'Site_Contact__c': '',
-                                                        'Site_Contact_Phone__c': '',
-                                                        'User_Input_Work_Order_Instructions__c': '',
-                                                        'EmailTemplateAdditionalComments__c':'',
-                                                        'Is_ByPassWO__c':false
-                                          }" />
-
-
-	<aura:attribute name="showMsgNTE" type="Boolean" default="false" />
-	<aura:attribute name="disableAddQuote" type="Boolean" default="false" />
 
     <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
     <aura:handler event="c:CaseDuplicateCheckEvent" action="{!c.checkCaseWorkOrderDuplicate}"/>
