@@ -1,8 +1,60 @@
 ({
     doInit: function (component, event, helper) {
-        const modalState = component.get('v.modalState');
-        modalState.duplicateModal = false;
-        component.set('v.modalState', modalState);
+        // Initialize consolidated state objects
+        component.set('v.displayState', {
+            displayMsg: false,
+            displaySummary: false,
+            displayMultipleAssetCases: false,
+            displayOccurrence: false,
+            showMultipleCaseLabel: true,
+            showOnRelatedMultiAssetCase: false,
+            reqInfoMsg: false,
+            approvalInfoMsg: false,
+            hideNoRecordSection: true,
+            summaryContent: true,
+            actionReqRed: false,
+            showMsgNTE: false
+        });
+
+        component.set('v.modalState', {
+            viewCaseSummary: false,
+            WOInstructions: false,
+            showModal: false,
+            duplicateModal: false,
+            showQuoteModal: false,
+            showFavroiteModal: false,
+            caseEmailTemp: false
+        });
+
+        component.set('v.buttonState', {
+            initiateWoButton: false,
+            subTypeBtn: false,
+            caseServiceDateBtn: false,
+            isShowServiceDateBtn: false,
+            isShowPOPSI: false,
+            isShowProgressCase: false,
+            isAddCaseAsset: false,
+            isShowAssignCase: false,
+            isAddQuote: false,
+            isOpportunityAdded: false,
+            disableAddQuote: false
+        });
+
+        component.set('v.stateFlags', {
+            showCalendar: false,
+            checkDivValue: true,
+            checkBoxValue: true,
+            psiReq: true,
+            isMultiCheckedVisible: true,
+            NotReturn: false,
+            singleAssetDupCheck: false,
+            isCapacityEligible: true,
+            isTempVisible: false,
+            isByPassWO: false,
+            loaded: false,
+            loadingSpinner: false
+        });
+
         helper.isCapacityEligible(component);
     },
     recordUpdated: function (component, event, helper) {
