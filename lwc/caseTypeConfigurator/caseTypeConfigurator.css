@@ -1,0 +1,170 @@
+/* Case Type Configurator Component Styles */
+
+.case-type-configurator-container {
+    position: relative;
+}
+
+/* Card Styles */
+.slds-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-card {
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.slds-card__header {
+    padding: 1rem;
+}
+
+.slds-border_bottom {
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-card__body_inner {
+    padding: 1rem;
+}
+
+.slds-text-heading_small {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+/* Quick Actions Buttons */
+.slds-button-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Form Grid */
+.slds-grid {
+    display: flex;
+}
+
+.slds-wrap {
+    flex-wrap: wrap;
+}
+
+.slds-gutters {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.slds-gutters > .slds-col {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.slds-col {
+    flex: 1 1 auto;
+}
+
+.slds-size_1-of-1 {
+    width: 100%;
+}
+
+@media (min-width: 48em) {
+    .slds-medium-size_1-of-2 {
+        width: 50%;
+    }
+}
+
+/* Current Configuration Display */
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+.slds-box {
+    padding: 1rem;
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+}
+
+.slds-theme_shade {
+    background-color: rgb(243, 243, 243);
+}
+
+.slds-p-around_small {
+    padding: 0.75rem;
+}
+
+.slds-m-bottom_x-small {
+    margin-bottom: 0.5rem;
+}
+
+/* Horizontal List */
+.slds-list_horizontal {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.slds-list_horizontal dt,
+.slds-list_horizontal dd {
+    padding: 0.25rem 0.5rem;
+}
+
+.slds-item_label {
+    flex: 0 0 auto;
+    font-weight: 700;
+}
+
+.slds-item_detail {
+    flex: 1 1 auto;
+}
+
+.slds-text-color_weak {
+    color: rgb(116, 116, 116);
+}
+
+.slds-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Action Buttons */
+.slds-text-align_right {
+    text-align: right;
+}
+
+.slds-m-left_x-small {
+    margin-left: 0.5rem;
+}
+
+.slds-m-right_x-small {
+    margin-right: 0.5rem;
+}
+
+/* Loading Spinner */
+lightning-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-button-group {
+        flex-direction: column;
+    }
+
+    .slds-button-group lightning-button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Accessibility - focus states */
+lightning-button:focus {
+    outline: 2px solid rgb(0, 112, 210);
+    outline-offset: 2px;
+}

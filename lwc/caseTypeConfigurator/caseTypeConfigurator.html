@@ -1,0 +1,151 @@
+<template>
+    <!-- Case Type Configurator Component -->
+    <div class="case-type-configurator-container">
+        <!-- Quick Actions (Predefined Case Types) -->
+        <template if:true={showQuickActions}>
+            <div class="slds-m-bottom_medium">
+                <div class="slds-card">
+                    <div class="slds-card__header slds-border_bottom">
+                        <h3 class="slds-text-heading_small">Quick Actions</h3>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-button-group" role="group">
+                            <lightning-button
+                                label="Pickup"
+                                onclick={handleQuickPickup}
+                                variant="neutral"
+                                class="slds-m-right_x-small slds-m-bottom_x-small">
+                            </lightning-button>
+                            <lightning-button
+                                label="Service Not Performed"
+                                onclick={handleQuickSNP}
+                                variant="neutral"
+                                class="slds-m-right_x-small slds-m-bottom_x-small">
+                            </lightning-button>
+                            <lightning-button
+                                label="ETA"
+                                onclick={handleQuickETA}
+                                variant="neutral"
+                                class="slds-m-right_x-small slds-m-bottom_x-small">
+                            </lightning-button>
+                            <lightning-button
+                                label="New Service"
+                                onclick={handleQuickNewService}
+                                variant="neutral"
+                                class="slds-m-right_x-small slds-m-bottom_x-small">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Configuration Form -->
+        <div class="slds-card">
+            <div class="slds-card__header slds-border_bottom">
+                <h3 class="slds-text-heading_small">Case Type Configuration</h3>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <!-- Record Type -->
+                    <template if:true={showRecordType}>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-combobox
+                                label="Record Type"
+                                value={selectedRecordTypeId}
+                                options={recordTypeOptions}
+                                onchange={handleRecordTypeChange}
+                                placeholder="Select record type..."
+                                disabled={isLoading}>
+                            </lightning-combobox>
+                        </div>
+                    </template>
+
+                    <!-- Case Type (Required) -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-combobox
+                            label="Case Type"
+                            value={selectedCaseType}
+                            options={caseTypeOptions}
+                            onchange={handleCaseTypeChange}
+                            placeholder="Select case type..."
+                            required
+                            disabled={isLoading}>
+                        </lightning-combobox>
+                    </div>
+
+                    <!-- Case Sub-Type -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-combobox
+                            label="Case Sub-Type"
+                            value={selectedCaseSubType}
+                            options={caseSubTypeOptions}
+                            onchange={handleCaseSubTypeChange}
+                            placeholder="Select sub-type..."
+                            disabled={disableSubType}>
+                        </lightning-combobox>
+                    </div>
+
+                    <!-- Case Reason -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-combobox
+                            label="Case Reason"
+                            value={selectedCaseReason}
+                            options={caseReasonOptions}
+                            onchange={handleCaseReasonChange}
+                            placeholder="Select reason..."
+                            disabled={disableReason}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+
+                <!-- Current Configuration Display -->
+                <template if:true={hasConfiguration}>
+                    <div class="slds-m-top_medium slds-box slds-theme_shade slds-p-around_small">
+                        <h4 class="slds-text-heading_small slds-m-bottom_x-small">Current Configuration</h4>
+                        <dl class="slds-list_horizontal slds-wrap">
+                            <template if:true={currentConfig.recordTypeName}>
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate">Record Type:</dt>
+                                <dd class="slds-item_detail slds-truncate">{currentConfig.recordTypeName}</dd>
+                            </template>
+                            <template if:true={currentConfig.caseType}>
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate">Case Type:</dt>
+                                <dd class="slds-item_detail slds-truncate">{currentConfig.caseType}</dd>
+                            </template>
+                            <template if:true={currentConfig.caseSubType}>
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate">Sub-Type:</dt>
+                                <dd class="slds-item_detail slds-truncate">{currentConfig.caseSubType}</dd>
+                            </template>
+                            <template if:true={currentConfig.caseReason}>
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate">Reason:</dt>
+                                <dd class="slds-item_detail slds-truncate">{currentConfig.caseReason}</dd>
+                            </template>
+                        </dl>
+                    </div>
+                </template>
+
+                <!-- Action Buttons -->
+                <div class="slds-m-top_medium slds-text-align_right">
+                    <lightning-button
+                        label="Reset"
+                        onclick={handleReset}
+                        variant="neutral"
+                        disabled={isLoading}>
+                    </lightning-button>
+                    <lightning-button
+                        label="Save Configuration"
+                        onclick={handleSave}
+                        variant="brand"
+                        disabled={isSaveDisabled}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>
