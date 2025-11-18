@@ -61,7 +61,7 @@
     },
 
     navigate: function(component, event, helper) {
-        this.closeAllModals(component);
+        helper.closeAllModals(component);
         component.set("v.isNewService", false);
         component.set("v.isCPQ", false);
         component.find("recordLoaderHightLightpPanel").reloadRecord(true);
@@ -72,58 +72,18 @@
     // =====================================================================
 
     /**
-     * Generic method to open modals - replaces 10+ individual modal open methods
-     */
-    openModal: function(component, modalType, dynamicComponent, targetDiv, params) {
-        const modalState = component.get("v.modalState");
-        modalState.isOpen = (modalType !== 'serviceDate' && modalType !== 'caseType' && modalType !== 'customerInfo' && modalType !== 'closeCasePop' && modalType !== 'contact' && modalType !== 'location');
-        modalState['is' + modalType.charAt(0).toUpperCase() + modalType.slice(1)] = true;
-        component.set("v.modalState", modalState);
-
-        if (dynamicComponent) {
-            this.createDynamicComponent(component, dynamicComponent, targetDiv, params);
-        }
-    },
-
-    /**
-     * Create dynamic component (extracted to reduce duplication)
-     */
-    createDynamicComponent: function(component, compName, targetDiv, params) {
-        const defaultParams = {
-            "recordId": component.get("v.recordId"),
-            "showForm": true
-        };
-        const finalParams = Object.assign(defaultParams, params || {});
-
-        $A.createComponent(
-            compName,
-            finalParams,
-            function(msgBox) {
-                if (component.isValid()) {
-                    const targetCmp = component.find(targetDiv);
-                    if (targetCmp) {
-                        const body = targetCmp.get("v.body");
-                        body.push(msgBox);
-                        targetCmp.set("v.body", body);
-                    }
-                }
-            }
-        );
-    },
-
-    /**
      * Specific modal open handlers
      */
     openModelLoc: function(component, event, helper) {
-        this.openModal(component, 'location', 'c:LocationContainer', 'LocationComp');
+        helper.openModal(component, 'location', 'c:LocationContainer', 'LocationComp');
     },
 
     openModelVendor: function(component, event, helper) {
-        this.openModal(component, 'location', 'c:VendorContainer', 'LocationComp');
+        helper.openModal(component, 'location', 'c:VendorContainer', 'LocationComp');
     },
 
     openModelClient: function(component, event, helper) {
-        this.openModal(component, 'location', 'c:ClientContainer', 'LocationComp');
+        helper.openModal(component, 'location', 'c:ClientContainer', 'LocationComp');
     },
 
     openModelContact: function(component, event, helper) {
@@ -137,58 +97,41 @@
     },
 
     openModelRecordType: function(component, event, helper) {
-        this.openModal(component, 'record', null, null);
+        helper.openModal(component, 'record', null, null);
     },
 
     openCloseCasePop: function(component, event, helper) {
-        this.openModal(component, 'closeCasePop', 'c:CloseCasePop', 'CloseCaseComp');
+        helper.openModal(component, 'closeCasePop', 'c:CloseCasePop', 'CloseCaseComp');
     },
 
     openModelAsset: function(component, event, helper) {
-        this.openModal(component, 'asset', null, null);
+        helper.openModal(component, 'asset', null, null);
     },
 
     openModelRelatedCases: function(component, event, helper) {
-        this.openModal(component, 'relatedCases', null, null);
+        helper.openModal(component, 'relatedCases', null, null);
     },
 
     openModelCaseType: function(component, event, helper) {
-        this.openModal(component, 'caseType', 'c:FillCaseSubType', 'CaseTypeComp');
+        helper.openModal(component, 'caseType', 'c:FillCaseSubType', 'CaseTypeComp');
     },
 
     openModelServiceDate: function(component, event, helper) {
         const params = {
             "isCapacityEligible": component.get("v.isCapacityEligible")
         };
-        this.openModal(component, 'serviceDate', 'c:ServiceDateContainer', 'SLADateComp', params);
+        helper.openModal(component, 'serviceDate', 'c:ServiceDateContainer', 'SLADateComp', params);
     },
 
     openModelCustomerInfo: function(component, event, helper) {
-        this.openModal(component, 'customerInfo', 'c:SetCaseCustomerInfo', 'CustomerInfoComp');
+        helper.openModal(component, 'customerInfo', 'c:SetCaseCustomerInfo', 'CustomerInfoComp');
     },
 
     /**
      * Close all modals - replaces individual close methods
      */
     closeModel: function(component, event, helper) {
-        this.closeAllModals(component);
-    },
-
-    closeAllModals: function(component) {
-        const modalState = {
-            isOpen: false,
-            type: '',
-            isServiceDate: false,
-            isCaseType: false,
-            isCustomerInfo: false,
-            isCloseCasePop: false,
-            isContact: false,
-            isLocation: false,
-            isAsset: false,
-            isRelatedCases: false,
-            isRecord: false
-        };
-        component.set("v.modalState", modalState);
+        helper.closeAllModals(component);
     },
 
     // =====================================================================
@@ -196,105 +139,54 @@
     // =====================================================================
 
     /**
-     * Generic hover enter handler - replaces 3 specific methods
-     */
-    handleHoverEnter: function(component, event, helper, entityType) {
-        const hoverDelay = parseInt($A.get("$Label.c.HoverDelay")) || 300;
-        const timer = setTimeout(function() {
-            const hoverState = component.get('v.hoverState');
-            if (!hoverState[entityType].showCard) {
-                hoverState[entityType].isHovering = true;
-                hoverState[entityType].showCard = true;
-                component.set("v.hoverState", hoverState);
-                helper.hovercall(component, entityType.charAt(0).toUpperCase() + entityType.slice(1), entityType + 'Comp');
-            }
-        }, hoverDelay);
-        component.set("v.timer", timer);
-    },
-
-    /**
-     * Generic hover leave handler - replaces 3 specific methods
-     */
-    handleHoverLeave: function(component, event, helper, entityType) {
-        const timer = component.get('v.timer');
-        clearTimeout(timer);
-
-        const sleepDelay = parseInt($A.get("$Label.c.SleepDelay")) || 200;
-        helper.sleep(sleepDelay).then(() => {
-            const hoverState = component.get('v.hoverState');
-            if (hoverState[entityType].showCard) {
-                hoverState[entityType].isHovering = false;
-                hoverState[entityType].showCard = false;
-                component.set("v.hoverState", hoverState);
-            }
-        });
-    },
-
-    /**
-     * Mouse hover/out handlers for persistent cards
-     */
-    handleMouseHover: function(component, event, helper, entityType) {
-        const hoverState = component.get('v.hoverState');
-        hoverState[entityType].showCard = false;
-        component.set("v.hoverState", hoverState);
-    },
-
-    handleMouseHoverOut: function(component, event, helper, entityType) {
-        const hoverState = component.get('v.hoverState');
-        hoverState[entityType].showCard = false;
-        hoverState[entityType].isHovering = false;
-        component.set("v.hoverState", hoverState);
-    },
-
-    /**
-     * Specific hover handlers (delegate to generic methods)
+     * Specific hover handlers (delegate to helper methods)
      */
     assetenter: function(component, event, helper) {
-        this.handleHoverEnter(component, event, helper, 'asset');
+        helper.handleHoverEnter(component, event, 'asset');
     },
 
     assetout: function(component, event, helper) {
-        this.handleHoverLeave(component, event, helper, 'asset');
+        helper.handleHoverLeave(component, event, 'asset');
     },
 
     assetMouseHover: function(component, event, helper) {
-        this.handleMouseHover(component, event, helper, 'asset');
+        helper.handleMouseHover(component, event, 'asset');
     },
 
     assetMouseHoverOut: function(component, event, helper) {
-        this.handleMouseHoverOut(component, event, helper, 'asset');
+        helper.handleMouseHoverOut(component, event, 'asset');
     },
 
     locationenter: function(component, event, helper) {
-        this.handleHoverEnter(component, event, helper, 'location');
+        helper.handleHoverEnter(component, event, 'location');
     },
 
     locationout: function(component, event, helper) {
-        this.handleHoverLeave(component, event, helper, 'location');
+        helper.handleHoverLeave(component, event, 'location');
     },
 
     locationMouseHover: function(component, event, helper) {
-        this.handleMouseHover(component, event, helper, 'location');
+        helper.handleMouseHover(component, event, 'location');
     },
 
     locationMouseHoverOut: function(component, event, helper) {
-        this.handleMouseHoverOut(component, event, helper, 'location');
+        helper.handleMouseHoverOut(component, event, 'location');
     },
 
     contactenter: function(component, event, helper) {
-        this.handleHoverEnter(component, event, helper, 'contact');
+        helper.handleHoverEnter(component, event, 'contact');
     },
 
     contactout: function(component, event, helper) {
-        this.handleHoverLeave(component, event, helper, 'contact');
+        helper.handleHoverLeave(component, event, 'contact');
     },
 
     contactMouseHover: function(component, event, helper) {
-        this.handleMouseHover(component, event, helper, 'contact');
+        helper.handleMouseHover(component, event, 'contact');
     },
 
     contactMouseHoverOut: function(component, event, helper) {
-        this.handleMouseHoverOut(component, event, helper, 'contact');
+        helper.handleMouseHoverOut(component, event, 'contact');
     },
 
     // =====================================================================
@@ -315,7 +207,7 @@
                 "parentId": component.get("v.recordId"),
                 "isCapacityEligible": isCapacityEligible
             };
-            this.openModal(component, 'serviceDate', 'c:ServiceDateContainer', 'SLADateComp', params);
+            helper.openModal(component, 'serviceDate', 'c:ServiceDateContainer', 'SLADateComp', params);
         }
     },
 

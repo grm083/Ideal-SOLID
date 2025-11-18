@@ -321,5 +321,126 @@
     _handleError: function(component, message) {
         console.error(message);
         component.set('v.recordLoadError', message);
+    },
+
+    // =====================================================================
+    // MODAL MANAGEMENT HELPERS
+    // =====================================================================
+
+    /**
+     * Generic method to open modals - replaces 10+ individual modal open methods
+     */
+    openModal: function(component, modalType, dynamicComponent, targetDiv, params) {
+        const modalState = component.get("v.modalState");
+        modalState.isOpen = (modalType !== 'serviceDate' && modalType !== 'caseType' && modalType !== 'customerInfo' && modalType !== 'closeCasePop' && modalType !== 'contact' && modalType !== 'location');
+        modalState['is' + modalType.charAt(0).toUpperCase() + modalType.slice(1)] = true;
+        component.set("v.modalState", modalState);
+
+        if (dynamicComponent) {
+            this.createDynamicComponent(component, dynamicComponent, targetDiv, params);
+        }
+    },
+
+    /**
+     * Create dynamic component (extracted to reduce duplication)
+     */
+    createDynamicComponent: function(component, compName, targetDiv, params) {
+        const defaultParams = {
+            "recordId": component.get("v.recordId"),
+            "showForm": true
+        };
+        const finalParams = Object.assign(defaultParams, params || {});
+
+        $A.createComponent(
+            compName,
+            finalParams,
+            function(msgBox) {
+                if (component.isValid()) {
+                    const targetCmp = component.find(targetDiv);
+                    if (targetCmp) {
+                        const body = targetCmp.get("v.body");
+                        body.push(msgBox);
+                        targetCmp.set("v.body", body);
+                    }
+                }
+            }
+        );
+    },
+
+    /**
+     * Close all modals - replaces individual close methods
+     */
+    closeAllModals: function(component) {
+        const modalState = {
+            isOpen: false,
+            type: '',
+            isServiceDate: false,
+            isCaseType: false,
+            isCustomerInfo: false,
+            isCloseCasePop: false,
+            isContact: false,
+            isLocation: false,
+            isAsset: false,
+            isRelatedCases: false,
+            isRecord: false
+        };
+        component.set("v.modalState", modalState);
+    },
+
+    // =====================================================================
+    // HOVER BEHAVIOR HELPERS
+    // =====================================================================
+
+    /**
+     * Generic hover enter handler - replaces 3 specific methods
+     */
+    handleHoverEnter: function(component, event, entityType) {
+        const hoverDelay = parseInt($A.get("$Label.c.HoverDelay")) || 300;
+        const timer = setTimeout($A.getCallback(() => {
+            const hoverState = component.get('v.hoverState');
+            if (!hoverState[entityType].showCard) {
+                hoverState[entityType].isHovering = true;
+                hoverState[entityType].showCard = true;
+                component.set("v.hoverState", hoverState);
+                this.hovercall(component, entityType.charAt(0).toUpperCase() + entityType.slice(1), entityType + 'Comp');
+            }
+        }), hoverDelay);
+        component.set("v.timer", timer);
+    },
+
+    /**
+     * Generic hover leave handler - replaces 3 specific methods
+     */
+    handleHoverLeave: function(component, event, entityType) {
+        const timer = component.get('v.timer');
+        clearTimeout(timer);
+
+        const sleepDelay = parseInt($A.get("$Label.c.SleepDelay")) || 200;
+        this.sleep(sleepDelay).then(() => {
+            if (component.isValid()) {
+                const hoverState = component.get('v.hoverState');
+                if (hoverState[entityType].showCard) {
+                    hoverState[entityType].isHovering = false;
+                    hoverState[entityType].showCard = false;
+                    component.set("v.hoverState", hoverState);
+                }
+            }
+        });
+    },
+
+    /**
+     * Mouse hover/out handlers for persistent cards
+     */
+    handleMouseHover: function(component, event, entityType) {
+        const hoverState = component.get('v.hoverState');
+        hoverState[entityType].showCard = false;
+        component.set("v.hoverState", hoverState);
+    },
+
+    handleMouseHoverOut: function(component, event, entityType) {
+        const hoverState = component.get('v.hoverState');
+        hoverState[entityType].showCard = false;
+        hoverState[entityType].isHovering = false;
+        component.set("v.hoverState", hoverState);
     }
 })
