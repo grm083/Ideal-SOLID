@@ -1,0 +1,81 @@
+<template>
+    <!-- Entity Selector Component (Location/Vendor/Client) -->
+    <div class="entity-selector-container">
+        <!-- Entity Type Selector (if mode not specified) -->
+        <template if:false={hasFixedMode}>
+            <div class="slds-m-bottom_medium">
+                <lightning-radio-group
+                    name="entityType"
+                    label="Select Entity Type"
+                    options={entityTypeOptions}
+                    value={selectedEntityType}
+                    onchange={handleEntityTypeChange}
+                    type="button">
+                </lightning-radio-group>
+            </div>
+        </template>
+
+        <!-- Recent Entities (Quick Selection) -->
+        <template if:true={showRecentEntities}>
+            <div class="slds-m-bottom_medium">
+                <div class="slds-card">
+                    <div class="slds-card__header slds-border_bottom">
+                        <h3 class="slds-text-heading_small">Recently Viewed {entityTypeLabel}s</h3>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <template if:true={hasRecentEntities}>
+                            <div class="recent-entities-grid">
+                                <template for:each={recentEntities} for:item="entity">
+                                    <lightning-button
+                                        key={entity.id}
+                                        label={entity.name}
+                                        title={entity.fullAddress}
+                                        variant="neutral"
+                                        onclick={handleRecentEntityClick}
+                                        data-id={entity.id}
+                                        class="slds-m-right_x-small slds-m-bottom_x-small">
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </template>
+                        <template if:false={hasRecentEntities}>
+                            <p class="slds-text-color_weak">No recently viewed {entityTypeLabel}s</p>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Search Component -->
+        <c-record-search-base
+            search-title={searchTitle}
+            icon-name={iconName}
+            search-fields={searchFields}
+            columns={columns}
+            show-radio-select={true}
+            show-create-new={false}
+            show-pagination={true}
+            create-new-label={createNewLabel}
+            onsearch={handleSearch}
+            onrecordselect={handleRecordSelect}
+            onrecordclick={handleRecordClick}
+            onclear={handleClear}
+            onerror={handleError}>
+        </c-record-search-base>
+
+        <!-- Selected Entity Detail Card -->
+        <template if:true={hasSelectedEntity}>
+            <div class="slds-m-top_medium">
+                <c-inline-detail-card
+                    title={selectedEntityTitle}
+                    icon-name={iconName}
+                    fields={selectedEntityFields}
+                    variant="base"
+                    is-visible={true}
+                    show-close-button={false}
+                    has-footer={false}>
+                </c-inline-detail-card>
+            </div>
+        </template>
+    </div>
+</template>

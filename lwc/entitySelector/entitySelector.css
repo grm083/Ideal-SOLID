@@ -1,0 +1,92 @@
+/* Entity Selector Component Styles */
+
+.entity-selector-container {
+    position: relative;
+}
+
+/* Entity Type Radio Group */
+.slds-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+/* Recent Entities Section */
+.slds-card {
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.slds-card__header {
+    padding: 1rem;
+}
+
+.slds-border_bottom {
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-card__body {
+    padding: 0;
+}
+
+.slds-card__body_inner {
+    padding: 1rem;
+}
+
+.slds-text-heading_small {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+.slds-text-color_weak {
+    color: rgb(116, 116, 116);
+}
+
+/* Recent Entities Grid */
+.recent-entities-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.recent-entities-grid lightning-button {
+    flex: 0 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .recent-entities-grid {
+        flex-direction: column;
+    }
+
+    .recent-entities-grid lightning-button {
+        width: 100%;
+    }
+}
+
+/* Selected Entity Detail Card */
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+/* Loading State */
+.slds-is-relative {
+    position: relative;
+}
+
+/* Accessibility - focus states */
+lightning-button:focus {
+    outline: 2px solid rgb(0, 112, 210);
+    outline-offset: 2px;
+}
+
+/* Button spacing */
+.slds-m-right_x-small {
+    margin-right: 0.5rem;
+}
+
+.slds-m-bottom_x-small {
+    margin-bottom: 0.5rem;
+}
