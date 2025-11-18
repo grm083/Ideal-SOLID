@@ -15,6 +15,53 @@
     // =====================================================================
 
     doInit: function(component, event, helper) {
+        // Initialize consolidated object attributes
+        component.set("v.modalState", {
+            isOpen: false,
+            type: '',
+            isServiceDate: false,
+            isCaseType: false,
+            isCustomerInfo: false,
+            isCloseCasePop: false,
+            isContact: false,
+            isLocation: false,
+            isAsset: false,
+            isRelatedCases: false,
+            isRecord: false
+        });
+
+        component.set("v.hoverState", {
+            asset: {isHovering: false, showCard: false},
+            location: {isHovering: false, showCard: false},
+            contact: {isHovering: false, showCard: false}
+        });
+
+        component.set("v.customerInfo", {
+            po: '-',
+            chargeable: '-',
+            psi: '-',
+            companyCategory: '-'
+        });
+
+        component.set("v.searchState", {
+            showForm: true,
+            showPriorResult: false,
+            boolShowNew: false,
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            mobile: '',
+            extension: '',
+            contacts: []
+        });
+
+        component.set("v.entityType", {
+            isLocation: false,
+            isVendor: false,
+            isClient: false
+        });
+
         component.set("v.isNewService", false);
         component.set("v.isCPQ", false);
         helper.getCaseDetails(component);
@@ -87,11 +134,13 @@
     },
 
     openModelContact: function(component, event, helper) {
-        const modalState = component.get("v.modalState");
+        // Clone modalState to ensure proper reactivity
+        const modalState = Object.assign({}, component.get("v.modalState"));
         modalState.isContact = true;
         component.set("v.modalState", modalState);
 
-        const searchState = component.get("v.searchState");
+        // Clone searchState to ensure proper reactivity
+        const searchState = Object.assign({}, component.get("v.searchState"));
         searchState.showForm = true;
         component.set("v.searchState", searchState);
     },

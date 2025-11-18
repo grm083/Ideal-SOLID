@@ -14,49 +14,17 @@
     <aura:attribute name="recordLoadError" type="String"/>
 
     <!-- Consolidated Modal State (instead of 10 separate boolean attributes) -->
-    <aura:attribute name="modalState" type="Object" default="{
-        'isOpen': false,
-        'type': '',
-        'isServiceDate': false,
-        'isCaseType': false,
-        'isCustomerInfo': false,
-        'isCloseCasePop': false,
-        'isContact': false,
-        'isLocation': false,
-        'isAsset': false,
-        'isRelatedCases': false,
-        'isRecord': false
-    }"/>
+    <aura:attribute name="modalState" type="Object"/>
 
     <!-- Consolidated Hover State (instead of 6 separate boolean attributes) -->
-    <aura:attribute name="hoverState" type="Object" default="{
-        'asset': {'isHovering': false, 'showCard': false},
-        'location': {'isHovering': false, 'showCard': false},
-        'contact': {'isHovering': false, 'showCard': false}
-    }"/>
+    <aura:attribute name="hoverState" type="Object"/>
     <aura:attribute name="timer" type="Integer"/>
 
     <!-- Consolidated Customer Info (instead of 4 separate string attributes) -->
-    <aura:attribute name="customerInfo" type="Object" default="{
-        'po': '-',
-        'chargeable': '-',
-        'psi': '-',
-        'companyCategory': '-'
-    }"/>
+    <aura:attribute name="customerInfo" type="Object"/>
 
     <!-- Consolidated Search State (instead of 9 separate attributes) -->
-    <aura:attribute name="searchState" type="Object" default="{
-        'showForm': true,
-        'showPriorResult': false,
-        'boolShowNew': false,
-        'firstName': '',
-        'lastName': '',
-        'email': '',
-        'phone': '',
-        'mobile': '',
-        'extension': '',
-        'contacts': []
-    }"/>
+    <aura:attribute name="searchState" type="Object"/>
 
     <!-- Flags and Status -->
     <aura:attribute name="isAssetReq" type="Boolean" default="true"/>
@@ -70,11 +38,7 @@
     <aura:attribute name="isCapacityEligible" type="Boolean" default="false"/>
 
     <!-- Entity Type Flags -->
-    <aura:attribute name="entityType" type="Object" default="{
-        'isLocation': false,
-        'isVendor': false,
-        'isClient': false
-    }"/>
+    <aura:attribute name="entityType" type="Object"/>
 
     <!-- Other Attributes -->
     <aura:attribute name="selectedAssets" type="List"/>
