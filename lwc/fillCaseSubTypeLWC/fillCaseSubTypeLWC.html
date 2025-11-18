@@ -22,6 +22,14 @@
 
                 <!-- Modal Content -->
                 <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Loading Spinner -->
+                    <template if:true={isLoading}>
+                        <lightning-spinner
+                            alternative-text="Saving..."
+                            size="medium">
+                        </lightning-spinner>
+                    </template>
+
                     <!-- Error Messages -->
                     <template if:true={showErrorMessage}>
                         <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">

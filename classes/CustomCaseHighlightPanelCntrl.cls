@@ -331,4 +331,59 @@ public without sharing class CustomCaseHighlightPanelCntrl {
         return 'success';
     }
 
+    /**
+     * @description Recalculates SLA for a case after Case Type/Sub-Type/Reason changes
+     * This method was restored after being removed during service layer refactoring.
+     * It delegates to SLACalculationUtility.setServiceDate() for the actual calculation.
+     *
+     * USAGE: Called by fillCaseSubTypeLWC and FillCaseSubType (Aura) after case type changes
+     *
+     * @param caseId The ID of the case to update SLA for
+     * @return String 'success' or 'error'
+     */
+    @AuraEnabled
+    public static String updateSLA(String caseId) {
+        try {
+            if (String.isBlank(caseId)) {
+                return 'error';
+            }
+
+            // Retrieve the case with necessary fields for SLA calculation
+            Case caseToUpdate = [
+                SELECT Id, Case_Type__c, Case_Sub_Type__c, Case_Reason__c,
+                       CreatedDate, EntitlementId, Service_Date__c,
+                       SLA_Service_Date__c, SLA_Service_Date_Time__c
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+
+            if (caseToUpdate == null) {
+                return 'error';
+            }
+
+            // Clear existing SLA dates to force recalculation
+            // SLACalculationUtility only calculates if SLA_Service_Date_Time__c is null
+            caseToUpdate.SLA_Service_Date_Time__c = null;
+            caseToUpdate.SLA_Service_Date__c = null;
+
+            // Use SLACalculationUtility to recalculate SLA
+            // Note: setServiceDate is an @InvocableMethod, so we need to pass a list
+            List<Case> casesToProcess = new List<Case>{caseToUpdate};
+            SLACalculationUtility.setServiceDate(casesToProcess);
+
+            return 'success';
+
+        } catch (Exception ex) {
+            UTIL_LoggingService.logHandledException(
+                ex,
+                UserInfo.getOrganizationId(),
+                UTIL_ErrorConstants.ERROR_APPLICATION,
+                LoggingLevel.ERROR
+            );
+            STPExceptionUtil.setStepByStepExceptionObj('updateSLA', 'Case Screen', ex.getMessage());
+            return 'error';
+        }
+    }
+
 }

@@ -584,28 +584,54 @@ export default class CustomCaseHighlightPanelLWC extends NavigationMixin(Lightni
         this.isModalOpenRelatedCases = false;
     }
 
-    // Refresh Handler (from child components)
+    // ========================================================================
+    // REFRESH UTILITIES - Called by child components after DML
+    // ========================================================================
+
+    /**
+     * Refresh all case data after DML operations
+     *
+     * This method is called by child modal components (via onrefresh event) when they
+     * perform DML on the Case record. It ensures all components on the page get fresh data.
+     *
+     * REFRESH FLOW:
+     * 1. Child component performs DML (e.g., update Location, Contact, etc.)
+     * 2. Child fires 'refresh' custom event
+     * 3. Parent catches event via onrefresh={handleRefresh}
+     * 4. This method executes:
+     *    a. loadDataDirectly() - Immediate local refresh for this component
+     *    b. requestGovernorRefresh() - Publishes to CaseDataChannel LMS
+     *    c. CaseDataGovernorLWC receives message and reloads from Apex
+     *    d. CaseDataGovernorLWC publishes fresh data to ALL subscribers
+     *    e. All components (ShowCaseMessagesLWC, etc.) receive updates
+     *    f. notifyRecordUpdateAvailable() - Refreshes wire adapters
+     *
+     * CHILD COMPONENTS: Emit refresh event after successful DML:
+     *   this.dispatchEvent(new CustomEvent('refresh'));
+     */
     async handleRefresh() {
-        // Always reload data directly to ensure immediate refresh
+        // 1. Immediate local refresh for responsive UI
         await this.loadDataDirectly();
 
-        // Notify governor to refresh (so other subscribed components also update)
+        // 2. Notify CaseDataGovernor to refresh (triggers cascade to all subscribers)
         if (this.hasReceivedGovernorData) {
             this.requestGovernorRefresh();
         }
 
-        // Notify wire service of record update
+        // 3. Notify Lightning Data Service wire adapters
         await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
     }
 
     /**
-     * Request governor to refresh data - NEW!
+     * Request governor to refresh data
+     * Uses 'reload' to force complete data reload from Apex
      */
     requestGovernorRefresh() {
         const message = {
             caseId: this.recordId,
-            eventType: 'refresh',
-            timestamp: new Date().toISOString()
+            eventType: 'reload',  // Use 'reload' to force full data refresh
+            timestamp: new Date().toISOString(),
+            requestedBy: 'customCaseHighlightPanelLWC'
         };
         publish(this.messageContext, CASE_DATA_CHANNEL, message);
     }

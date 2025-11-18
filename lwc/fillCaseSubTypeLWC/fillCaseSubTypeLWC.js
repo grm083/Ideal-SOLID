@@ -45,6 +45,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
     @track caseReason = '';
     @track showErrorMessage = false;
     @track errorMessage = '';
+    @track isLoading = false;
 
     // Governor integration
     @track caseAsset = null; // Asset data from governor or direct call
@@ -78,11 +79,22 @@ export default class FillCaseSubTypeLWC extends LightningElement {
 
     // Wire Case Record
     @wire(getRecord, { recordId: '$recordId', fields: CASE_FIELDS })
+    wiredCaseRecord(result) {
+        this.caseRecord = result;
+
+        // Populate default values from case record when data is available
+        if (result.data) {
+            this.caseType = getFieldValue(result.data, CASE_TYPE) || '';
+            this.caseSubType = getFieldValue(result.data, CASE_SUB_TYPE) || '';
+            this.caseReason = getFieldValue(result.data, CASE_REASON) || '';
+        }
+    }
+
     caseRecord;
 
     // Computed properties
     get recordTypeId() {
-        return getFieldValue(this.caseRecord.data, CASE_RECORD_TYPE_ID);
+        return this.caseRecord?.data ? getFieldValue(this.caseRecord.data, CASE_RECORD_TYPE_ID) : null;
     }
 
     get caseReasonFieldClass() {
@@ -224,6 +236,9 @@ export default class FillCaseSubTypeLWC extends LightningElement {
             return;
         }
 
+        // Show loading spinner
+        this.isLoading = true;
+
         // Validation 3: For Pickup cases, validate against product family
         if (caseType === 'Pickup') {
             await this.validatePickupCase(fields);
@@ -265,6 +280,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
                     const isOpenTopTemp = asset.Equipment_Type__c === 'Open Top' && asset.Duration__c === 'Temporary';
 
                     if (!isOpenTopTemp && !this.ROLLOFF_ALLOWED_SUBTYPES.includes(newSubType)) {
+                        this.isLoading = false;
                         this.showErrorMessage = true;
                         this.errorMessage = 'For Product Family RollOff we can only select Empty and Return, Empty And DO NOT Return and Bale(s)';
                         return;
@@ -274,6 +290,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
                 // Check Commercial validation
                 if (asset.ProductFamily === 'Commercial' && asset.Equipment_Type__c !== 'Hand Pickup') {
                     if (!this.COMMERCIAL_ALLOWED_SUBTYPES.includes(newSubType)) {
+                        this.isLoading = false;
                         this.showErrorMessage = true;
                         this.errorMessage = 'For Product Family Commercial we can only select Extra Pickup, On-Call and Bale(s)';
                         return;
@@ -287,6 +304,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
             this.submitForm(fields);
 
         } catch (error) {
+            this.isLoading = false;
             this.showToast('Error', error.body?.message || 'Error validating case', 'error');
         }
     }
@@ -297,6 +315,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
     }
 
     handleSuccess() {
+        this.isLoading = false;
         this.showForm = false;
 
         // Refresh the record
@@ -318,6 +337,7 @@ export default class FillCaseSubTypeLWC extends LightningElement {
     }
 
     handleError(error) {
+        this.isLoading = false;
         this.showToast('Error', 'An error occurred while updating the case', 'error');
         console.error('Form error:', error);
     }
