@@ -27,12 +27,14 @@
 
     /**
      * Get case details with caching to reduce server calls
+     * @param {Object} component - The component instance
+     * @param {Boolean} forceRefresh - If true, bypass cache and fetch fresh data
      */
-    getCaseDetails: function(component) {
+    getCaseDetails: function(component, forceRefresh) {
         const caseId = component.get("v.recordId");
 
-        // Check cache first
-        if (this._shouldUseCache()) {
+        // Check cache first (unless force refresh is requested)
+        if (!forceRefresh && this._shouldUseCache()) {
             this._applyCachedData(component);
             return;
         }
@@ -304,6 +306,14 @@
     _updateCache: function(data) {
         this._caseDetailsCache = data;
         this._cacheTimestamp = Date.now();
+    },
+
+    /**
+     * Invalidate the cache to force fresh data fetch
+     */
+    invalidateCache: function() {
+        this._caseDetailsCache = null;
+        this._cacheTimestamp = null;
     },
 
     /**

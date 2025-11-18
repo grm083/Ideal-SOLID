@@ -56,11 +56,8 @@
             contacts: []
         });
 
-        component.set("v.entityType", {
-            isLocation: false,
-            isVendor: false,
-            isClient: false
-        });
+        // NOTE: Do NOT initialize entityType here - let getCaseDetails set it based on case data
+        // Initializing with false values causes the UI to render incorrectly before data loads
 
         component.set("v.isNewService", false);
         component.set("v.isCPQ", false);
@@ -71,7 +68,9 @@
     recordUpdated: function(component, event, helper) {
         const changeType = event.getParams().changeType;
         if (changeType === "CHANGED" || changeType === "LOADED" || changeType === "REMOVED") {
-            helper.getCaseDetails(component);
+            // Force refresh to bypass cache when record changes
+            const forceRefresh = (changeType === "CHANGED");
+            helper.getCaseDetails(component, forceRefresh);
             helper.isCapacityEligible(component);
         }
     },
@@ -84,6 +83,8 @@
         if (workspaceAPI && currentTab) {
             workspaceAPI.getFocusedTabInfo().then(function(response) {
                 if (LDSPanel && response.focused && response.url.includes('lightning/r/Case/')) {
+                    // Invalidate cache to ensure fresh data when tab is focused
+                    helper.invalidateCache();
                     window.setTimeout(function() {
                         LDSPanel.reloadRecord(true);
                         $A.get('e.force:refreshView').fire();
@@ -111,6 +112,8 @@
         helper.closeAllModals(component);
         component.set("v.isNewService", false);
         component.set("v.isCPQ", false);
+        // Invalidate cache before reloading to ensure fresh data
+        helper.invalidateCache();
         component.find("recordLoaderHightLightpPanel").reloadRecord(true);
     },
 
