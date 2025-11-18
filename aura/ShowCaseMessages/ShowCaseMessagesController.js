@@ -1,27 +1,36 @@
 ({
     doInit: function (component, event, helper) {
-        component.set('v.duplicateModal', false);  
+        const modalState = component.get('v.modalState');
+        modalState.duplicateModal = false;
+        component.set('v.modalState', modalState);
         helper.isCapacityEligible(component);
     },
     recordUpdated: function (component, event, helper) {
         var spin = component.find('spinner');
         $A.util.removeClass(spin, 'slds-hide');
-        component.set("v.displayMultipleAssetCases", false);
+        const displayState = component.get("v.displayState");
+        displayState.displayMultipleAssetCases = false;
+        component.set("v.displayState", displayState);
         var caseRecord = component.get("v.caseRecord");
+
         if(caseRecord && caseRecord.Show_Multiple_Asset_Cases__c && caseRecord.Status ==='New' && caseRecord.AssetId && caseRecord.ContactId && caseRecord.Case_Sub_Type__c){
             if(component.get('v.CaseMsg')==='Multi Asset'){
                 component.set('v.CaseMsg', 'Complete the intake of related cases(if any) from the below list');
             }
             else if(component.get('v.CaseMsg')==='Complete the intake of related cases(if any) from the below list')
             {
-                component.set('v.displaySummary', false);
+                displayState.displaySummary = false;
+                component.set('v.displayState', displayState);
             }
                 else
                 {
                     window.setTimeout(
                         $A.getCallback(function() {
-                            component.set('v.displaySummary', true);
-                            component.set('v.displayMsg', true);
+                            const displayState = component.get("v.displayState");
+                            displayState.displaySummary = true;
+                            displayState.displayMsg = true;
+                            component.set('v.displayState', displayState);
+
                             if(component.find("disablebuttonid") != undefined)
                             {
                                 component.find("disablebuttonid").set("v.label",'View Multi Asset Case Summary');
@@ -30,11 +39,12 @@
                         }), 2000
                     );
                 }
-            
+
         }
         else{
-            component.set('v.showMultipleCaseLabel', false);
-            component.set('v.showOnRelatedMultiAssetCase',false);
+            displayState.showMultipleCaseLabel = false;
+            displayState.showOnRelatedMultiAssetCase = false;
+            component.set('v.displayState', displayState);
             helper.getCaseMsg(component, false,helper);
             helper.isCapacityEligible(component);
         }
@@ -45,25 +55,30 @@
         if (event != null) {
             const caseId = event.getParam('caseId');
             var enable = event.getParam('enable');
+            const displayState = component.get("v.displayState");
+            const stateFlags = component.get("v.stateFlags");
+
             if(component.get("v.recordId") === caseId && enable){
                 var caseRecord = component.get("v.caseRecord");
                 console.log('Invoked from LWC');
                 if(caseRecord.Status ==='New'){
-                    component.set('v.displayMsg', true);
-                    component.set('v.displaySummary', true);
+                    displayState.displayMsg = true;
+                    displayState.displaySummary = true;
+                    displayState.showMultipleCaseLabel = true;
+                    displayState.showOnRelatedMultiAssetCase = true;
+                    component.set('v.displayState', displayState);
                     component.set('v.CaseMsg', '');
-                    component.set('v.showMultipleCaseLabel', true);
-                    component.set('v.showOnRelatedMultiAssetCase',true);
-                    var isWMcapacityEligible = component.get('v.isCapacityEligible');
-                    if(!isWMcapacityEligible)
+
+                    if(!stateFlags.isCapacityEligible)
                         component.find("disablebuttonid").set("v.label", 'View Multi Asset Case Summary');
                     component.set("v.multiAssetCaseReferenceNo", caseRecord.Reference_Number__c);
                     helper.duplicateCheckInvocation(component,true);
-                    
+
                 }
             }else if(component.get("v.recordId") === caseId && !enable){
-                component.set('v.displayMsg', true);
-                component.set('v.displaySummary', false);
+                displayState.displayMsg = true;
+                displayState.displaySummary = false;
+                component.set('v.displayState', displayState);
                 component.set('v.CaseMsg', "* Please complete the intake of related cases if any in 'New' status.");
             }
         }
@@ -77,13 +92,17 @@
             }
         }
     },
-    
+
     closeModel: function (component, event, helper) {
-        component.set("v.viewCaseSummary", false);
+        const modalState = component.get("v.modalState");
+        modalState.viewCaseSummary = false;
+        component.set("v.modalState", modalState);
     },
     CancelModel: function (component, event, helper) {
-        component.set("v.WOInstructions", false);
-        component.set("v.caseEmailTemp", false);
+        const modalState = component.get("v.modalState");
+        modalState.WOInstructions = false;
+        modalState.caseEmailTemp = false;
+        component.set("v.modalState", modalState);
         component.set("v.CaseObj", { 'sobjectType': 'Case' });
     },
     
@@ -104,12 +123,18 @@
     },
     
     showCaseSummary: function (component, event, helper) {
-        component.set("v.viewCaseSummary", true);
+        const modalState = component.get("v.modalState");
+        const stateFlags = component.get("v.stateFlags");
+
+        modalState.viewCaseSummary = true;
+        component.set("v.modalState", modalState);
         component.find("workOrderButton").set("v.disabled", false);
+
         var btnValue = event.getSource().get('v.label');
         helper.getCaseSummary(component, helper);
         if(btnValue !='View Case Summary'){
-            component.set("v.isTempVisible",false);
+            stateFlags.isTempVisible = false;
+            component.set("v.stateFlags", stateFlags);
         }
         else{
             helper.isTemplateVisible(component);
@@ -117,11 +142,15 @@
     },
     openWorkOrderPopup: function (component, event, helper) {
         helper.getQAOverride(component, helper);
-        component.set("v.WOInstructions", true);
+        const modalState = component.get("v.modalState");
+        modalState.WOInstructions = true;
+        component.set("v.modalState", modalState);
     },
     openEmailTemplatePopup: function (component, event, helper) {
         helper.getQAOverride(component, helper);
-        component.set("v.caseEmailTemp", true);
+        const modalState = component.get("v.modalState");
+        modalState.caseEmailTemp = true;
+        component.set("v.modalState", modalState);
     },
     saveWorkOrderDetails: function (component, event, helper) {
         var validcontact = component.find('WOdetailsform').reduce(function (validSoFar, inputCmp) {
@@ -329,11 +358,15 @@
     },
     checkCaseWorkOrderDuplicate: function (component, event, helper) {
         var isWorkOrderDuplicate = event.getParam("isDuplicate");
-        component.set('v.singleAssetDupCheck',isWorkOrderDuplicate);
+        const stateFlags = component.get("v.stateFlags");
+        stateFlags.singleAssetDupCheck = isWorkOrderDuplicate;
+        component.set('v.stateFlags', stateFlags);
     },
-    
+
     closeDuplicatePopup: function (component, event, helper) {
-        component.set('v.duplicateModal', false);  
+        const modalState = component.get("v.modalState");
+        modalState.duplicateModal = false;
+        component.set('v.modalState', modalState);
     },
     
     goToQuote: function (cmp, event, helper){
@@ -357,12 +390,16 @@
             cmp.find("Id_spinner").set("v.class", 'slds-hide');
         });
         $A.enqueueAction(getOppID);*/
-        cmp.set('v.showModal', true);
+        const modalState = cmp.get('v.modalState');
+        modalState.showModal = true;
+        cmp.set('v.modalState', modalState);
     },
-    
+
     closeQuotes: function(cmp) {
-        cmp.set('v.showModal', 'false');
-        cmp.set('v.showQuoteModal', 'false');
+        const modalState = cmp.get('v.modalState');
+        modalState.showModal = false;
+        modalState.showQuoteModal = false;
+        cmp.set('v.modalState', modalState);
         $A.get('e.force:refreshView').fire();
     },
     
@@ -401,16 +438,19 @@
                             return;
                         }
                         //TCS-pkulkarn-25-Aug-2023-End-SDT-31259
-                        
+
                         //if (response.getReturnValue() == 'quoteExists'){
-                        
-                        cmp.set('v.showQuoteModal', true); 
+                        const modalState = cmp.get('v.modalState');
+                        modalState.showQuoteModal = true;
+                        cmp.set('v.modalState', modalState);
                         cmp.find("Id_spinner").set("v.class", 'slds-hide');
                         /*}
                         else
                      {
 						 // Code removed - to open Favroite Modal SDT-20853
-						cmp.set('v.showFavroiteModal', 'true');
+						const modalState = cmp.get('v.modalState');
+                        modalState.showFavroiteModal = true;
+                        cmp.set('v.modalState', modalState);
                         cmp.find("Id_spinner").set("v.class", 'slds-hide');
                      }*/
                     };

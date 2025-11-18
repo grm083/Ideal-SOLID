@@ -6,12 +6,88 @@
     <aura:handler event="c:FetchServiceApproverEvent" action="{!c.handleFetchServiceApproverEvent}" />
     <aura:handler event="force:showToast" action="{!c.recordUpdated}"/> <!-- Case Asset Validation -->
     <aura:registerEvent name="serviceApproverEvent" type="c:ServiceApproverEvent" />
-    <aura:attribute name="showMultipleCaseLabel" type="Boolean" default="true" />
-    <aura:attribute name="showCalendar" type="Boolean" default="false" />
+    <!-- Consolidated State Objects - Phase 1 Refactoring -->
+    <aura:attribute name="displayState" type="Object" default="{
+        'displayMsg': false,
+        'displaySummary': false,
+        'displayMultipleAssetCases': false,
+        'displayOccurrence': false,
+        'showMultipleCaseLabel': true,
+        'showOnRelatedMultiAssetCase': false,
+        'reqInfoMsg': false,
+        'approvalInfoMsg': false,
+        'hideNoRecordSection': true,
+        'summaryContent': true,
+        'actionReqRed': false,
+        'showMsgNTE': false
+    }" />
+
+    <aura:attribute name="modalState" type="Object" default="{
+        'viewCaseSummary': false,
+        'WOInstructions': false,
+        'showModal': false,
+        'duplicateModal': false,
+        'showQuoteModal': false,
+        'showFavroiteModal': false,
+        'caseEmailTemp': false
+    }" />
+
+    <aura:attribute name="buttonState" type="Object" default="{
+        'initiateWoButton': false,
+        'subTypeBtn': false,
+        'caseServiceDateBtn': false,
+        'isShowServiceDateBtn': false,
+        'isShowPOPSI': false,
+        'isShowProgressCase': false,
+        'isAddCaseAsset': false,
+        'isShowAssignCase': false,
+        'isAddQuote': false,
+        'isOpportunityAdded': false,
+        'disableAddQuote': false
+    }" />
+
+    <aura:attribute name="stateFlags" type="Object" default="{
+        'showCalendar': false,
+        'checkDivValue': true,
+        'checkBoxValue': true,
+        'psiReq': true,
+        'isMultiCheckedVisible': true,
+        'NotReturn': false,
+        'singleAssetDupCheck': false,
+        'isCapacityEligible': true,
+        'isTempVisible': false,
+        'isByPassWO': false,
+        'loaded': false,
+        'loadingSpinner': false
+    }" />
+
+    <!-- Core data attributes -->
     <aura:attribute name="caseLst" type="Case[]" />
-    <aura:attribute name="showModal" type="Boolean" default="false" />
-    <aura:attribute name="duplicateModal" type="Boolean" default="false" />
-    <aura:handler name="CloseModalEvent" event="c:QuoteProductsCloseModal" action="{!c.closeQuotes}" />
+    <aura:attribute name="selectedCases" type="String[]" access="global" />
+    <aura:attribute name="multiAssetSelections" type="String[]" access="Private" />
+    <aura:attribute name="multiAssetCaseReferenceNo" type="String" access="Private" />
+    <aura:attribute name="selectedCase" type="String" access="global" />
+    <aura:attribute name="caseSummary" type="Case[]" access="global" />
+    <aura:attribute name="caseRecord" type="Object" />
+    <aura:attribute name="caseRec" type="Case" />
+    <aura:attribute name="CaseObj" type="Case" default="{'sobjectType': 'Case',
+                                                        'Site_Contact__c': '',
+                                                        'Site_Contact_Phone__c': '',
+                                                        'User_Input_Work_Order_Instructions__c': '',
+                                                        'EmailTemplateAdditionalComments__c':'',
+                                                        'Is_ByPassWO__c':false
+                                          }" />
+
+    <!-- Message attributes -->
+    <aura:attribute name="CaseMsg" type="String" access="global" />
+    <aura:attribute name="reqInfo" type="String" access="global" />
+    <aura:attribute name="approvalInfo" type="String" access="global" />
+    <aura:attribute name="occurrenceLimit" type="String" default="0" access="global" />
+    <aura:attribute name="Message" type="String" default="" />
+    <aura:attribute name="recordLoadError" type="String" />
+    <aura:attribute name="lastEventName" type="String" access="global" />
+
+    <!-- Configuration attributes -->
     <aura:attribute name="caseRecordTypeList" type="List" default="['Integration Case',
                                                                'Interruption Case',
                                                                'Modify Existing Service Case',
@@ -21,67 +97,8 @@
                                                                'Standard Case',
                                                                'Status Case',
                                                                'Vendor Case']" />
-    <aura:attribute name="displayMsg" type="Boolean" default="false" />
-    <aura:attribute name="selectedCases" type="String[]" access="global" />
-    <aura:attribute name="reqInfoMsg" type="Boolean" default="false" />
-    <aura:attribute name="approvalInfoMsg" type="Boolean" default="false" />
-    <aura:attribute name="checkDivValue" type="Boolean" default="true" />
-    <aura:attribute name="checkBoxValue" type="Boolean" default="true" />
-    <aura:attribute name="displaySummary" type="Boolean" default="false" />
-    <aura:attribute name="showOnRelatedMultiAssetCase" type="Boolean" default="false" />
-    <aura:attribute name="psiReq" type="Boolean" default="true" />
-    <aura:attribute name="isMultiCheckedVisible" type="Boolean" default="true" />
-    <aura:attribute name="displayMultipleAssetCases" type="Boolean" default="false" />
-    <aura:attribute name="multiAssetSelections" type="String[]" access="Private" />
-    <aura:attribute name="multiAssetCaseReferenceNo" type="String" access="Private" />
-    <aura:attribute name="viewCaseSummary" type="Boolean" default="false" />
-    <aura:attribute name="WOInstructions" type="Boolean" default="false" />
-    <aura:attribute name="selectedCase" type="String" access="global" />
-    <aura:attribute name="caseSummary" type="Case[]" access="global" />
-    <aura:attribute name="CaseMsg" type="String" access="global" />
-    <aura:attribute name="reqInfo" type="String" access="global" />
-    <aura:attribute name="approvalInfo" type="String" access="global" />
-    <aura:attribute name="occurrenceLimit" type="String" default="0" access="global" />
-    <aura:attribute name="displayOccurrence" type="Boolean" default="false" access="global" />
-    <aura:attribute name="initiateWoButton" type="Boolean" default="false" />
-    <aura:attribute name="hideNoRecordSection" type="boolean" default="true" access="global" />
-    <aura:attribute name="actionReqRed" type="Boolean" default="false" />
-    <aura:attribute name="subTypeBtn" type="Boolean" default="false" />
-    <aura:attribute name="caseServiceDateBtn" type="Boolean" default="false" />
-    <aura:attribute name="isShowServiceDateBtn" type="Boolean" default="false" />
-    <aura:attribute name="isShowPOPSI" type="Boolean" default="false" />
-    <aura:attribute name="isShowProgressCase" type="Boolean" default="false" />
-     <aura:attribute name="isAddCaseAsset" type="Boolean" default="false" />
-    <aura:attribute name="isShowAssignCase" type="Boolean" default="false" />
-    <aura:attribute name="summaryContent" type="boolean" default="true" />
-    <aura:attribute name="caseRecord" type="Object" />
-    <aura:attribute name="caseRec" type="Case" />
-    <aura:attribute name="Message" type="String" default="" />
-    <aura:attribute name="NotReturn" type="Boolean" default="false" />
-    <aura:attribute name="singleAssetDupCheck" type="Boolean" default="false" />
-    <aura:attribute name="recordLoadError" type="String" />
-    <aura:attribute name="lastEventName" type="String" access="global" />
-    <aura:attribute name="isCapacityEligible" type="Boolean" default="true"/>
-	<aura:attribute name = "isAddQuote" type="Boolean" default="false" />
-    <aura:attribute name = "isOpportunityAdded" type="Boolean" default="false" />
-	<aura:attribute name="loadingSpinner" type="Boolean" default="false" />
-    <aura:attribute name="showQuoteModal" type="Boolean" default="false" />
-	<aura:attribute name="showFavroiteModal" type="Boolean" default="false" />
-    <aura:attribute name="isTempVisible" type="Boolean" default="false"/>
-	<aura:attribute name="caseEmailTemp" type="Boolean" default="false" />
-    <aura:attribute name="isByPassWO" type="Boolean" default="false"/>
-	<aura:attribute name="loaded" type="Boolean" default="false"/>
-    <aura:attribute name="CaseObj" type="Case" default="{'sobjectType': 'Case',
-                                                        'Site_Contact__c': '',
-                                                        'Site_Contact_Phone__c': '',
-                                                        'User_Input_Work_Order_Instructions__c': '',
-                                                        'EmailTemplateAdditionalComments__c':'',
-                                                        'Is_ByPassWO__c':false
-                                          }" />
 
-
-	<aura:attribute name="showMsgNTE" type="Boolean" default="false" />
-	<aura:attribute name="disableAddQuote" type="Boolean" default="false" />
+    <aura:handler name="CloseModalEvent" event="c:QuoteProductsCloseModal" action="{!c.closeQuotes}" />
 
     <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
     <aura:handler event="c:CaseDuplicateCheckEvent" action="{!c.checkCaseWorkOrderDuplicate}"/>
@@ -97,11 +114,11 @@
         <div class="setHeight slds-truncate slds-col slds-scrollable">
             <lightning:card class=" slds-scrollable" aura:id="actionReqCard">
 			<lightning:spinner variant="brand" size="large" aura:id="Id_spinner" class="slds-hide" />
-				<aura:if isTrue="{! v.loaded }">
+				<aura:if isTrue="{! v.stateFlags.loaded }">
                     <lightning:spinner alternativeText="Loading" class="spin"/>
                 </aura:if>
                 <ul class="slds-list--inline">
-                    <aura:if isTrue="{!v.reqInfoMsg}">
+                    <aura:if isTrue="{!v.displayState.reqInfoMsg}">
                         <li>
                             <div class="slds-m-left_small">
                                 <lightning:icon aura:id="infoIcon" iconName="action:info"
@@ -119,13 +136,13 @@
                                 <div class="slds-m-left_small">
                                     <lightning:icon aura:id="actionIcon" iconName="action:new_task"
                                         alternativeText="Action Required" size="xx-small"
-                                        class="{!v.actionReqRed ? 'redicon' : 'greenicon'}" />
+                                        class="{!v.displayState.actionReqRed ? 'redicon' : 'greenicon'}" />
                                 </div>
                             </li>
                             <li>
                                 <div class="slds-text-heading_medium slds-m-left_small">Action Required</div>
                             </li>
-                            <aura:if isTrue="{!v.showMsgNTE}">
+                            <aura:if isTrue="{!v.displayState.showMsgNTE}">
                             		<li class="NTEmsg">
                                 	<div class="slds-text-body_medium slds-m-left_medium">{!v.CaseMsg}</div>
                                 	</li>
@@ -139,10 +156,10 @@
                     </aura:if>
                 </ul>
                 <ul class="slds-list--inline slds-float_right">
-                    <aura:if isTrue="{!v.displayMsg}">
+                    <aura:if isTrue="{!v.displayState.displayMsg}">
                         <li>
                             <div class="slds-m-right_medium">
-                                <aura:if isTrue="{!v.displayMultipleAssetCases}">
+                                <aura:if isTrue="{!v.displayState.displayMultipleAssetCases}">
                                     <lightning:button label="Multi Assets" variant="brand"
                                         onclick="{!c.updatedRelatedCases}">
                                     </lightning:button>
@@ -168,8 +185,8 @@
                        <!-- commeting out multi date button as per SDT-12786
                         <li>
                             <div class="slds-m-right_medium">
-                                <aura:if isTrue="{!and(and(or(v.displaySummary,v.showOnRelatedMultiAssetCase), v.psiReq), v.isMultiCheckedVisible)}">
-                                    <aura:if isTrue="{!v.showMultipleCaseLabel}">
+                                <aura:if isTrue="{!and(and(or(v.displayState.displaySummary,v.displayState.showOnRelatedMultiAssetCase), v.stateFlags.psiReq), v.stateFlags.isMultiCheckedVisible)}">
+                                    <aura:if isTrue="{!v.displayState.showMultipleCaseLabel}">
                                         <lightning:button label="Multi Dates" variant="brand"
                                             onclick="{!c.createCasesComp}">
                                         </lightning:button>
@@ -186,16 +203,16 @@
                                 </aura:if>
                             </div>
                         </li>-->
-                        
+
                         <div class="slds-m-right_small">
-                             <aura:if isTrue="{!v.isAddCaseAsset}">
+                             <aura:if isTrue="{!v.buttonState.isAddCaseAsset}">
                                     <lightning:button label='Add Case Assets' variant="brand"
                                       onclick="{!c.addCaseAsset}" />
                                </aura:if>
                             </div>
                         <li>
                             <div class="slds-m-right_small">
-                                <aura:if isTrue="{!v.isShowProgressCase}">
+                                <aura:if isTrue="{!v.buttonState.isShowProgressCase}">
                                     <lightning:button label='Progress Case' variant="brand"
                                         onclick="{!c.showPgrsBtns}" />
                                 </aura:if>
@@ -204,7 +221,7 @@
                         <li>
                             <div class="slds-m-right_small">
                                 <ltng:require styles="{!$Resource.multilineToastCSS}" />
-                                <aura:if isTrue="{!and(not(v.isCapacityEligible),v.displaySummary)}">
+                                <aura:if isTrue="{!and(not(v.stateFlags.isCapacityEligible),v.displayState.displaySummary)}">
 									<lightning:button label="View Case Summary" variant="brand"
                                         class="btnMargin btnviewcasewdh" onclick="{!c.showCaseSummary}"
                                         aura:id="disablebuttonid">
@@ -214,14 +231,14 @@
                         </li>
                     </aura:if>
                     <!-- Launch Point changes added -->
-                    <li> 
+                    <li>
                         <div class="slds-m-right_medium">
-                            <aura:if isTrue="{!v.isAddQuote}">
-                                <lightning:button label="Add Quote" variant="brand" disabled="{!v.disableAddQuote}"
+                            <aura:if isTrue="{!v.buttonState.isAddQuote}">
+                                <lightning:button label="Add Quote" variant="brand" disabled="{!v.buttonState.disableAddQuote}"
                                                   onclick="{!c.createQuote}">
                                 </lightning:button>
                             </aura:if>
-                            <aura:if isTrue="{!v.isOpportunityAdded}">
+                            <aura:if isTrue="{!v.buttonState.isOpportunityAdded}">
                                 <lightning:button label= "View Quote(s)" variant="brand"
                                                   onclick="{!c.goToQuote}">
                                 </lightning:button>
@@ -245,7 +262,7 @@
 
     </div>
     <!-- Modal visible on click of View Case Summary Button -->
-    <aura:if isTrue="{!v.viewCaseSummary}">
+    <aura:if isTrue="{!v.modalState.viewCaseSummary}">
         <!--###### MODAL BOX Start From Here ######-->
         <div role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small"
@@ -317,12 +334,12 @@
                         aura:id="workOrderButtonInst" onclick="{!c.openWorkOrderPopup}" />
                     <lightning:button variant="brand" class="slds-float--left" label="Work Order Updates"
                         aura:id="woUpdates" onclick="{!c.opencaseAssetPopup}"/>
-						<aura:if isTrue="{!v.isTempVisible}">
+						<aura:if isTrue="{!v.stateFlags.isTempVisible}">
                     <lightning:button variant="brand" class="slds-float--left" label="Edit Approval Email"
                         aura:id="emailTemp" onclick="{!c.openEmailTemplatePopup}"/>
                     </aura:if>						
                     <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }" />
-                    <lightning:button variant="brand" disabled="{!v.initiateWoButton}" label="Initiate W/O"
+                    <lightning:button variant="brand" disabled="{!v.buttonState.initiateWoButton}" label="Initiate W/O"
                         aura:id="workOrderButton" onclick="{!c.initiateWorkorder}" />
                 </footer>
             </div>
@@ -332,7 +349,7 @@
     </aura:if>
 
     <!-- Modal visible on click of WO Instruction Button -->
-    <aura:if isTrue="{!v.WOInstructions}">
+    <aura:if isTrue="{!v.modalState.WOInstructions}">
         <div class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
                 <div class="slds-modal__header">
@@ -353,7 +370,7 @@
                         name="WorkOrderInst" value="{!v.CaseObj.User_Input_Work_Order_Instructions__c}"
                         required="false" />
                     <lightning:input aura:id="WOdetailsform" type="Checkbox" label="By-Pass W/O"
-                        name="byPassWorkOrder" checked="{!v.isByPassWO}" required="false" />
+                        name="byPassWorkOrder" checked="{!v.stateFlags.isByPassWO}" required="false" />
                     <div class="slds-align_absolute-center">
                         <lightning:button label="Save" class="slds-m-top--medium" variant="brand"
                             onclick="{!c.saveWorkOrderDetails}" />
@@ -365,7 +382,7 @@
     </aura:if>
     <!-- CaseQuoteModel show on case page-->
     <!--Email Template edit-->
-    <aura:if isTrue="{!v.caseEmailTemp}">
+    <aura:if isTrue="{!v.modalState.caseEmailTemp}">
             <div class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
                     <div class="slds-modal__header">
@@ -374,9 +391,9 @@
                             class="slds-modal__close" onclick="{!c.CancelModel}" />
                         <h2 class="slds-text-heading_medium">Email Template Comments</h2>
                     </div>
-                   
+
                     <div class="slds-modal__content slds-p-around_medium">
-                        <lightning:textarea aura:id="caseEditdetailsform" type="text" label="Additional Comments"
+                        <lightning:textarea aura:id="caseEditdetailsform" label="Additional Comments"
                             name="OnsiteContactName" value="{!v.CaseObj.EmailTemplateAdditionalComments__c}" required="false" />
                        
                         <div class="slds-align_absolute-center">
@@ -392,14 +409,14 @@
     </aura:if>
 
 <!--Email Template edit-->
-    <aura:if isTrue="{!v.showModal}">
+    <aura:if isTrue="{!v.modalState.showModal}">
         <c:CaseQuoteModal recordId="{!v.recordId}" />
     </aura:if>
-    <aura:if isTrue="{!v.showQuoteModal}">
+    <aura:if isTrue="{!v.modalState.showQuoteModal}">
         <c:ExistingQuoteModal recordId="{!v.recordId}" />
     </aura:if>
-	<aura:if isTrue="{!v.showFavroiteModal}">
-        <c:AddFavoriteContainers showForm="{!v.showFavroiteModal}" caseId="{!v.recordId}" />
+	<aura:if isTrue="{!v.modalState.showFavroiteModal}">
+        <c:AddFavoriteContainers showForm="{!v.modalState.showFavroiteModal}" caseId="{!v.recordId}" />
     </aura:if>
 
 
