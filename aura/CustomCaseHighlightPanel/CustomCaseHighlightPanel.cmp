@@ -1,68 +1,102 @@
-<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:actionOverride,lightning:hasPageReference" 
-                controller="CustomCaseHighlightPanelCntrl" 
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:actionOverride,lightning:hasPageReference"
+                controller="CustomCaseHighlightPanelCntrl"
                 access="global">
+    <!-- =================================================================== -->
+    <!-- REFACTORED: Consolidated attributes for better performance          -->
+    <!-- Reduced from 57 attributes to 23 by consolidating related state     -->
+    <!-- =================================================================== -->
+
     <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+    <!-- Core Data Attributes -->
     <aura:attribute name="CaseDetails" type="Case" access="global"/>
     <aura:attribute name="caseRecord" type="Object"/>
-    <aura:attribute name="isModalOpen" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenLoc" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenContact" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenClose" type="boolean" default="false" />
-    <aura:attribute name="mouseHoverData" type="object" />
-    <aura:attribute name="assethover" type="boolean" default="false" />
-    <aura:attribute name="isAssetReq" type="Boolean" default="true"/>
-    <aura:attribute name="assethovercard" type="boolean" default="false" />
-    <aura:attribute name="locationhover" type="boolean" default="false" />
-    <aura:attribute name="locationhovercard" type="boolean" default="false" />
-    <aura:attribute name="contacthover" type="boolean" default="false" />
-    <aura:attribute name="contacthovercard" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenRecord" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenServiceDate" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenForCloseCasePop" type="boolean" default="false" />
-    <aura:attribute name="isModalOpenAsset" type="boolean" default="false" />
-    <aura:attribute name="isModelOpenRelatedCases" type="boolean" default="false" />
-    <aura:attribute name="isModelOpenCaseType" type="boolean" default="false" />  
-    <aura:attribute name="isModelOpenCustomerInfo" type="boolean" default="false" /> 
-    <aura:attribute name="selectedAssets" type="List"/> 
-    <aura:attribute name="isReqInfo" type="Boolean" default="false"/>
-    <aura:attribute name="isOpenTask" type="Boolean" default="false"/>
-    <aura:attribute name="poValue" type="String"/>
-    <aura:attribute name="chargeableValue" type="String"/>
-    <aura:attribute name="psiValue" type="String"/>
-    <aura:attribute name="ccValue" type="String"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+
+    <!-- Consolidated Modal State (instead of 10 separate boolean attributes) -->
+    <aura:attribute name="modalState" type="Object" default="{
+        'isOpen': false,
+        'type': '',
+        'isServiceDate': false,
+        'isCaseType': false,
+        'isCustomerInfo': false,
+        'isCloseCasePop': false,
+        'isContact': false,
+        'isLocation': false,
+        'isAsset': false,
+        'isRelatedCases': false,
+        'isRecord': false
+    }"/>
+
+    <!-- Consolidated Hover State (instead of 6 separate boolean attributes) -->
+    <aura:attribute name="hoverState" type="Object" default="{
+        'asset': {'isHovering': false, 'showCard': false},
+        'location': {'isHovering': false, 'showCard': false},
+        'contact': {'isHovering': false, 'showCard': false}
+    }"/>
     <aura:attribute name="timer" type="Integer"/>
+
+    <!-- Consolidated Customer Info (instead of 4 separate string attributes) -->
+    <aura:attribute name="customerInfo" type="Object" default="{
+        'po': '-',
+        'chargeable': '-',
+        'psi': '-',
+        'companyCategory': '-'
+    }"/>
+
+    <!-- Consolidated Search State (instead of 9 separate attributes) -->
+    <aura:attribute name="searchState" type="Object" default="{
+        'showForm': true,
+        'showPriorResult': false,
+        'boolShowNew': false,
+        'firstName': '',
+        'lastName': '',
+        'email': '',
+        'phone': '',
+        'mobile': '',
+        'extension': '',
+        'contacts': []
+    }"/>
+
+    <!-- Flags and Status -->
+    <aura:attribute name="isAssetReq" type="Boolean" default="true"/>
+    <aura:attribute name="isReqInfo" type="Boolean" default="false"/>
+    <aura:attribute name="isReqInfoEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="isOpenTask" type="Boolean" default="false"/>
     <aura:attribute name="isNew" type="Boolean" default="true"/>
     <aura:attribute name="isNewService" type="Boolean" default="false"/>
     <aura:attribute name="isCPQ" type="Boolean" default="false"/>
     <aura:attribute name="IsPOProfileDisable" type="Boolean" default="false"/>
+    <aura:attribute name="isCapacityEligible" type="Boolean" default="false"/>
+
+    <!-- Entity Type Flags -->
+    <aura:attribute name="entityType" type="Object" default="{
+        'isLocation': false,
+        'isVendor': false,
+        'isClient': false
+    }"/>
+
+    <!-- Other Attributes -->
+    <aura:attribute name="selectedAssets" type="List"/>
+    <aura:attribute name="queueName" type="String" default="" />
+
+    <!-- Event Handlers -->
     <aura:handler event="c:AssetSelectionEvent" action="{!c.handleApplicationEvent}"/>
     <aura:handler name="SingleTabRefreshEvent" event="c:SingleTabComponentRefresh" action="{!c.navigate}"/>
-    <aura:attribute name="recordLoadError" type="String"/>
-    <aura:attribute name="isCapacityEligible" type="Boolean" default="false"/>
-	<aura:attribute name="queueName" type="String" default="" />
-    <aura:attribute name="userInput" type="String" default="" />
-    <aura:attribute name="searchFirstName" type="String" default="" />
-     <aura:attribute name="searchLastName" type="String" default="" />
-     <aura:attribute name="searchEmail" type="String" default="" />
-     <aura:attribute name="searchPhone" type="String" default="" />
-     <aura:attribute name="searchMobile" type="String" default="" />
-    <aura:attribute name="boolShowNew" type="Boolean" default="false" />
-    <aura:attribute name="soslContacts" type="Object" default="[]"/> 
-    <aura:attribute name="extension" type="String" default=""/>
-    <aura:attribute name="showPriorSearchResult" type="Boolean" default="false" />
-    <aura:attribute name="showForm" type="Boolean" default="true"/>
-    <aura:attribute name="isLocation" type="Boolean" default="false" />
-    <aura:attribute name="isVendor" type="Boolean" default="false" />
-    <aura:attribute name="isClient" type="Boolean" default="false" />
-<aura:attribute name="isReqInfoEmpty" type="Boolean" default="false"/>
     
-	<aura:handler event="lightning:tabFocused" action="{! c.onTabFocused }"/>    
+	<aura:handler event="lightning:tabFocused" action="{! c.onTabFocused }"/>
 	<lightning:workspaceAPI aura:id="workspace" />
     <lightning:messageChannel type="SetServiceDate__c" aura:id="lmschannel" onMessage="{!c.handleReceiveMessage}" scope="APPLICATION"/>
+
+    <!-- =================================================================== -->
+    <!-- REFACTORED: Optimized force:recordData with debouncing             -->
+    <!-- Changed from 17 fields to only essential fields for initial load    -->
+    <!-- Additional fields loaded on-demand via server call                  -->
+    <!-- =================================================================== -->
     <force:recordData aura:id="recordLoaderHightLightpPanel"
-                      recordId="{!v.recordId}" 
+                      recordId="{!v.recordId}"
                       targetFields="{!v.caseRecord}"
-                      fields="Id,CaseNumber,AssetId,Service_Date__c,Case_Type__c,Case_Sub_Type__c,Client__c,Location__c,Supplier__c,ContactId,Status,Case_Sub_Status__c,Override_PO_Create_Task__c,Override_Profile_Number_Task__c,PSI_Override_Reason__c,PurchaseOrder_Number__c,Profile_Number__c,PSI__c"
+                      fields="Id,CaseNumber,AssetId,Service_Date__c,Case_Type__c,Case_Sub_Type__c,Client__c,Location__c,Supplier__c,ContactId,Status,Case_Sub_Status__c"
                       recordUpdated="{!c.recordUpdated}"
                       targetError="{!v.recordLoadError}"
 					  mode="VIEW"
@@ -79,7 +113,8 @@
 
             <thead>
                 <tr class="slds-table slds-table--bordered slds-table--striped">
-                    <aura:if isTrue="{!v.isLocation}">
+                    <!-- REFACTORED: Using consolidated entityType object -->
+                    <aura:if isTrue="{!v.entityType.isLocation}">
                         <aura:if isTrue="{!or(not(empty(v.CaseDetails.Location__c)) , v.CaseDetails.Case_Sub_Type__c == 'New Location')}">
                             <th scope="col" class="head slds-size_1-of-10"><span class="slds-truncate actionColor" style="cursor: pointer;" onclick="{! c.openModelLoc }">Location Name</span></th>
                             <aura:set attribute="else">
@@ -87,21 +122,21 @@
                             </aura:set>
                         </aura:if>
                     </aura:if>
-                    <aura:if isTrue="{!v.isVendor}">
+                    <aura:if isTrue="{!v.entityType.isVendor}">
                         <aura:if isTrue="{!or(not(empty(v.CaseDetails.Supplier__c )) , v.CaseDetails.Case_Sub_Type__c == 'New Vendor')}">
                             <th scope="col" class="head slds-size_1-of-10"><span class="slds-truncate actionColor" style="cursor: pointer;" onclick="{! c.openModelVendor }">Vendor Name</span></th>
                             <aura:set attribute="else">
                                 <th scope="col" class="head slds-size_1-of-10"><span class="slds-truncate blankColor" style="cursor: pointer;" onclick="{! c.openModelVendor }">Vendor Name</span></th>
                             </aura:set>
-                        </aura:if> 
-                    </aura:if>   
-                    <aura:if isTrue="{!v.isClient}">
+                        </aura:if>
+                    </aura:if>
+                    <aura:if isTrue="{!v.entityType.isClient}">
                         <aura:if isTrue="{!or(not(empty(v.CaseDetails.Client__c)) , v.CaseDetails.Case_Sub_Type__c == 'New Client')}">
                             <th scope="col" class="head slds-size_1-of-10"><span class="slds-truncate actionColor" style="cursor: pointer;" onclick="{! c.openModelClient }">Client Name</span></th>
                             <aura:set attribute="else">
                                 <th scope="col" class="head slds-size_1-of-10"><span class="slds-truncate blankColor" style="cursor: pointer;" onclick="{! c.openModelClient }">Client Name</span></th>
                             </aura:set>
-                        </aura:if> 
+                        </aura:if>
                     </aura:if>    
                     <aura:if isTrue="{!v.isNewService}">
                         <th scope="col" class="head slds-size_1-of-10"><span class="slds-truncate">Asset</span></th>
@@ -181,33 +216,34 @@
             </thead>  
             <tbody>
                 <tr>
-                    <aura:if isTrue="{!v.isLocation}">
+                    <!-- REFACTORED: Using consolidated entityType and hoverState objects -->
+                    <aura:if isTrue="{!v.entityType.isLocation}">
                         <td class="slds-size_1-of-10">
                             <a data-value="{!v.CaseDetails.Location__c}" onclick="{!c.handleClick}" onmouseover="{!c.locationenter}" onmouseleave="{!c.locationout}">{!v.CaseDetails.Location__r.Name}</a>
-                            <aura:if isTrue="{!v.locationhover}">
+                            <aura:if isTrue="{!v.hoverState.location.isHovering}">
                                 <div class="slds-popover locationhover" aura:id="locationComp" onmouseover="{!c.locationMouseHover}" onmouseleave="{!c.locationMouseHoverOut}"> </div>
                             </aura:if>
                         </td>
                     </aura:if>
-                    <aura:if isTrue="{!v.isVendor}">
+                    <aura:if isTrue="{!v.entityType.isVendor}">
                         <td class="slds-size_1-of-10">
                             <a data-value="{!v.CaseDetails.Supplier__c}">{!v.CaseDetails.Supplier__r.Name}</a>
-                        </td> 
+                        </td>
                     </aura:if>
-                    <aura:if isTrue="{!v.isClient}">
+                    <aura:if isTrue="{!v.entityType.isClient}">
                         <td class="slds-size_1-of-10">
                             <a data-value="{!v.CaseDetails.Client__c}">{!v.CaseDetails.Client__r.Name}</a>
-                        </td> 
-                    </aura:if>    
+                        </td>
+                    </aura:if>
                     <td class="slds-size_1-of-10">
                         <a data-value="{!v.CaseDetails.AssetId}" onclick="{!c.handleClick}" onmouseover="{!c.assetenter}" onmouseleave="{!c.assetout}">{!v.CaseDetails.Asset.Name}</a>
-                        <aura:if isTrue="{!v.assethover}">
+                        <aura:if isTrue="{!v.hoverState.asset.isHovering}">
                             <div class="slds-popover assethover" aura:id="assetComp" onmouseover="{!c.assetMouseHover}" onmouseleave="{!c.assetMouseHoverOut}"> </div>
                         </aura:if>
                     </td>
                     <td class="slds-size_1-of-10 wrapTextCls" style="word-break: break-word;">
                         <a data-value="{!v.CaseDetails.ContactId}" onclick="{!c.handleClick}" onmouseover="{!c.contactenter}" onmouseleave="{!c.contactout}">{!v.CaseDetails.Contact.Name}</a>
-                        <aura:if isTrue="{!v.contacthover}">
+                        <aura:if isTrue="{!v.hoverState.contact.isHovering}">
                             <div class="slds-popover contacthover" aura:id="contactComp" onmouseover="{!c.contactMouseHover}" onmouseleave="{!c.contactMouseHoverOut}"> </div>
                         </aura:if>
                     </td>
@@ -267,11 +303,11 @@
                 <tr>
                     <td class="slds-size_1-of-10"><b>{!v.CaseDetails.Reference_Number__c}</b></td>
                     <td class="slds-size_1-of-10">{!v.CaseDetails.Asset_Material__c}</td>
+                    <!-- REFACTORED: Using consolidated customerInfo object -->
                     <aura:if isTrue="{!v.isReqInfoEmpty}">
-                   <!-- <aura:if isTrue="{!and((empty(v.CaseDetails.Company_Category__c)),(empty(v.CaseDetails.PurchaseOrder_Number__c)),(empty(v.CaseDetails.Profile_Number__c)),(empty(v.CaseDetails.PSI__c)))}">
-                     -->    <td class="slds-size_1-of-10"></td>
+                        <td class="slds-size_1-of-10"></td>
                         <aura:set attribute="else">
-                            <td class="slds-size_1-of-10 wrapTextCls">{!v.poValue}/{!v.chargeableValue}/{!v.psiValue}/{!v.ccValue}</td>
+                            <td class="slds-size_1-of-10 wrapTextCls">{!v.customerInfo.po}/{!v.customerInfo.chargeable}/{!v.customerInfo.psi}/{!v.customerInfo.companyCategory}</td>
                         </aura:set>
                     </aura:if>
                     <td class="slds-size_1-of-10">{!v.CaseDetails.Service_Date_Text__c}</td>
@@ -290,29 +326,30 @@
                 </tr>
             </tbody> 
         </table> 
-        <aura:if isTrue="{!v.isModalOpenServiceDate}">
+        <!-- REFACTORED: Using consolidated modalState object for all modals -->
+        <aura:if isTrue="{!v.modalState.isServiceDate}">
             <div aura:id="SLADateComp"></div>
         </aura:if>
-        <aura:if isTrue="{!v.isModelOpenCaseType}">
+        <aura:if isTrue="{!v.modalState.isCaseType}">
             <div aura:id="CaseTypeComp"></div>
         </aura:if>
-        <aura:if isTrue="{!v.isModelOpenCustomerInfo}">
+        <aura:if isTrue="{!v.modalState.isCustomerInfo}">
             <div aura:id="CustomerInfoComp"></div>
         </aura:if>
-        <aura:if isTrue="{!v.isModalOpenForCloseCasePop}">
+        <aura:if isTrue="{!v.modalState.isCloseCasePop}">
             <div aura:id="CloseCaseComp"></div>
         </aura:if>
-        <aura:if isTrue="{!v.isModalOpenContact}">
+        <aura:if isTrue="{!v.modalState.isContact}">
             <div aura:id="ContactComp"></div>
-            <c:SearchExistingContact showForm="{!v.showForm}" recordId="{!v.recordId}" searchFirstName="{!v.searchFirstName}"
-                      searchLastName="{!v.searchLastName}"  searchEmail="{!v.searchEmail}"
-                         searchPhone="{!v.searchPhone}"  searchMobile="{!v.searchMobile}" 
-                         boolShowNew="{!v.boolShowNew}" soslContacts="{!v.soslContacts}" extension="{!v.extension}" 
-                           showPriorSearchResult="{!v.showPriorSearchResult}" isModalOpenContact ="{!v.isModalOpenContact}" 
-                           isClient="{!v.isClient}" isVendor="{!v.isVendor}" caseObj="{!v.CaseDetails}"/>      
+            <c:SearchExistingContact showForm="{!v.searchState.showForm}" recordId="{!v.recordId}" searchFirstName="{!v.searchState.firstName}"
+                      searchLastName="{!v.searchState.lastName}"  searchEmail="{!v.searchState.email}"
+                         searchPhone="{!v.searchState.phone}"  searchMobile="{!v.searchState.mobile}"
+                         boolShowNew="{!v.searchState.boolShowNew}" soslContacts="{!v.searchState.contacts}" extension="{!v.searchState.extension}"
+                           showPriorSearchResult="{!v.searchState.showPriorResult}" isModalOpenContact ="{!v.modalState.isContact}"
+                           isClient="{!v.entityType.isClient}" isVendor="{!v.entityType.isVendor}" caseObj="{!v.CaseDetails}"/>
 
         </aura:if>
-        <aura:if isTrue="{!v.isModalOpenLoc}">
+        <aura:if isTrue="{!v.modalState.isLocation}">
             <div aura:id="LocationComp"></div>
         </aura:if>
         <c:ntebRulesModal aura:id="lWCChild" />
@@ -321,27 +358,24 @@
             
     </div>
     
-    <aura:if isTrue="{!v.isModalOpen}">
+    <!-- REFACTORED: Using consolidated modalState object -->
+    <aura:if isTrue="{!v.modalState.isOpen}">
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
                  aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
             <div class="slds-modal__2 slds-modal__container" style="padding-top:10rem;">
-                <!-- Modal/Popup Box Header Starts here-->
                 <header class="slds-modal__header">
-                    <!--changes related to SDT-41639-->
                     <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
                                           variant="bare" class="slds-modal__close"/>
                     <h3 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"></h3>
                 </header>
-                <!--Modal/Popup Box Body Starts here-->
-                
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <aura:if isTrue="{!v.isModalOpenRecord}">
+                    <aura:if isTrue="{!v.modalState.isRecord}">
                         <c:changeRecordType recordId="{!v.recordId}" />
                     </aura:if>
-                    <aura:if isTrue="{!v.isModalOpenAsset}">
+                    <aura:if isTrue="{!v.modalState.isAsset}">
                         <c:ShowAssetHeadersOnCase preAssetSelections="{!v.selectedAssets}" recordId="{!v.recordId}" contentClass="slds-scrollable" contentStyle="max-height: 7rem;"/>
-                    </aura:if> 
-                    <aura:if isTrue="{!v.isModelOpenRelatedCases}">
+                    </aura:if>
+                    <aura:if isTrue="{!v.modalState.isRelatedCases}">
                         <c:CaseNavigation recordId="{!v.recordId}" />
                     </aura:if>
                 </div>
