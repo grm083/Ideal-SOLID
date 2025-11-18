@@ -1,0 +1,71 @@
+<template>
+    <!-- Inline Detail Card Component - Replaces Hover Cards -->
+    <template if:true={isVisible}>
+        <article class={cardClass}>
+            <!-- Card Header -->
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure" if:true={iconName}>
+                        <lightning-icon
+                            icon-name={iconName}
+                            size="small"
+                            alternative-text={title}>
+                        </lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="slds-card__header-link">{title}</span>
+                        </h2>
+                    </div>
+                </header>
+                <div class="slds-no-flex" if:true={showCloseButton}>
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        variant="bare"
+                        alternative-text="Close"
+                        title="Close"
+                        onclick={handleClose}>
+                    </lightning-button-icon>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- Field Rows -->
+                <template if:true={hasFields}>
+                    <dl class="slds-dl_horizontal">
+                        <template for:each={fields} for:item="field">
+                            <div key={field.id} class="slds-dl_horizontal__item">
+                                <dt class="slds-dl_horizontal__label">
+                                    <p class="slds-truncate" title={field.label}>{field.label}</p>
+                                </dt>
+                                <dd class="slds-dl_horizontal__detail">
+                                    <template if:true={field.isLink}>
+                                        <a href={field.linkUrl} onclick={handleFieldClick} data-id={field.id}>
+                                            {field.value}
+                                        </a>
+                                    </template>
+                                    <template if:false={field.isLink}>
+                                        <p class={field.valueClass}>{field.displayValue}</p>
+                                    </template>
+                                </dd>
+                            </div>
+                        </template>
+                    </dl>
+                </template>
+
+                <!-- Custom Content Slot -->
+                <template if:false={hasFields}>
+                    <slot></slot>
+                </template>
+            </div>
+
+            <!-- Card Footer (Optional) -->
+            <template if:true={hasFooter}>
+                <footer class="slds-card__footer">
+                    <slot name="footer"></slot>
+                </footer>
+            </template>
+        </article>
+    </template>
+</template>

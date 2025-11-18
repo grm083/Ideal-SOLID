@@ -1,0 +1,219 @@
+/* Record Search Base Styles */
+
+.slds-card {
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.slds-card__header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-card__header-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+.slds-card__body_inner {
+    padding: 1rem;
+}
+
+/* Form styles */
+.slds-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+}
+
+.slds-form__item {
+    flex: 1 1 100%;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 48em) {
+    .slds-form__item {
+        flex: 1 1 50%;
+    }
+}
+
+.slds-form-element {
+    position: relative;
+}
+
+.slds-form-element__label {
+    display: inline-block;
+    color: rgb(116, 116, 116);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 0.25rem;
+}
+
+.slds-form-element__control {
+    clear: left;
+    position: relative;
+}
+
+/* Table styles */
+.slds-scrollable_x {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.slds-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: rgb(255, 255, 255);
+}
+
+.slds-table_bordered {
+    border: 1px solid rgb(221, 219, 218);
+}
+
+.slds-table_cell-buffer thead th {
+    padding: 0.5rem 0.75rem;
+}
+
+.slds-table_cell-buffer tbody td {
+    padding: 0.5rem 0.75rem;
+}
+
+.slds-table thead th {
+    background-color: rgb(250, 250, 249);
+    color: rgb(22, 50, 92);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    border-top: 1px solid rgb(221, 219, 218);
+    border-bottom: 1px solid rgb(221, 219, 218);
+    white-space: nowrap;
+}
+
+.slds-table tbody tr {
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-table tbody tr:hover {
+    background-color: rgb(250, 250, 249);
+}
+
+.slds-table td {
+    color: rgb(22, 50, 92);
+    font-size: 0.8125rem;
+}
+
+.slds-table td a {
+    color: rgb(0, 112, 210);
+    text-decoration: none;
+}
+
+.slds-table td a:hover {
+    text-decoration: underline;
+    color: rgb(0, 95, 178);
+}
+
+.slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Pagination styles */
+.slds-grid {
+    display: flex;
+}
+
+.slds-grid_align-spread {
+    justify-content: space-between;
+}
+
+.slds-align-middle {
+    vertical-align: middle;
+    align-self: center;
+}
+
+/* Text utilities */
+.slds-text-body_small {
+    font-size: 0.8125rem;
+}
+
+.slds-text-color_weak {
+    color: rgb(116, 116, 116);
+}
+
+.slds-text-heading_small {
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.slds-text-align_center {
+    text-align: center;
+}
+
+/* Spacing utilities */
+.slds-m-top_small {
+    margin-top: 0.75rem;
+}
+
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+.slds-m-top_x-small {
+    margin-top: 0.5rem;
+}
+
+.slds-m-bottom_small {
+    margin-bottom: 0.75rem;
+}
+
+.slds-m-right_x-small {
+    margin-right: 0.5rem;
+}
+
+.slds-m-left_x-small {
+    margin-left: 0.5rem;
+}
+
+.slds-p-around_medium {
+    padding: 1rem;
+}
+
+/* Media object */
+.slds-media {
+    display: flex;
+    align-items: flex-start;
+}
+
+.slds-media_center {
+    align-items: center;
+}
+
+.slds-media__figure {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.slds-media__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.slds-has-flexi-truncate {
+    min-width: 0;
+}
+
+/* Line height reset */
+.slds-line-height_reset {
+    line-height: 1;
+}

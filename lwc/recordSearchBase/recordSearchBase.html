@@ -1,0 +1,191 @@
+<template>
+    <!-- Record Search Base Component -->
+    <div class="slds-card">
+        <!-- Search Header -->
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure" if:true={iconName}>
+                    <lightning-icon
+                        icon-name={iconName}
+                        size="small"
+                        alternative-text={searchTitle}>
+                    </lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span>{searchTitle}</span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+
+        <!-- Search Filters -->
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-form" role="list">
+                <!-- Search Fields (Dynamic based on configuration) -->
+                <template for:each={searchFields} for:item="field">
+                    <div key={field.name} class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for={field.name}>
+                                    {field.label}
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <lightning-input
+                                        name={field.name}
+                                        type={field.type}
+                                        placeholder={field.placeholder}
+                                        value={field.value}
+                                        onchange={handleFieldChange}
+                                        data-field={field.name}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Search Button Row -->
+                <div class="slds-form__row slds-m-top_small">
+                    <div class="slds-form__item" role="listitem">
+                        <lightning-button
+                            variant="brand"
+                            label="Search"
+                            title="Search"
+                            onclick={handleSearch}
+                            class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button
+                            variant="neutral"
+                            label="Clear"
+                            title="Clear"
+                            onclick={handleClear}>
+                        </lightning-button>
+                        <template if:true={showCreateNew}>
+                            <lightning-button
+                                variant="success"
+                                label={createNewLabel}
+                                title={createNewLabel}
+                                onclick={handleCreateNew}
+                                class="slds-m-left_x-small">
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <template if:true={hasResults}>
+            <div class="slds-card__body slds-card__body_inner slds-m-top_medium">
+                <!-- Results count -->
+                <div class="slds-m-bottom_small">
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        {resultsCountText}
+                    </p>
+                </div>
+
+                <!-- Results Table -->
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col" if:true={showRadioSelect}>
+                                    <div class="slds-truncate" title="Select">Select</div>
+                                </th>
+                                <template for:each={columns} for:item="col">
+                                    <th key={col.fieldName} scope="col">
+                                        <div class="slds-truncate" title={col.label}>{col.label}</div>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={results} for:item="record">
+                                <tr key={record.Id} class="slds-hint-parent">
+                                    <td if:true={showRadioSelect}>
+                                        <lightning-input
+                                            type="radio"
+                                            name="recordSelection"
+                                            value={record.Id}
+                                            onchange={handleRecordSelect}
+                                            checked={record.isSelected}>
+                                        </lightning-input>
+                                    </td>
+                                    <template for:each={columns} for:item="col">
+                                        <td key={col.fieldName} data-label={col.label}>
+                                            <template if:true={col.isLink}>
+                                                <a href={record[col.linkField]} onclick={handleRecordClick} data-id={record.Id}>
+                                                    {record[col.fieldName]}
+                                                </a>
+                                            </template>
+                                            <template if:false={col.isLink}>
+                                                <div class="slds-truncate" title={record[col.fieldName]}>
+                                                    {record[col.fieldName]}
+                                                </div>
+                                            </template>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination (if applicable) -->
+                <template if:true={showPagination}>
+                    <div class="slds-m-top_small slds-grid slds-grid_align-spread">
+                        <div>
+                            <lightning-button
+                                label="Previous"
+                                onclick={handlePrevious}
+                                disabled={isFirstPage}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-align-middle">
+                            <p class="slds-text-body_small">
+                                Page {currentPage} of {totalPages}
+                            </p>
+                        </div>
+                        <div>
+                            <lightning-button
+                                label="Next"
+                                onclick={handleNext}
+                                disabled={isLastPage}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- No Results Message -->
+        <template if:true={showNoResults}>
+            <div class="slds-card__body slds-card__body_inner slds-m-top_medium">
+                <div class="slds-text-align_center slds-p-around_medium">
+                    <lightning-icon
+                        icon-name="utility:search"
+                        size="large"
+                        alternative-text="No results">
+                    </lightning-icon>
+                    <p class="slds-text-heading_small slds-m-top_small">
+                        No records found
+                    </p>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        Try adjusting your search criteria
+                    </p>
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-card__body slds-card__body_inner">
+                <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium">
+                </lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>
