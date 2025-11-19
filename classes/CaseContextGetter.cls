@@ -68,7 +68,7 @@ public with sharing class CaseContextGetter {
         'Location__r.Geography__c, Location__r.Division__c, ' +
         'ContactId, Contact.Name, Contact.Email, Contact.Phone, Contact.MobilePhone, ' +
         'Contact.Preferred_Method__c, Contact.Email_Validated__c, Contact_Title__c, ' +
-        'AssetId, Asset.Name, Asset.Acorn_SID__c, ' +
+        'AssetId, Asset.Name, Asset.Acorn_SID__c, Asset.Sensitivity_Code__c, Asset.CPQ_Product__c, ' +
         'Case_Type__c, Case_Sub_Type__c, Case_Reason__c, ' +
         'Service_Date__c, SLA_Service_Date_Time__c, SlaStartDate, ' +
         'Reference_Number__c, ParentId, ' +
