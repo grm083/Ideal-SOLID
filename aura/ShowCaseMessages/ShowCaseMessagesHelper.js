@@ -886,6 +886,14 @@
                     return;
                 }
 
+                // DEBUG: Log wrapper to see what's being returned
+                console.log('getCaseMessages wrapper:', JSON.stringify(wrapper, null, 2));
+                console.log('addQuoteVisibility:', wrapper.addQuoteVisibility);
+                console.log('progressCaseVisibility:', wrapper.progressCaseVisibility);
+                console.log('caseInfo:', wrapper.caseInfo);
+                console.log('CaseStatus:', wrapper.CaseStatus);
+                console.log('CaseType:', wrapper.CaseType);
+
                 // Set multi-asset selections
                 component.set("v.multiAssetSelections", wrapper.multiAssetSelections);
 
@@ -925,6 +933,11 @@
                 // Handle case type specific logic
                 this._handleNonPickupCase(component, wrapper, sMsg);
                 this._handlePickupCase(component, wrapper, sMsg);
+
+                // DEBUG: Log final state
+                console.log('Final buttonState:', component.get('v.buttonState'));
+                console.log('Final displayState:', component.get('v.displayState'));
+                console.log('Final CaseMsg:', component.get('v.CaseMsg'));
 
             } else {
                 console.error('Error getting case messages:', response.getError());
