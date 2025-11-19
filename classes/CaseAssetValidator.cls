@@ -596,32 +596,55 @@ public without sharing class CaseAssetValidator {
     
     /**
 * @description Builds hierarchical map of assets by service header and service type
-* @param assetMap Map of all assets
-* @return Nested map: Service Header ID -> Service Type -> List of Assets
+* Handles both flat asset maps (with Service_Header_Id__c) and parent assets with ChildAssets
+* @param assetMap Map of all assets (may be parent assets with ChildAssets or flat child asset map)
+* @return Nested map: Service Header ID (Parent Asset ID) -> Service Type -> List of Assets
 */
     private static Map<String, Map<String, List<Asset>>> buildAssetHierarchyMap(Map<Id, Asset> assetMap) {
         Map<String, Map<String, List<Asset>>> assetByServiceHeaderMap = new Map<String, Map<String, List<Asset>>>();
-        
+
         if (assetMap != null && !assetMap.isEmpty()) {
-            for (Asset asst : assetMap.values()) {                
-                if (asst.Service_Header_Id__c != null && asst.Is_Active__c) {
-                    Map<String, List<Asset>> assetbyServiceTypeMap = assetByServiceHeaderMap.get(asst.Service_Header_Id__c);
-                    
-                    if (assetbyServiceTypeMap == null) {
-                        assetbyServiceTypeMap = new Map<String, List<Asset>>();
-                        assetByServiceHeaderMap.put(asst.Service_Header_Id__c, assetbyServiceTypeMap);
+            for (Asset asst : assetMap.values()) {
+                // First, check if this is a parent asset with ChildAssets relationship populated
+                if (asst.ChildAssets != null && !asst.ChildAssets.isEmpty()) {
+                    // Process child assets from the relationship
+                    for (Asset childAsset : asst.ChildAssets) {
+                        if (childAsset.Is_Active__c) {
+                            addAssetToHierarchyMap(assetByServiceHeaderMap, asst.Id, childAsset);
+                        }
                     }
-                    
-                    if (!assetbyServiceTypeMap.containsKey(asst.Service_Type__c)) {
-                        assetbyServiceTypeMap.put(asst.Service_Type__c, new List<Asset>());
-                    }
-                    
-                    assetbyServiceTypeMap.get(asst.Service_Type__c).add(asst);
+                }
+                // Otherwise, check if this is a child asset with Service_Header_Id__c (flat map structure)
+                else if (asst.Service_Header_Id__c != null && asst.Is_Active__c) {
+                    addAssetToHierarchyMap(assetByServiceHeaderMap, asst.Service_Header_Id__c, asst);
                 }
             }
         }
-        
+
         return assetByServiceHeaderMap;
+    }
+
+    /**
+* @description Helper method to add an asset to the hierarchy map
+* @param hierarchyMap The map to add to
+* @param serviceHeaderId The service header (parent) ID
+* @param childAsset The child asset to add
+*/
+    private static void addAssetToHierarchyMap(Map<String, Map<String, List<Asset>>> hierarchyMap,
+                                               String serviceHeaderId,
+                                               Asset childAsset) {
+        Map<String, List<Asset>> assetbyServiceTypeMap = hierarchyMap.get(serviceHeaderId);
+
+        if (assetbyServiceTypeMap == null) {
+            assetbyServiceTypeMap = new Map<String, List<Asset>>();
+            hierarchyMap.put(serviceHeaderId, assetbyServiceTypeMap);
+        }
+
+        if (!assetbyServiceTypeMap.containsKey(childAsset.Service_Type__c)) {
+            assetbyServiceTypeMap.put(childAsset.Service_Type__c, new List<Asset>());
+        }
+
+        assetbyServiceTypeMap.get(childAsset.Service_Type__c).add(childAsset);
     }
     
     /**
