@@ -557,15 +557,20 @@ public without sharing class CaseBusinessRuleService {
      */
     private static void validateRequiredFields(Case currentCase, Map<String, Object> validationResult) {
         List<String> messages = (List<String>)validationResult.get('messages');
-        
+
         if (String.isBlank(currentCase.ContactId)) {
             validationResult.put('isValid', false);
             messages.add(Constant_Util.SELECT_CONTACT);
         }
-        
+
         if (String.isBlank(currentCase.Case_Sub_type__c)) {
             validationResult.put('isValid', false);
             messages.add(Constant_Util.SELECT_CASESUBTYPE);
+        }
+
+        if (String.isBlank(currentCase.Location__c)) {
+            validationResult.put('isValid', false);
+            messages.add('Please select a Location');
         }
     }
     
