@@ -721,11 +721,48 @@ public with sharing class GetCaseInformation {
         }
     }
 
+    /**
+     * @description Checks if a quote can be added for the given case
+     * @param CaseId The ID of the case to check
+     * @return 'SUCCESS' if quote can be added, 'quoteExists' if quotes already exist, or error message
+     */
+    @AuraEnabled
+    public static String addQuoteCheck(String CaseId) {
+        try {
+            // Check if opportunity/quote already exists for this case
+            List<Opportunity> existingOpps = [
+                SELECT Id, SBQQ__PrimaryQuote__c
+                FROM Opportunity
+                WHERE Case__c = :CaseId
+                LIMIT 1
+            ];
+
+            if (!existingOpps.isEmpty() && existingOpps[0].SBQQ__PrimaryQuote__c != null) {
+                return 'quoteExists';
+            }
+
+            // Check for existing quotes at the same location and service date
+            List<QuoteProcurementController.ProductsWrapper> duplicates =
+                QuoteProcurementController.getDuplicates(CaseId);
+
+            if (duplicates != null && !duplicates.isEmpty()) {
+                return 'quoteExists';
+            }
+
+            // All checks passed
+            return 'SUCCESS';
+
+        } catch (Exception e) {
+            System.debug('Error in addQuoteCheck: ' + e.getMessage());
+            return 'Error checking quote eligibility: ' + e.getMessage();
+        }
+    }
+
     @AuraEnabled
     public static string getAddProductId() {
-        
+
         String addProduct = [SELECT Id FROM SBQQ__CustomAction__c WHERE Name =: Constant_Util.ADD_PRODUCTS].Id;
-        
+
         return addProduct;
         
     }
