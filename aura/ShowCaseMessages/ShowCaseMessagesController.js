@@ -65,6 +65,11 @@
         component.set("v.displayState", displayState);
         var caseRecord = component.get("v.caseRecord");
 
+        // Always call getCaseMsg to populate messages and button states
+        helper.getCaseMsg(component, false, helper);
+        helper.isCapacityEligible(component);
+
+        // Handle multi-asset case specific logic
         if(caseRecord && caseRecord.Show_Multiple_Asset_Cases__c && caseRecord.Status ==='New' && caseRecord.AssetId && caseRecord.ContactId && caseRecord.Case_Sub_Type__c){
             if(component.get('v.CaseMsg')==='Multi Asset'){
                 component.set('v.CaseMsg', 'Complete the intake of related cases(if any) from the below list');
@@ -74,33 +79,30 @@
                 displayState.displaySummary = false;
                 component.set('v.displayState', displayState);
             }
-                else
-                {
-                    window.setTimeout(
-                        $A.getCallback(function() {
-                            const displayState = component.get("v.displayState");
-                            displayState.displaySummary = true;
-                            displayState.displayMsg = true;
-                            component.set('v.displayState', displayState);
+            else
+            {
+                window.setTimeout(
+                    $A.getCallback(function() {
+                        const displayState = component.get("v.displayState");
+                        displayState.displaySummary = true;
+                        displayState.displayMsg = true;
+                        component.set('v.displayState', displayState);
 
-                            if(component.find("disablebuttonid") != undefined)
-                            {
-                                component.find("disablebuttonid").set("v.label",'View Multi Asset Case Summary');
-                                helper.duplicateCheckInvocation(component,true);
-                            }
-                        }), 2000
-                    );
-                }
-
+                        if(component.find("disablebuttonid") != undefined)
+                        {
+                            component.find("disablebuttonid").set("v.label",'View Multi Asset Case Summary');
+                            helper.duplicateCheckInvocation(component,true);
+                        }
+                    }), 2000
+                );
+            }
         }
         else{
             displayState.showMultipleCaseLabel = false;
             displayState.showOnRelatedMultiAssetCase = false;
             component.set('v.displayState', displayState);
-            helper.getCaseMsg(component, false,helper);
-            helper.isCapacityEligible(component);
         }
-        
+
     },
     
     handleReceiveMessage: function (component, event, helper) {
