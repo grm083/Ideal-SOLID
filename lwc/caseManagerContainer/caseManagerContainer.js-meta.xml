@@ -12,6 +12,8 @@
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
             <!-- recordId is automatically provided by Salesforce on record pages -->
+            <!-- caseId is kept for backward compatibility with existing pages -->
+            <property name="caseId" type="String" label="Case ID (Legacy)" description="Legacy property - recordId is used automatically. Leave blank for record pages." />
             <property name="mode" type="String" default="view" label="Mode" description="Component mode: create, edit, view" />
             <objects>
                 <object>Case</object>
