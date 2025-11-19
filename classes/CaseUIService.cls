@@ -144,35 +144,53 @@ public with sharing class CaseUIService {
     @AuraEnabled
     public static CaseUIWrapper getCaseMessages(Id caseId) {
         try {
+            System.debug('CaseUIService.getCaseMessages - START for caseId: ' + caseId);
+
             if (caseId == null) {
+                System.debug('CaseUIService.getCaseMessages - caseId is null, returning empty wrapper');
                 return createEmptyWrapper();
             }
-            
+
             // Load case data using CaseContextGetter
             Case caseObj = CaseContextGetter.getCaseByIdExtended(caseId);
             if (caseObj == null) {
+                System.debug('CaseUIService.getCaseMessages - caseObj is null, returning empty wrapper');
                 return createEmptyWrapper();
             }
-            
+            System.debug('CaseUIService.getCaseMessages - caseObj loaded: ' + caseObj.CaseNumber);
+
             // Create wrapper and populate basic info
             CaseUIWrapper wrapper = new CaseUIWrapper();
+            System.debug('CaseUIService.getCaseMessages - calling populateBasicCaseInfo');
             populateBasicCaseInfo(wrapper, caseObj);
-            
+            System.debug('CaseUIService.getCaseMessages - after populateBasicCaseInfo: caseType=' + wrapper.caseType + ', caseStatus=' + wrapper.caseStatus);
+
             // Load user permissions
+            System.debug('CaseUIService.getCaseMessages - calling loadUserPermissions');
             loadUserPermissions(wrapper);
-            
+            System.debug('CaseUIService.getCaseMessages - after loadUserPermissions: isCPQUser=' + wrapper.isCPQUser);
+
             // Get business rules and validations
+            System.debug('CaseUIService.getCaseMessages - calling evaluateBusinessRules');
             evaluateBusinessRules(wrapper, caseObj);
-            
+            System.debug('CaseUIService.getCaseMessages - after evaluateBusinessRules: caseInfo=' + wrapper.caseInfo + ', approvalInfo=' + wrapper.approvalInfo);
+
             // Get UI-specific data
+            System.debug('CaseUIService.getCaseMessages - calling loadUISpecificData');
             loadUISpecificData(wrapper, caseObj);
-            
+            System.debug('CaseUIService.getCaseMessages - after loadUISpecificData: relatedCaseList.size=' + (wrapper.relatedCaseList != null ? wrapper.relatedCaseList.size() : 0));
+
             // Determine button visibility
+            System.debug('CaseUIService.getCaseMessages - calling determineButtonVisibility');
             determineButtonVisibility(wrapper, caseObj);
-            
+            System.debug('CaseUIService.getCaseMessages - after determineButtonVisibility: progressCaseVisibility=' + wrapper.progressCaseVisibility + ', addQuoteVisibility=' + wrapper.addQuoteVisibility);
+
+            System.debug('CaseUIService.getCaseMessages - COMPLETE, returning wrapper: ' + JSON.serializePretty(wrapper));
             return wrapper;
-            
+
         } catch (Exception ex) {
+            System.debug(LoggingLevel.ERROR, 'CaseUIService.getCaseMessages - EXCEPTION: ' + ex.getMessage());
+            System.debug(LoggingLevel.ERROR, 'CaseUIService.getCaseMessages - STACK TRACE: ' + ex.getStackTraceString());
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
                                                    UTIL_ErrorConstants.ERROR_APPLICATION,
                                                    LoggingLevel.ERROR);
