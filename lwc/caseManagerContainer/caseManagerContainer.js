@@ -29,7 +29,12 @@ export default class CaseManagerContainer extends NavigationMixin(LightningEleme
     // ========================================
 
     /**
-     * Case ID (for edit/view mode)
+     * Record ID (automatically provided by Salesforce on record pages)
+     */
+    @api recordId;
+
+    /**
+     * Case ID (for manual configuration on app pages)
      */
     @api caseId;
 
@@ -60,6 +65,13 @@ export default class CaseManagerContainer extends NavigationMixin(LightningEleme
     // ========================================
 
     /**
+     * Get effective case ID (recordId takes precedence over caseId)
+     */
+    get effectiveCaseId() {
+        return this.recordId || this.caseId;
+    }
+
+    /**
      * Whether to show wizard
      */
     get showWizard() {
@@ -70,7 +82,7 @@ export default class CaseManagerContainer extends NavigationMixin(LightningEleme
      * Whether to show persistent panels
      */
     get showPersistentPanels() {
-        return this.mode === 'view' && this.caseId;
+        return this.mode === 'view' && this.effectiveCaseId;
     }
 
     /**
@@ -215,7 +227,7 @@ export default class CaseManagerContainer extends NavigationMixin(LightningEleme
      * Load case data for edit mode
      */
     loadCaseData() {
-        if (!this.caseId) return;
+        if (!this.effectiveCaseId) return;
 
         this.isLoading = true;
 
