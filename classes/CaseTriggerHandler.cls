@@ -126,17 +126,16 @@ public without sharing class CaseTriggerHandler {
             CaseTriggerHelper.casewithLocation = casewithLocationMap;
             
             // Phase 4: Process case details and attributes
-            if (!casesNeedingSubtype.isEmpty() && 
-                !casewithContainerMap.isEmpty() && 
-                !casewithLocationMap.isEmpty()) {
-                
+            if (!casesNeedingSubtype.isEmpty()) {
+
                 if (!RecurrsiveTriggerHandler.bypassValidation) {
                     // Update case details using helper (will be refactored to service)
+                    // Note: Method handles empty/null maps gracefully
                     CaseTriggerHelper.updateCaseDetails(
-                        casesNeedingSubtype, 
-                        new Map<Id, Case>(), 
-                        casewithContainerMap, 
-                        casewithLocationMap, 
+                        casesNeedingSubtype,
+                        new Map<Id, Case>(),
+                        casewithContainerMap,
+                        casewithLocationMap,
                         true
                     );
                 } else {
@@ -274,12 +273,13 @@ public without sharing class CaseTriggerHandler {
             CaseTriggerHelper.casewithLocation = casewithLocationMap;
             
             // Phase 5: Process case details and SLA
-            if (!casesNeedingSubtype.isEmpty() && !casewithLocationMap.isEmpty()) {
+            if (!casesNeedingSubtype.isEmpty()) {
+                // Note: Method handles empty/null maps gracefully
                 CaseTriggerHelper.updateCaseDetails(
-                    casesNeedingSubtype, 
-                    caseOldMap, 
-                    casewithContainerMap, 
-                    casewithLocationMap, 
+                    casesNeedingSubtype,
+                    caseOldMap,
+                    casewithContainerMap,
+                    casewithLocationMap,
                     false
                 );
             }
