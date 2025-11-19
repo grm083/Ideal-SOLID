@@ -1,0 +1,138 @@
+/* Customer Info Panel Component Styles */
+
+.customer-info-panel-container {
+    position: relative;
+}
+
+/* Card Styles */
+.slds-card {
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.slds-card__header {
+    padding: 1rem;
+}
+
+.slds-border_bottom {
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-card__body_inner {
+    padding: 1rem;
+}
+
+.slds-text-heading_small {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+/* Info Alert */
+.slds-notify {
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.slds-notify_alert {
+    background-color: rgb(227, 242, 253);
+    border: 1px solid rgb(0, 112, 210);
+}
+
+.slds-alert_info {
+    color: rgb(51, 51, 51);
+}
+
+.slds-notify h2 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.slds-list_dotted {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    font-size: 0.8125rem;
+}
+
+/* Form Grid */
+.slds-grid {
+    display: flex;
+}
+
+.slds-wrap {
+    flex-wrap: wrap;
+}
+
+.slds-gutters {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.slds-gutters > .slds-col {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.slds-col {
+    flex: 1 1 auto;
+}
+
+.slds-size_1-of-1 {
+    width: 100%;
+}
+
+@media (min-width: 48em) {
+    .slds-medium-size_1-of-2 {
+        width: 50%;
+    }
+}
+
+/* Form Element Help */
+.slds-form-element__help {
+    margin-top: 0.5rem;
+}
+
+/* Action Buttons */
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+.slds-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-text-align_right {
+    text-align: right;
+}
+
+.slds-m-left_x-small {
+    margin-left: 0.5rem;
+}
+
+.slds-m-right_x-small {
+    margin-right: 0.5rem;
+}
+
+/* Loading Spinner */
+lightning-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Accessibility - focus states */
+lightning-button:focus {
+    outline: 2px solid rgb(0, 112, 210);
+    outline-offset: 2px;
+}

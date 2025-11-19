@@ -1,0 +1,161 @@
+/* Work Order Preview Component Styles */
+
+.work-order-preview-container {
+    position: relative;
+}
+
+/* Card Styles */
+.slds-card__body_inner {
+    padding: 1rem;
+}
+
+/* Form Styles */
+.slds-form {
+    margin: 0;
+}
+
+.slds-form-element {
+    margin-bottom: 0.75rem;
+}
+
+/* Alert Styles */
+.slds-notify {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+
+.slds-notify_alert {
+    border-left: 4px solid;
+}
+
+.slds-alert_info {
+    background-color: rgb(244, 246, 249);
+    border-left-color: rgb(22, 50, 92);
+}
+
+.slds-alert_warning {
+    background-color: rgb(254, 247, 234);
+    border-left-color: rgb(254, 184, 82);
+}
+
+.slds-alert_error {
+    background-color: rgb(254, 235, 235);
+    border-left-color: rgb(234, 0, 30);
+}
+
+/* Preview Box */
+.slds-box {
+    padding: 1rem;
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+}
+
+.slds-theme_shade {
+    background-color: rgb(243, 243, 243);
+}
+
+/* Preview Text */
+.preview-text {
+    white-space: pre-line;
+    font-family: monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: rgb(3, 45, 96);
+}
+
+/* Grid Layouts */
+.slds-grid {
+    display: flex;
+}
+
+.slds-grid_align-end {
+    justify-content: flex-end;
+}
+
+.slds-gutters {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.slds-gutters > .slds-col {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.slds-col {
+    flex: 1 1 auto;
+}
+
+/* Spacing */
+.slds-m-bottom_small {
+    margin-bottom: 0.75rem;
+}
+
+.slds-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-m-bottom_x-small {
+    margin-bottom: 0.5rem;
+}
+
+.slds-m-top_x-small {
+    margin-top: 0.5rem;
+}
+
+.slds-m-top_small {
+    margin-top: 0.75rem;
+}
+
+/* Text Styles */
+.slds-text-heading_small {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+.slds-text-color_weak {
+    color: rgb(116, 116, 116);
+}
+
+.slds-text-body_small {
+    font-size: 0.8125rem;
+}
+
+/* List Styles */
+.slds-list_dotted {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.slds-list_dotted li {
+    padding: 0.25rem 0;
+}
+
+/* Loading Spinner */
+lightning-spinner {
+    position: relative;
+    min-height: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-grid_align-end {
+        flex-direction: column;
+    }
+
+    .slds-col {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Accessibility - focus states */
+lightning-input:focus,
+lightning-textarea:focus,
+lightning-button:focus {
+    outline: 2px solid rgb(0, 112, 210);
+    outline-offset: 2px;
+}

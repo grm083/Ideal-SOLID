@@ -1,0 +1,109 @@
+<template>
+    <!-- Action Messages Panel - Persistent Panel -->
+    <lightning-card>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading actions..." size="small"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="slds-card__body_inner">
+                <!-- Action Message Section -->
+                <template if:true={hasActionMessage}>
+                    <div class={messageClass} role="alert">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name={panelData.messageIcon} size="small" variant={panelData.messageVariant}></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-text-heading_small slds-m-bottom_xx-small">
+                                    {messageHeading}
+                                </h2>
+                                <p>{panelData.actionMessage}</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Action Buttons Section -->
+                <div class="slds-button-group slds-m-top_medium" role="group">
+                    <!-- Progress Case -->
+                    <template if:true={panelData.showProgressCase}>
+                        <lightning-button
+                            label="Progress Case"
+                            variant="brand"
+                            onclick={handleProgressCase}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+
+                    <!-- View Case Summary -->
+                    <template if:true={panelData.showViewCaseSummary}>
+                        <lightning-button
+                            label={caseSummaryLabel}
+                            variant="neutral"
+                            onclick={handleViewCaseSummary}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+
+                    <!-- Add Quote -->
+                    <template if:true={panelData.showAddQuote}>
+                        <lightning-button
+                            label="Add Quote"
+                            variant="neutral"
+                            onclick={handleAddQuote}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+
+                    <!-- Initiate Work Order -->
+                    <template if:true={panelData.showInitiateWorkOrder}>
+                        <lightning-button
+                            label="Initiate Work Order"
+                            variant="neutral"
+                            onclick={handleInitiateWorkOrder}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+
+                    <!-- Add Case Assets -->
+                    <template if:true={panelData.showAddCaseAssets}>
+                        <lightning-button
+                            label="Add Case Assets"
+                            variant="neutral"
+                            onclick={handleAddCaseAssets}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+
+                    <!-- Create Pending Info Task -->
+                    <template if:true={panelData.showPendingInfoTask}>
+                        <lightning-button
+                            label="Create Pending Info Task"
+                            variant="neutral"
+                            onclick={handlePendingInfoTask}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+
+                    <!-- Multi Dates -->
+                    <template if:true={panelData.showMultiDates}>
+                        <lightning-button
+                            label="Multi Dates"
+                            variant="neutral"
+                            onclick={handleMultiDates}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <!-- Processing Spinner Overlay -->
+        <template if:true={isProcessing}>
+            <div class="spinner-overlay">
+                <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+    </lightning-card>
+</template>

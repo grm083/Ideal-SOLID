@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Entity Selector</masterLabel>
+    <description>Unified component for selecting Locations, Vendors, or Clients. Replaces LocationContainer, VendorContainer, and ClientContainer with a single configurable component. Features multi-field search, recent entities, and inline detail display.</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="mode" type="String" label="Mode" description="Entity type mode: location, vendor, or client. Leave blank to allow user selection." />
+            <property name="selectedEntityId" type="String" label="Selected Entity ID" description="Pre-selected entity ID (for edit mode)" />
+            <property name="showRecentEntities" type="Boolean" default="true" label="Show Recent Entities" description="Show recent entities for quick selection" />
+            <property name="recentEntityLimit" type="Integer" default="5" label="Recent Entity Limit" description="Number of recent entities to show" />
+            <property name="caseRecordType" type="String" label="Case Record Type" description="Case record type for validation" />
+        </targetConfig>
+        <targetConfig targets="lightning__AppPage">
+            <property name="mode" type="String" label="Mode" description="Entity type mode: location, vendor, or client. Leave blank to allow user selection." />
+            <property name="selectedEntityId" type="String" label="Selected Entity ID" description="Pre-selected entity ID (for edit mode)" />
+            <property name="showRecentEntities" type="Boolean" default="true" label="Show Recent Entities" description="Show recent entities for quick selection" />
+            <property name="recentEntityLimit" type="Integer" default="5" label="Recent Entity Limit" description="Number of recent entities to show" />
+            <property name="caseRecordType" type="String" label="Case Record Type" description="Case record type for validation" />
+        </targetConfig>
+        <targetConfig targets="lightning__HomePage">
+            <property name="mode" type="String" label="Mode" description="Entity type mode: location, vendor, or client. Leave blank to allow user selection." />
+            <property name="selectedEntityId" type="String" label="Selected Entity ID" description="Pre-selected entity ID (for edit mode)" />
+            <property name="showRecentEntities" type="Boolean" default="true" label="Show Recent Entities" description="Show recent entities for quick selection" />
+            <property name="recentEntityLimit" type="Integer" default="5" label="Recent Entity Limit" description="Number of recent entities to show" />
+            <property name="caseRecordType" type="String" label="Case Record Type" description="Case record type for validation" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

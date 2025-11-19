@@ -1,0 +1,159 @@
+/* Inline Detail Card Styles */
+
+.slds-card {
+    padding: 0;
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.slds-card_narrow {
+    max-width: 30rem;
+}
+
+.slds-card__header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-card__header-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: rgb(3, 45, 96);
+}
+
+.slds-card__header-link {
+    color: inherit;
+    font-weight: inherit;
+}
+
+.slds-card__body {
+    padding: 1rem;
+}
+
+.slds-card__body_inner {
+    padding: 0.75rem 1rem;
+}
+
+.slds-card__footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgb(221, 219, 218);
+    background-color: rgb(250, 250, 249);
+}
+
+/* Horizontal Definition List */
+.slds-dl_horizontal {
+    margin: 0;
+}
+
+.slds-dl_horizontal__item {
+    display: flex;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgb(243, 242, 242);
+}
+
+.slds-dl_horizontal__item:last-child {
+    border-bottom: none;
+}
+
+.slds-dl_horizontal__label {
+    flex: 0 0 40%;
+    padding-right: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgb(116, 116, 116);
+    line-height: 1.5;
+}
+
+.slds-dl_horizontal__detail {
+    flex: 1 1 60%;
+    font-size: 0.8125rem;
+    color: rgb(22, 50, 92);
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.slds-dl_horizontal__detail p {
+    margin: 0;
+}
+
+.slds-dl_horizontal__detail a {
+    color: rgb(0, 112, 210);
+    text-decoration: none;
+}
+
+.slds-dl_horizontal__detail a:hover {
+    text-decoration: underline;
+    color: rgb(0, 95, 178);
+}
+
+/* Text utilities */
+.slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.slds-text-body_strong {
+    font-weight: 700;
+}
+
+.slds-text-color_success {
+    color: rgb(2, 126, 70);
+}
+
+/* Media object for header */
+.slds-media {
+    display: flex;
+    align-items: flex-start;
+}
+
+.slds-media_center {
+    align-items: center;
+}
+
+.slds-media__figure {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.slds-media__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.slds-has-flexi-truncate {
+    min-width: 0;
+}
+
+/* Grid for header */
+.slds-grid {
+    display: flex;
+}
+
+.slds-no-flex {
+    flex: none;
+    align-self: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48em) {
+    .slds-dl_horizontal__label {
+        flex: 0 0 100%;
+        padding-right: 0;
+        margin-bottom: 0.25rem;
+    }
+
+    .slds-dl_horizontal__detail {
+        flex: 1 1 100%;
+        padding-left: 0;
+    }
+
+    .slds-dl_horizontal__item {
+        flex-direction: column;
+    }
+}

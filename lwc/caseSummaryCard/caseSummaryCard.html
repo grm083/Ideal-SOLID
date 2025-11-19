@@ -1,0 +1,155 @@
+<template>
+    <!-- Case Summary Card -->
+    <lightning-card title="Case Summary" icon-name="standard:case">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading summary..." size="small"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="slds-card__body_inner">
+                <!-- Progress Indicator -->
+                <template if:true={showProgress}>
+                    <div class="slds-m-bottom_medium">
+                        <div class="slds-text-align_center slds-m-bottom_small">
+                            <span class="slds-text-heading_small">
+                                {completedPhases} of 4 phases complete
+                            </span>
+                        </div>
+                        <lightning-progress-indicator
+                            current-step={currentPhase}
+                            type="base"
+                            variant="base">
+                            <lightning-progress-step label="Caller" value="caller"></lightning-progress-step>
+                            <lightning-progress-step label="Intent" value="intent"></lightning-progress-step>
+                            <lightning-progress-step label="Details" value="details"></lightning-progress-step>
+                            <lightning-progress-step label="Review" value="review"></lightning-progress-step>
+                        </lightning-progress-indicator>
+                    </div>
+                </template>
+
+                <!-- Caller Section -->
+                <div class="slds-box slds-m-bottom_small">
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <div class="slds-col slds-grow">
+                            <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                                <lightning-icon icon-name="standard:contact" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                Caller Information
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button
+                                label="Edit"
+                                variant="neutral"
+                                onclick={handleEditCaller}
+                                disabled={isLoading}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                    <dl class="slds-list_horizontal slds-wrap slds-m-top_small">
+                        <dt class="slds-item_label slds-text-color_weak">Entity Type:</dt>
+                        <dd class="slds-item_detail">{summaryData.entityType}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Location:</dt>
+                        <dd class="slds-item_detail">{summaryData.locationName}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Contact:</dt>
+                        <dd class="slds-item_detail">{summaryData.contactName}</dd>
+                    </dl>
+                </div>
+
+                <!-- Intent Section -->
+                <div class="slds-box slds-m-bottom_small">
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <div class="slds-col slds-grow">
+                            <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                                <lightning-icon icon-name="standard:asset_object" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                Case Configuration
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button
+                                label="Edit"
+                                variant="neutral"
+                                onclick={handleEditIntent}
+                                disabled={isLoading}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                    <dl class="slds-list_horizontal slds-wrap slds-m-top_small">
+                        <dt class="slds-item_label slds-text-color_weak">Asset:</dt>
+                        <dd class="slds-item_detail">{summaryData.assetName}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Record Type:</dt>
+                        <dd class="slds-item_detail">{summaryData.recordTypeName}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Case Type:</dt>
+                        <dd class="slds-item_detail">{summaryData.caseType}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Sub-Type:</dt>
+                        <dd class="slds-item_detail">{summaryData.caseSubType}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Reason:</dt>
+                        <dd class="slds-item_detail">{summaryData.caseReason}</dd>
+                    </dl>
+                </div>
+
+                <!-- Details Section -->
+                <div class="slds-box slds-m-bottom_small">
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <div class="slds-col slds-grow">
+                            <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                                <lightning-icon icon-name="standard:form" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                Case Details
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button
+                                label="Edit"
+                                variant="neutral"
+                                onclick={handleEditDetails}
+                                disabled={isLoading}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                    <dl class="slds-list_horizontal slds-wrap slds-m-top_small">
+                        <dt class="slds-item_label slds-text-color_weak">PO Number:</dt>
+                        <dd class="slds-item_detail">{summaryData.purchaseOrderNumber}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Profile Number:</dt>
+                        <dd class="slds-item_detail">{summaryData.profileNumber}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">PSI:</dt>
+                        <dd class="slds-item_detail">{summaryData.psi}</dd>
+
+                        <dt class="slds-item_label slds-text-color_weak">Service Date:</dt>
+                        <dd class="slds-item_detail">{formattedServiceDate}</dd>
+                    </dl>
+                </div>
+
+                <!-- Business Rules Section -->
+                <template if:true={hasBusinessRuleMessages}>
+                    <div class="slds-box slds-theme_warning slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                            <lightning-icon icon-name="utility:warning" size="x-small" variant="warning" class="slds-m-right_x-small"></lightning-icon>
+                            Business Rule Status
+                        </h3>
+                        <ul class="slds-list_dotted">
+                            <template for:each={businessRuleMessages} for:item="msg">
+                                <li key={msg}>{msg}</li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+
+                <template if:true={isReadyForSubmit}>
+                    <div class="slds-box slds-theme_success slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small">
+                            <lightning-icon icon-name="utility:success" size="x-small" variant="success" class="slds-m-right_x-small"></lightning-icon>
+                            Case is ready for submission
+                        </h3>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </lightning-card>
+</template>

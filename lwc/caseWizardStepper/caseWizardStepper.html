@@ -1,0 +1,47 @@
+<template>
+    <!-- Case Wizard Stepper - Progress Indicator -->
+    <div class="wizard-stepper-container">
+        <lightning-progress-indicator
+            current-step={currentStep}
+            type="path"
+            variant="base">
+
+            <!-- Step 1: Caller -->
+            <lightning-progress-step
+                label="Caller"
+                value="caller"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
+
+            <!-- Step 2: Intent -->
+            <lightning-progress-step
+                label="Intent"
+                value="intent"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
+
+            <!-- Step 3: Details -->
+            <lightning-progress-step
+                label="Details"
+                value="details"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
+
+            <!-- Step 4: Review -->
+            <lightning-progress-step
+                label="Review"
+                value="review"
+                onclick={handleStepClick}>
+            </lightning-progress-step>
+        </lightning-progress-indicator>
+
+        <!-- Progress Summary Text -->
+        <template if:true={showProgressText}>
+            <div class="progress-text slds-text-align_center slds-m-top_small">
+                <span class="slds-text-body_small slds-text-color_weak">
+                    Step {currentStepNumber} of {totalSteps}: {currentStepLabel}
+                </span>
+            </div>
+        </template>
+    </div>
+</template>

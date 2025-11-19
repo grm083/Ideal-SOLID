@@ -1,0 +1,337 @@
+<template>
+    <!-- Contact Selector Component -->
+    <div class="contact-selector-container">
+        <!-- Context Pill (shows selected entity) -->
+        <template if:true={hasEntityContext}>
+            <div class="slds-m-bottom_medium">
+                <div class="slds-pill_container">
+                    <span class="slds-pill">
+                        <lightning-icon
+                            icon-name={entityIconName}
+                            size="x-small"
+                            class="slds-m-right_xx-small">
+                        </lightning-icon>
+                        <span class="slds-pill__label">
+                            Searching contacts for: {entityName}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </template>
+
+        <!-- Recent Contacts (Quick Selection) -->
+        <template if:true={showRecentContacts}>
+            <div class="slds-m-bottom_medium">
+                <div class="slds-card">
+                    <div class="slds-card__header slds-border_bottom">
+                        <h3 class="slds-text-heading_small">Recently Viewed Contacts</h3>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <template if:true={hasRecentContacts}>
+                            <div class="recent-contacts-grid">
+                                <template for:each={recentContacts} for:item="contact">
+                                    <lightning-button
+                                        key={contact.id}
+                                        label={contact.name}
+                                        title={contact.email}
+                                        variant="neutral"
+                                        onclick={handleRecentContactClick}
+                                        data-id={contact.id}
+                                        class="slds-m-right_x-small slds-m-bottom_x-small">
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </template>
+                        <template if:false={hasRecentContacts}>
+                            <p class="slds-text-color_weak">No recently viewed contacts</p>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Search Component -->
+        <c-record-search-base
+            search-title={searchTitle}
+            icon-name="standard:contact"
+            search-fields={searchFields}
+            columns={columns}
+            show-radio-select={true}
+            show-create-new={true}
+            show-pagination={true}
+            create-new-label="Create New Contact"
+            onsearch={handleSearch}
+            onrecordselect={handleRecordSelect}
+            onrecordclick={handleRecordClick}
+            oncreatenew={handleCreateNew}
+            onclear={handleClear}
+            onerror={handleError}>
+        </c-record-search-base>
+
+        <!-- Selected Contact Detail Card -->
+        <template if:true={hasSelectedContact}>
+            <div class="slds-m-top_medium">
+                <c-inline-detail-card
+                    title={selectedContactTitle}
+                    icon-name="standard:contact"
+                    fields={selectedContactFields}
+                    variant="base"
+                    is-visible={true}
+                    show-close-button={false}
+                    has-footer={false}>
+                </c-inline-detail-card>
+            </div>
+        </template>
+
+        <!-- Create New Contact Modal -->
+        <template if:true={showCreateContactModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close"
+                                onclick={handleCloseModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">Create New Contact</h2>
+                    </header>
+
+                    <!-- Modal Body -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- Duplicate Warning -->
+                        <template if:true={showDuplicateWarning}>
+                            <div class="slds-m-bottom_medium">
+                                <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                                    <span class="slds-assistive-text">warning</span>
+                                    <lightning-icon icon-name="utility:warning" size="x-small" variant="warning"></lightning-icon>
+                                    <h2>
+                                        <strong>Potential Duplicates Found</strong>
+                                    </h2>
+                                    <p>The following contacts match your criteria. Please select an existing contact or create a new one.</p>
+                                </div>
+                            </div>
+
+                            <!-- Duplicate Contacts List -->
+                            <div class="slds-m-bottom_medium">
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate">Select</div></th>
+                                            <th scope="col"><div class="slds-truncate">Name</div></th>
+                                            <th scope="col"><div class="slds-truncate">Title</div></th>
+                                            <th scope="col"><div class="slds-truncate">Phone</div></th>
+                                            <th scope="col"><div class="slds-truncate">Email</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={duplicateContacts} for:item="contact">
+                                            <tr key={contact.id} class="slds-hint-parent">
+                                                <td>
+                                                    <lightning-button
+                                                        variant="neutral"
+                                                        label="Select"
+                                                        onclick={handleSelectDuplicate}
+                                                        data-id={contact.id}
+                                                        disabled={contact.isNew}>
+                                                    </lightning-button>
+                                                </td>
+                                                <td><div class="slds-truncate">{contact.name}</div></td>
+                                                <td><div class="slds-truncate">{contact.accountTitle}</div></td>
+                                                <td><div class="slds-truncate">{contact.phone}</div></td>
+                                                <td><div class="slds-truncate">{contact.email}</div></td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Separator -->
+                            <div class="slds-m-vertical_medium">
+                                <div class="slds-text-heading_small slds-text-align_center">
+                                    OR
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Contact Form -->
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <!-- First Name (Required) -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input
+                                    label="First Name"
+                                    value={newContact.firstName}
+                                    onchange={handleContactFieldChange}
+                                    data-field="firstName"
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- Last Name (Required) -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input
+                                    label="Last Name"
+                                    value={newContact.lastName}
+                                    onchange={handleContactFieldChange}
+                                    data-field="lastName"
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input
+                                    type="email"
+                                    label="Email"
+                                    value={newContact.email}
+                                    onchange={handleContactFieldChange}
+                                    data-field="email">
+                                </lightning-input>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input
+                                    type="tel"
+                                    label="Phone"
+                                    value={newContact.phone}
+                                    onchange={handleContactFieldChange}
+                                    data-field="phone">
+                                </lightning-input>
+                            </div>
+
+                            <!-- Mobile Phone -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input
+                                    type="tel"
+                                    label="Mobile Phone"
+                                    value={newContact.mobilePhone}
+                                    onchange={handleContactFieldChange}
+                                    data-field="mobilePhone">
+                                </lightning-input>
+                            </div>
+
+                            <!-- Phone Extension -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input
+                                    label="Phone Extension"
+                                    value={newContact.phoneExtension}
+                                    onchange={handleContactFieldChange}
+                                    data-field="phoneExtension">
+                                </lightning-input>
+                            </div>
+
+                            <!-- Account Title (Required) -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-combobox
+                                    label="Account Title"
+                                    value={newContact.accountTitleId}
+                                    options={accountTitleOptions}
+                                    onchange={handleAccountTitleChange}
+                                    placeholder="Select account title..."
+                                    required>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Account Department -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-combobox
+                                    label="Account Department"
+                                    value={newContact.accountDepartmentId}
+                                    options={accountDepartmentOptions}
+                                    onchange={handleAccountDepartmentChange}
+                                    placeholder="Select department...">
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Preferred Method -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-combobox
+                                    label="Preferred Contact Method"
+                                    value={newContact.preferredMethod}
+                                    options={preferredMethodOptions}
+                                    onchange={handlePreferredMethodChange}
+                                    placeholder="Select preferred method...">
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Create New Title Link -->
+                            <div class="slds-col slds-size_1-of-1">
+                                <div class="slds-m-top_small">
+                                    <a href="#" onclick={handleShowCreateTitle} class="slds-text-link">
+                                        <lightning-icon icon-name="utility:add" size="xx-small"></lightning-icon>
+                                        Create New Account Title
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Create Title Inline Form -->
+                            <template if:true={showCreateTitleForm}>
+                                <div class="slds-col slds-size_1-of-1 slds-m-top_small">
+                                    <div class="slds-box slds-theme_shade slds-p-around_small">
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col slds-size_3-of-4">
+                                                <lightning-input
+                                                    label="New Title Name"
+                                                    value={newTitleName}
+                                                    onchange={handleNewTitleNameChange}
+                                                    placeholder="Enter title name...">
+                                                </lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-4">
+                                                <div class="slds-m-top_large">
+                                                    <lightning-button
+                                                        variant="brand"
+                                                        label="Create"
+                                                        onclick={handleCreateTitle}
+                                                        disabled={isCreatingTitle}>
+                                                    </lightning-button>
+                                                    <lightning-button
+                                                        variant="neutral"
+                                                        label="Cancel"
+                                                        onclick={handleCancelCreateTitle}
+                                                        class="slds-m-left_x-small">
+                                                    </lightning-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            variant="neutral"
+                            label="Cancel"
+                            onclick={handleCloseModal}>
+                        </lightning-button>
+                        <lightning-button
+                            variant="neutral"
+                            label="Check for Duplicates"
+                            onclick={handleCheckDuplicates}
+                            disabled={isCheckingDuplicates}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                        <lightning-button
+                            variant="brand"
+                            label="Save Contact"
+                            onclick={handleSaveContact}
+                            disabled={isSaving}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

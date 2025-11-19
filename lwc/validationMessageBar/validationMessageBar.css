@@ -1,0 +1,55 @@
+/* Validation Message Bar Styles */
+
+.slds-notify__content {
+    flex-grow: 1;
+}
+
+.slds-notify__content p {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.slds-alert_error {
+    background-color: rgb(254, 222, 216);
+    border-color: rgb(254, 147, 140);
+}
+
+.slds-alert_warning {
+    background-color: rgb(254, 246, 224);
+    border-color: rgb(255, 183, 93);
+}
+
+.slds-theme_success {
+    background-color: rgb(212, 249, 224);
+    border-color: rgb(75, 202, 129);
+}
+
+.slds-theme_info {
+    background-color: rgb(224, 243, 250);
+    border-color: rgb(107, 201, 223);
+}
+
+.slds-text-heading_small {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+/* Icon container alignment */
+.slds-icon_container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Close button styling */
+.slds-notify__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+/* Ensure proper spacing for multiple messages */
+.slds-m-bottom_x-small {
+    margin-bottom: 0.5rem;
+}

@@ -1,0 +1,140 @@
+/* Case Highlight Strip Component Styles */
+
+.case-highlight-strip-container {
+    position: relative;
+    padding: 0.5rem;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 0.25rem;
+}
+
+/* Highlight Rows */
+.highlight-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.highlight-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Highlight Fields */
+.highlight-field {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    min-width: 150px;
+    flex: 1 1 150px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.highlight-field:hover {
+    box-shadow: 0 0 0 2px rgb(0, 112, 210);
+    transform: translateY(-1px);
+}
+
+/* Field Labels and Values */
+.field-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgb(116, 116, 116);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: rgb(3, 45, 96);
+    word-break: break-word;
+}
+
+/* Color-coded Field States */
+
+/* ✅ Green background = Complete & valid */
+.highlight-field_complete {
+    background-color: rgb(227, 252, 239);
+    border: 1px solid rgb(4, 132, 75);
+}
+
+.highlight-field_complete .field-value {
+    color: rgb(1, 68, 33);
+}
+
+/* ⚠️ Orange background = Needs attention */
+.highlight-field_warning {
+    background-color: rgb(254, 247, 234);
+    border: 1px solid rgb(254, 184, 82);
+}
+
+.highlight-field_warning .field-value {
+    color: rgb(123, 62, 0);
+}
+
+/* ❌ Red background = Missing required field */
+.highlight-field_missing {
+    background-color: rgb(254, 235, 235);
+    border: 1px solid rgb(234, 0, 30);
+}
+
+.highlight-field_missing .field-value {
+    color: rgb(170, 0, 0);
+    font-weight: 700;
+}
+
+/* ℹ️ Blue background = Informational */
+.highlight-field_info {
+    background-color: rgb(244, 246, 249);
+    border: 1px solid rgb(201, 201, 201);
+}
+
+/* Loading Spinner */
+lightning-spinner {
+    position: relative;
+    min-height: 80px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .highlight-row {
+        flex-direction: column;
+    }
+
+    .highlight-field {
+        min-width: 100%;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .highlight-field {
+        flex: 1 1 calc(33.333% - 0.5rem);
+    }
+}
+
+@media (min-width: 1025px) {
+    .highlight-field {
+        flex: 1 1 calc(16.666% - 0.5rem);
+    }
+}
+
+/* Accessibility - focus states */
+.highlight-field:focus {
+    outline: 2px solid rgb(0, 112, 210);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .highlight-field:hover {
+        box-shadow: none;
+        transform: none;
+    }
+
+    .case-highlight-strip-container {
+        border: 1px solid rgb(0, 0, 0);
+    }
+}

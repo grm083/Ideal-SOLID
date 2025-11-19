@@ -1,0 +1,85 @@
+<template>
+    <!-- Service Date Selector Component -->
+    <div class="service-date-selector-container">
+        <div class="slds-card">
+            <div class="slds-card__header slds-border_bottom">
+                <h3 class="slds-text-heading_small">Service Date & Time</h3>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- Service Date -->
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            type="date"
+                            label="Service Date"
+                            value={serviceDate}
+                            onchange={handleServiceDateChange}
+                            required
+                            disabled={isLoading}
+                            min={minDate}>
+                        </lightning-input>
+                    </div>
+
+                    <!-- Service Time -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            type="time"
+                            label="Service Time"
+                            value={serviceTime}
+                            onchange={handleServiceTimeChange}
+                            disabled={isLoading}>
+                        </lightning-input>
+                    </div>
+
+                    <!-- Multi-Calendar Checkbox -->
+                    <template if:true={showMultiCalendar}>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input
+                                type="checkbox"
+                                label="Multi-Calendar Checked"
+                                checked={isMultiCalendarChecked}
+                                onchange={handleMultiCalendarChange}
+                                disabled={isLoading}>
+                            </lightning-input>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- WM Capacity Planner -->
+                <template if:true={showWMCapacityPlanner}>
+                    <div class="slds-m-top_medium">
+                        <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                            <lightning-icon icon-name="utility:warning" size="x-small" variant="warning"></lightning-icon>
+                            <div>
+                                <h2><strong>WM Capacity Planner Available</strong></h2>
+                                <p>Check WM Capacity before progressing this case.</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Action Buttons -->
+                <div class="slds-m-top_medium slds-text-align_right">
+                    <lightning-button
+                        label="Reset"
+                        onclick={handleReset}
+                        variant="neutral"
+                        disabled={isLoading}>
+                    </lightning-button>
+                    <lightning-button
+                        label="Save"
+                        onclick={handleSave}
+                        variant="brand"
+                        disabled={isSaveDisabled}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>
