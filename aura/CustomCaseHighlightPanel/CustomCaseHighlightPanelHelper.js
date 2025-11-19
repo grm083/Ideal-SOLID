@@ -91,7 +91,7 @@
 
         // Set task and status flags
         component.set('v.isOpenTask', wrapper.isOpenTask);
-        component.set('v.isNew', wrapper.myCase.Status !== 'New');
+        component.set('v.isNew', wrapper.myCase.Status === 'New');
         component.set('v.isCPQ', wrapper.CPQUser === true && wrapper.myCase.Case_Record_Type__c === 'New Service Case');
         component.set('v.isNewService', wrapper.myCase.Case_Record_Type__c === 'New Service Case');
 
