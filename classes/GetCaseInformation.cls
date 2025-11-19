@@ -37,13 +37,25 @@ public with sharing class GetCaseInformation {
     @AuraEnabled
     public static Wrapper getMessage(Id caseId){
         try {
+            System.debug('GetCaseInformation.getMessage - START for caseId: ' + caseId);
             CaseUIService.CaseUIWrapper uiWrapper = CaseUIService.getCaseMessages(caseId);
-            return convertToLegacyWrapper(uiWrapper);
+            System.debug('GetCaseInformation.getMessage - uiWrapper: ' + JSON.serializePretty(uiWrapper));
+
+            Wrapper result = convertToLegacyWrapper(uiWrapper);
+            System.debug('GetCaseInformation.getMessage - result: ' + JSON.serializePretty(result));
+            return result;
         } catch(Exception ex){
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
-                                                    UTIL_ErrorConstants.ERROR_APPLICATION, 
+            System.debug(LoggingLevel.ERROR, 'GetCaseInformation.getMessage - ERROR: ' + ex.getMessage());
+            System.debug(LoggingLevel.ERROR, 'GetCaseInformation.getMessage - STACK TRACE: ' + ex.getStackTraceString());
+
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
+                                                    UTIL_ErrorConstants.ERROR_APPLICATION,
                                                     LoggingLevel.ERROR);
-            return new Wrapper();
+
+            // Return empty wrapper with error indicator
+            Wrapper errorWrapper = new Wrapper();
+            errorWrapper.caseInfo = 'ERROR: ' + ex.getMessage() + ' - Check debug logs for details';
+            return errorWrapper;
         }
     }
     
