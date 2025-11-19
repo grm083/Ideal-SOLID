@@ -11,11 +11,14 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <property name="caseId" type="String" label="Case ID" description="Case ID (for edit/view mode)" />
+            <!-- recordId is automatically provided by Salesforce on record pages -->
             <property name="mode" type="String" default="view" label="Mode" description="Component mode: create, edit, view" />
+            <objects>
+                <object>Case</object>
+            </objects>
         </targetConfig>
         <targetConfig targets="lightning__AppPage">
-            <property name="caseId" type="String" label="Case ID" description="Case ID (for edit/view mode)" />
+            <property name="caseId" type="String" label="Case ID" description="Case ID (for manual configuration on app pages)" />
             <property name="mode" type="String" default="view" label="Mode" description="Component mode: create, edit, view" />
         </targetConfig>
         <targetConfig targets="lightning__HomePage">

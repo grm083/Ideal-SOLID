@@ -121,14 +121,14 @@
             <div class="persistent-panels-container slds-m-top_large">
                 <!-- Case Highlight Strip -->
                 <c-case-highlight-strip
-                    case-id={caseId}
+                    case-id={effectiveCaseId}
                     onfieldedit={handleFieldEdit}>
                 </c-case-highlight-strip>
 
                 <!-- Action Messages Panel -->
                 <div class="slds-m-top_medium">
                     <c-action-messages-panel
-                        case-id={caseId}
+                        case-id={effectiveCaseId}
                         onaction={handleAction}>
                     </c-action-messages-panel>
                 </div>
