@@ -1206,6 +1206,7 @@
     duplicateCheckInvocation: function(component, flag) {
         const modalState = component.get('v.modalState');
         if (!modalState.duplicateModal) {
+            const self = this; // Store reference to helper for use in callback
             $A.createComponent(
                 "c:DuplicateCheckOnCase",
                 {
@@ -1218,7 +1219,11 @@
                         const body = targetCmp.get("v.body");
                         body.push(msgBox);
                         targetCmp.set("v.body", body);
-                        this._updateModalState(component, { duplicateModal: true });
+
+                        // Update modal state using stored reference
+                        const modalState = component.get('v.modalState');
+                        modalState.duplicateModal = true;
+                        component.set('v.modalState', modalState);
                     }
                 }
             );
