@@ -375,44 +375,47 @@ public with sharing class CaseAttributeService {
 * @return List<Case> Updated cases
 */
     public static List<Case> updateCaseDetailsFromAssetAndLocation(
-        List<Case> caseList, 
+        List<Case> caseList,
         Map<Id,Case> oldCaseMap,
-        Map<Id,Asset> caseWithContainerMap, 
-        Map<Id,Account> caseWithLocationMap, 
+        Map<Id,Asset> caseWithContainerMap,
+        Map<Id,Account> caseWithLocationMap,
         Boolean isInsert
     ) {
         if (caseList == null || caseList.isEmpty()) {
             return caseList;
         }
-        
+
         try {
             for (Case caseRecord : caseList) {
                 Case oldCase = oldCaseMap != null ? oldCaseMap.get(caseRecord.Id) : null;
-                
+
                 // Update from Asset data
-                if (String.isNotBlank(caseRecord.AssetId) && 
-                    caseWithContainerMap != null && 
+                if (String.isNotBlank(caseRecord.AssetId) &&
+                    caseWithContainerMap != null &&
                     caseWithContainerMap.containsKey(caseRecord.AssetId)) {
-                        
+
                         Asset asset = caseWithContainerMap.get(caseRecord.AssetId);
-                        
+
                         // Update fields from Asset
                         if (asset.Product2 != null) {
                             caseRecord.LOB__c = asset.Product2.Family;
                             caseRecord.Equipment_Type_Code__c = asset.Product2.Equipment_Type__c;
                         }
-                        
+
                         if (String.isBlank(caseRecord.Material_Type__c) && asset.Material_Type__c != null) {
                             caseRecord.Material_Type__c = asset.Material_Type__c;
                         }
+
+                        // Update Case Sub Type based on asset (Issue fix)
+                        caseRecord.Case_Sub_Type__c = determineCaseSubType(caseRecord, asset);
                     }
             }
-            
+
         } catch (Exception ex) {
-            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
                                                     UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
         }
-        
+
         return caseList;
     }
     
