@@ -214,7 +214,7 @@
 
     </div>
     <!-- Modal visible on click of View Case Summary Button -->
-    <aura:if isTrue="{!v.modalState.viewCaseSummary}">
+    <aura:if isTrue="{!and(v.modalState.viewCaseSummary, v.caseSummary.length > 0)}">
         <!--###### MODAL BOX Start From Here ######-->
         <div role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small"
@@ -232,7 +232,7 @@
                    <table class="slds-table slds-p-around_medium">
                         <th scope="col" class="head slds-size_3-of-4"><span class="slds-truncate">Contact:
                             <b>{!v.caseSummary[0].Contact.Name}</b></span></th>
-                        <th scope="col" class="head slds-size_1-of-4"><span class="slds-truncate">Reference#: 
+                        <th scope="col" class="head slds-size_1-of-4"><span class="slds-truncate">Reference#:
                                  <b>{!v.caseSummary[0].Reference_Number__c}</b></span></th>
                     </table>
 

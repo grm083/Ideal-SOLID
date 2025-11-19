@@ -966,10 +966,43 @@
             const state = response.getState();
             if (state === "SUCCESS") {
                 const data = response.getReturnValue();
+
+                // Validate that we have case summary data
+                if (!data || data.length === 0) {
+                    console.warn('getCaseSummary: No case summary data returned');
+                    // Close the modal since there's no data to display
+                    this._updateModalState(component, { viewCaseSummary: false });
+
+                    // Show a warning toast to the user
+                    const toastEvent = $A.get("e.force:showToast");
+                    if (toastEvent) {
+                        toastEvent.setParams({
+                            "title": "No Case Summary Available",
+                            "message": "No cases found to display in the summary.",
+                            "type": "warning"
+                        });
+                        toastEvent.fire();
+                    }
+                    return;
+                }
+
                 component.set('v.caseSummary', data);
                 helper.populateCheckboxField(component);
             } else {
                 console.error('Error getting case summary:', response.getError());
+                // Close the modal on error
+                this._updateModalState(component, { viewCaseSummary: false });
+
+                // Show an error toast
+                const toastEvent = $A.get("e.force:showToast");
+                if (toastEvent) {
+                    toastEvent.setParams({
+                        "title": "Error",
+                        "message": "Failed to load case summary. Please try again.",
+                        "type": "error"
+                    });
+                    toastEvent.fire();
+                }
             }
         });
 
@@ -1156,17 +1189,40 @@
     populateCheckboxField: function(component) {
         let array = component.find("multiSelect");
         let selectedCase = [];
+        let woUpdatesButton = component.find("woUpdates");
 
+        // Guard: If caseSummary is empty or checkboxes don't exist, exit early
+        let caseList = component.get("v.caseSummary");
+        if (!caseList || caseList.length === 0) {
+            console.warn('populateCheckboxField: No case summary data available');
+            component.set('v.selectedCases', selectedCase);
+            return;
+        }
+
+        // Guard: If multiSelect checkboxes don't exist, exit early
+        if (!array) {
+            console.warn('populateCheckboxField: multiSelect checkboxes not found in component');
+            // Still populate selectedCase from caseList
+            caseList.forEach(function(res) {
+                selectedCase.push(res.Id);
+            });
+            component.set('v.selectedCases', selectedCase);
+            return;
+        }
+
+        // Process checkboxes
         if (Array.isArray(array) && array.length > 1) {
-            component.find("woUpdates").set("v.disabled", true);
+            if (woUpdatesButton) {
+                woUpdatesButton.set("v.disabled", true);
+            }
             array.forEach(function(res) {
                 res.set("v.value", true);
             });
         } else if (array) {
-            component.find("multiSelect").set("v.value", true);
+            array.set("v.value", true);
         }
 
-        let caseList = component.get("v.caseSummary");
+        // Build selected case list
         if (caseList) {
             caseList.forEach(function(res) {
                 selectedCase.push(res.Id);
@@ -1175,10 +1231,13 @@
 
         component.set('v.selectedCases', selectedCase);
 
-        if (selectedCase.length === 1) {
-            component.find("woUpdates").set("v.disabled", false);
-        } else {
-            component.find("woUpdates").set("v.disabled", true);
+        // Update woUpdates button state if it exists
+        if (woUpdatesButton) {
+            if (selectedCase.length === 1) {
+                woUpdatesButton.set("v.disabled", false);
+            } else {
+                woUpdatesButton.set("v.disabled", true);
+            }
         }
     },
 
@@ -1186,6 +1245,12 @@
         let checkboxes = component.find("multiSelect");
         let chkflag = false;
         let count = 0;
+
+        // Guard: If checkboxes don't exist, exit early
+        if (!checkboxes) {
+            console.warn('enableWorkorderButton: multiSelect checkboxes not found');
+            return;
+        }
 
         if (checkboxes.length !== undefined) {
             for (let i = 0; i < checkboxes.length; i++) {
@@ -1196,19 +1261,30 @@
             }
         } else {
             checkboxes = [component.find("multiSelect")];
-            if (checkboxes[0].get("v.value") === true) {
+            if (checkboxes[0] && checkboxes[0].get("v.value") === true) {
                 chkflag = true;
                 count++;
             }
         }
 
-        component.find("workOrderButton").set("v.disabled", !chkflag);
-        component.find("workOrderButtonInst").set("v.disabled", !chkflag);
+        // Safely update button states
+        const workOrderButton = component.find("workOrderButton");
+        const workOrderButtonInst = component.find("workOrderButtonInst");
+        const woUpdatesButton = component.find("woUpdates");
 
-        if (count === 1) {
-            component.find("woUpdates").set("v.disabled", false);
-        } else {
-            component.find("woUpdates").set("v.disabled", true);
+        if (workOrderButton) {
+            workOrderButton.set("v.disabled", !chkflag);
+        }
+        if (workOrderButtonInst) {
+            workOrderButtonInst.set("v.disabled", !chkflag);
+        }
+
+        if (woUpdatesButton) {
+            if (count === 1) {
+                woUpdatesButton.set("v.disabled", false);
+            } else {
+                woUpdatesButton.set("v.disabled", true);
+            }
         }
     },
 
