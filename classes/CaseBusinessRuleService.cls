@@ -71,7 +71,11 @@ public without sharing class CaseBusinessRuleService {
                 evaluateApprovalRules(currentCase, result);
                 evaluateRequiredInformation(currentCase, result);
             }
-            
+
+            // Validate core required fields (Contact, Case Sub Type, Location)
+            // This ensures the button only appears when all necessary data is present
+            validateCoreRequiredFields(currentCase, result);
+
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(), 
                 UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
@@ -357,10 +361,10 @@ public without sharing class CaseBusinessRuleService {
     private static Case queryCaseForRuleEvaluation(Id caseId) {
         try {
             return [
-                SELECT Id, Status, Case_Sub_Status__c, Client__c, Case_Type__c, 
-                       Case_Sub_type__c, Case_Reason__c, Location__c, AssetId, 
+                SELECT Id, Status, Case_Sub_Status__c, Client__c, Case_Type__c,
+                       Case_Sub_type__c, Case_Reason__c, Location__c, AssetId, ContactId,
                        Service_Date__c, SLA_Service_Date_Time__c, Reference_Number__c,
-                       PurchaseOrder_Number__c, Override_PO_Create_Task__c, 
+                       PurchaseOrder_Number__c, Override_PO_Create_Task__c,
                        Profile_Number__c, Override_Profile_Number_Task__c,
                        PSI__c, PSI_Override_Reason__c, PSI_Comments__c,
                        RecordTypeId, Source_System__c
@@ -549,7 +553,36 @@ public without sharing class CaseBusinessRuleService {
                 UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
         }
     }
-    
+
+    /**
+     * @description Validates core required fields for business rule evaluation
+     * This prevents the "View Case Summary" button from appearing prematurely
+     * @param currentCase The case to validate
+     * @param result BusinessRuleResult to update with validation messages
+     */
+    private static void validateCoreRequiredFields(Case currentCase, BusinessRuleResult result) {
+        // Check for Location - required for all case types to show View Case Summary
+        if (String.isBlank(currentCase.Location__c)) {
+            result.validationMessages.add('Please select a Location');
+        }
+
+        // Check for Contact - required for all cases
+        if (String.isBlank(currentCase.ContactId)) {
+            result.validationMessages.add(Constant_Util.SELECT_CONTACT);
+        }
+
+        // Check for Case Sub Type - required for all cases
+        if (String.isBlank(currentCase.Case_Sub_type__c)) {
+            result.validationMessages.add(Constant_Util.SELECT_CASESUBTYPE);
+        }
+
+        // Check for Asset - required for most cases except Bales
+        if (String.isBlank(currentCase.AssetId) &&
+            currentCase.Case_Sub_type__c != Constant_Util.BALES) {
+            result.validationMessages.add(Constant_Util.SELECT_ASSET);
+        }
+    }
+
     /**
      * @description Validates required fields are populated
      * @param currentCase The case to validate
