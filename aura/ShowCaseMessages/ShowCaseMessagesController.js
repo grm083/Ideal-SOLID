@@ -182,10 +182,9 @@
 
         modalState.viewCaseSummary = true;
         component.set("v.modalState", modalState);
-        component.find("workOrderButton").set("v.disabled", false);
 
         var btnValue = event.getSource().get('v.label');
-        helper.getCaseSummary(component, helper);
+        helper.getCaseSummary(component, helper, btnValue);
         if(btnValue !='View Case Summary'){
             stateFlags.isTempVisible = false;
             component.set("v.stateFlags", stateFlags);

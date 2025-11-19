@@ -951,7 +951,7 @@
     // CASE SUMMARY AND DETAILS
     // ========================================================================
 
-    getCaseSummary: function(component, helper) {
+    getCaseSummary: function(component, helper, btnValue) {
         const cId = component.get("v.recordId");
         const referenceNo = component.get("v.multiAssetCaseReferenceNo");
         const action = component.get('c.getCaseSummary');
@@ -987,7 +987,19 @@
                 }
 
                 component.set('v.caseSummary', data);
-                helper.populateCheckboxField(component);
+
+                // Use setTimeout to ensure modal is rendered before accessing its elements
+                window.setTimeout(
+                    $A.getCallback(function() {
+                        helper.populateCheckboxField(component);
+
+                        // Enable work order button after modal is rendered
+                        const workOrderButton = component.find("workOrderButton");
+                        if (workOrderButton) {
+                            workOrderButton.set("v.disabled", false);
+                        }
+                    }), 100
+                );
             } else {
                 console.error('Error getting case summary:', response.getError());
                 // Close the modal on error
