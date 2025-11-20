@@ -344,7 +344,7 @@ public without sharing class WorkOrderCreation {
             wo.AccountId = currentCase.Client__c;
             wo.ContactId = currentCase.ContactId;
             wo.AssetId = currentCase.AssetId;
-            wo.LocationId = currentCase.Location__c;
+            wo.Customer_Location__c = currentCase.Location__c;
             
             // Service details
             wo.Service_Date__c = currentCase.Service_Date__c;
@@ -460,9 +460,9 @@ public without sharing class WorkOrderCreation {
             // Core fields from case
             wo.CaseId = currentCase.Id;
             wo.AccountId = currentCase.Client__c;
-            wo.ContactId = quoteOrder.Onsite_Contact__c != null ? 
+            wo.ContactId = quoteOrder.Onsite_Contact__c != null ?
                 currentCase.ContactId : currentCase.ContactId;
-            wo.LocationId = currentCase.Location__c;
+            wo.Customer_Location__c = currentCase.Location__c;
             
             // Service details from quote order
             wo.Service_Date__c = quoteOrder.Service_Date__c;
@@ -521,10 +521,10 @@ public without sharing class WorkOrderCreation {
                             WorkOrderLineItem woli = new WorkOrderLineItem();
                             woli.WorkOrderId = wo.Id;
                             woli.AssetId = caseAsset.AssetId__c;
-                            woli.Quantity = caseAsset.Quantity_Override__c != null ? 
+                            woli.Quantity__c = caseAsset.Quantity_Override__c != null ?
                                 caseAsset.Quantity_Override__c : 1;
                             woli.Description = caseAsset.AssetId__r.Name;
-                            
+
                             lineItemsToInsert.add(woli);
                         }
                     }
@@ -564,10 +564,10 @@ public without sharing class WorkOrderCreation {
                             WorkOrderLineItem woli = new WorkOrderLineItem();
                             woli.WorkOrderId = wo.Id;
                             woli.AssetId = caseAsset.AssetId__c;
-                            woli.Quantity = caseAsset.Quantity_Override__c != null ? 
+                            woli.Quantity__c = caseAsset.Quantity_Override__c != null ?
                                 caseAsset.Quantity_Override__c : 1;
                             woli.Description = caseAsset.AssetId__r.Name;
-                            
+
                             lineItemsToInsert.add(woli);
                         }
                     }
@@ -620,12 +620,12 @@ public without sharing class WorkOrderCreation {
                                     quoteLineMap.containsKey(qo.Service_Quote_Line__c)) {
                                     
                                     SBQQ__QuoteLine__c quoteLine = quoteLineMap.get(qo.Service_Quote_Line__c);
-                                    
+
                                     WorkOrderLineItem woli = new WorkOrderLineItem();
                                     woli.WorkOrderId = wo.Id;
                                     woli.Description = quoteLine.SBQQ__Product__r.Name;
-                                    woli.Quantity = quoteLine.SBQQ__Quantity__c;
-                                    
+                                    woli.Quantity__c = quoteLine.SBQQ__Quantity__c;
+
                                     lineItemsToInsert.add(woli);
                                 }
                                 break;
