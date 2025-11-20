@@ -214,8 +214,29 @@ public without sharing class CaseAssetValidator {
 */
     public static void createCaseAssetRelationships(Map<Id, Case> caseNewMap, Map<Id, Case> oldCaseMap, Map<Id, Asset> assetMap) {
         try {
+            // DEBUG: Log entry into Case Asset creation
+            System.debug('CaseAssetValidator.createCaseAssetRelationships - ENTRY');
+            System.debug('  caseNewMap size: ' + (caseNewMap != null ? caseNewMap.size() : 0));
+            System.debug('  assetMap size: ' + (assetMap != null ? assetMap.size() : 0));
+            if (assetMap != null && !assetMap.isEmpty()) {
+                for (Asset a : assetMap.values()) {
+                    System.debug('  Asset: ' + a.Id + ', ProductFamily: ' + a.ProductFamily +
+                        ', Product2.Family: ' + (a.Product2 != null ? a.Product2.Family : 'NULL') +
+                        ', ChildAssets: ' + (a.ChildAssets != null ? a.ChildAssets.size() : 0));
+                }
+            }
+
             // Build asset hierarchy map
             Map<String, Map<String, List<Asset>>> assetByServiceHeaderMap = buildAssetHierarchyMap(assetMap);
+
+            // DEBUG: Log hierarchy map results
+            System.debug('  assetByServiceHeaderMap size: ' + assetByServiceHeaderMap.size());
+            if (!assetByServiceHeaderMap.isEmpty()) {
+                for (String headerKey : assetByServiceHeaderMap.keySet()) {
+                    System.debug('  Service Header: ' + headerKey +
+                        ', Service Types: ' + assetByServiceHeaderMap.get(headerKey).keySet());
+                }
+            }
             
             // Check for cases that need asset link updates
             Map<String, String> oldCaseAssetIdMap = new Map<String, String>();
@@ -235,12 +256,40 @@ public without sharing class CaseAssetValidator {
             
             // Create new case assets
             List<SBS_Case_Asset__c> caseAssetList = buildCaseAssetList(caseNewMap, assetMap, assetByServiceHeaderMap);
-            
+
+            // DEBUG: Log Case Assets to be created
+            System.debug('  caseAssetList size: ' + caseAssetList.size());
+            if (!caseAssetList.isEmpty()) {
+                for (SBS_Case_Asset__c ca : caseAssetList) {
+                    System.debug('    Case Asset - CaseId: ' + ca.CaseId__c +
+                        ', AssetId: ' + ca.AssetId__c + ', Asset_Header: ' + ca.Asset_Header__c);
+                }
+            }
+
             if (!caseAssetList.isEmpty()) {
                 List<Database.SaveResult> srList = Database.insert(caseAssetList, false);
-                UTIL_LoggingService.logDmlResults(srList, null, caseAssetList, '', 
+                UTIL_LoggingService.logDmlResults(srList, null, caseAssetList, '',
                                                   UTIL_ErrorConstants.CASE_TRIGGER_CLASS, '', UTIL_ErrorConstants.CASE_TRIGGER, LoggingLevel.ERROR);
+
+                // DEBUG: Log insert results
+                Integer successCount = 0;
+                Integer failureCount = 0;
+                for (Database.SaveResult sr : srList) {
+                    if (sr.isSuccess()) {
+                        successCount++;
+                    } else {
+                        failureCount++;
+                        for (Database.Error err : sr.getErrors()) {
+                            System.debug('    Case Asset insert ERROR: ' + err.getStatusCode() + ' - ' + err.getMessage());
+                        }
+                    }
+                }
+                System.debug('  Case Assets inserted - Success: ' + successCount + ', Failures: ' + failureCount);
+            } else {
+                System.debug('  NO Case Assets to insert - caseAssetList is EMPTY');
             }
+
+            System.debug('CaseAssetValidator.createCaseAssetRelationships - EXIT');
         } catch (Exception e) {
             UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(), 
                                                     UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);

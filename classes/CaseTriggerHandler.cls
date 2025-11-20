@@ -286,8 +286,20 @@ public without sharing class CaseTriggerHandler {
             // Phase 4: Bulk data retrieval
             if (!assetIds.isEmpty()) {
                 casewithContainerMap = getAssetRecordValue(assetIds, true);
+
+                // DEBUG: Log asset retrieval for Case Asset creation
+                System.debug('CaseTriggerHandler.beforeUpdate - Assets queried: ' + assetIds.size());
+                System.debug('CaseTriggerHandler.beforeUpdate - Assets retrieved: ' +
+                    (casewithContainerMap != null ? casewithContainerMap.size() : 0));
+                if (casewithContainerMap != null && !casewithContainerMap.isEmpty()) {
+                    for (Asset a : casewithContainerMap.values()) {
+                        System.debug('CaseTriggerHandler.beforeUpdate - Asset: ' + a.Id +
+                            ', ProductFamily: ' + a.ProductFamily +
+                            ', ChildAssets count: ' + (a.ChildAssets != null ? a.ChildAssets.size() : 0));
+                    }
+                }
             }
-            
+
             if (!accountIds.isEmpty()) {
                 casewithLocationMap = getLocationRecordValue(accountIds);
             }
@@ -462,9 +474,23 @@ public without sharing class CaseTriggerHandler {
             // Phase 1: Categorize cases for different processing paths
             for (Case caseRecord : casesToProcess) {
                 Case oldCase = caseOldMap.get(caseRecord.Id);
-                
+
                 // Case asset management
-                if (shouldUpdateCaseAsset(caseRecord, oldCase, pickupRcdTypeId)) {
+                Boolean shouldUpdate = shouldUpdateCaseAsset(caseRecord, oldCase, pickupRcdTypeId);
+
+                // DEBUG: Log Case Asset creation eligibility
+                if (caseRecord.AssetId != oldCase.AssetId || caseRecord.Service_Date__c != oldCase.Service_Date__c) {
+                    System.debug('CaseTriggerHandler.afterUpdate - Case Asset check for Case: ' + caseRecord.Id);
+                    System.debug('  AssetId changed: ' + (caseRecord.AssetId != oldCase.AssetId) +
+                        ' (Old: ' + oldCase.AssetId + ', New: ' + caseRecord.AssetId + ')');
+                    System.debug('  Service_Date changed: ' + (caseRecord.Service_Date__c != oldCase.Service_Date__c) +
+                        ' (Old: ' + oldCase.Service_Date__c + ', New: ' + caseRecord.Service_Date__c + ')');
+                    System.debug('  Is_Multivendor: ' + caseRecord.Is_Multivendor__c);
+                    System.debug('  Source_System: ' + caseRecord.Source_System__c + ', Origin: ' + caseRecord.Origin);
+                    System.debug('  shouldUpdateCaseAsset result: ' + shouldUpdate);
+                }
+
+                if (shouldUpdate) {
                     caseAssetCreationMap.put(caseRecord.Id, caseRecord);
                 }
                 
@@ -520,14 +546,30 @@ public without sharing class CaseTriggerHandler {
             }
             
             // Phase 2: Execute DML operations through services
-            
+
+            // DEBUG: Log Case Asset creation attempt
+            System.debug('CaseTriggerHandler.afterUpdate - Case Asset creation check:');
+            System.debug('  bypassValidation: ' + RecurrsiveTriggerHandler.bypassValidation);
+            System.debug('  caseAssetCreationMap size: ' + caseAssetCreationMap.size());
+            System.debug('  casewithContainerMap size: ' + (casewithContainerMap != null ? casewithContainerMap.size() : 0));
+            if (!caseAssetCreationMap.isEmpty()) {
+                System.debug('  Cases eligible for Case Asset creation: ' + caseAssetCreationMap.keySet());
+            }
+
             // Manage case assets
             if (!RecurrsiveTriggerHandler.bypassValidation && !caseAssetCreationMap.isEmpty()) {
+                System.debug('CaseTriggerHandler.afterUpdate - Calling addCaseAssets for ' +
+                    caseAssetCreationMap.size() + ' cases');
+
                 CaseTriggerHelper.addCaseAssets(
-                    caseAssetCreationMap, 
-                    caseOldMap, 
+                    caseAssetCreationMap,
+                    caseOldMap,
                     casewithContainerMap
                 );
+
+                System.debug('CaseTriggerHandler.afterUpdate - addCaseAssets completed');
+            } else if (RecurrsiveTriggerHandler.bypassValidation && !caseAssetCreationMap.isEmpty()) {
+                System.debug('CaseTriggerHandler.afterUpdate - Case Asset creation BLOCKED by bypassValidation flag');
             }
             
             // Insert approval and status logs
