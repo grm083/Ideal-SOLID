@@ -657,14 +657,16 @@ public without sharing class CaseAssetValidator {
                 // First, check if this is a parent asset with ChildAssets relationship populated
                 if (asst.ChildAssets != null && !asst.ChildAssets.isEmpty()) {
                     // Process child assets from the relationship
+                    // NOTE: We do NOT filter by Is_Active__c here because date-based validation
+                    // happens later in isAssetValidForServiceDate(). This ensures Case Assets
+                    // are created for all ProductFamily types (Commercial, Rolloff, Services)
+                    // as long as they're valid for the Service_Date__c
                     for (Asset childAsset : asst.ChildAssets) {
-                        if (childAsset.Is_Active__c) {
-                            addAssetToHierarchyMap(assetByServiceHeaderMap, asst.Id, childAsset);
-                        }
+                        addAssetToHierarchyMap(assetByServiceHeaderMap, asst.Id, childAsset);
                     }
                 }
                 // Otherwise, check if this is a child asset with Service_Header_Id__c (flat map structure)
-                else if (asst.Service_Header_Id__c != null && asst.Is_Active__c) {
+                else if (asst.Service_Header_Id__c != null) {
                     addAssetToHierarchyMap(assetByServiceHeaderMap, asst.Service_Header_Id__c, asst);
                 }
             }
