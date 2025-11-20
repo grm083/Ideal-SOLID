@@ -521,10 +521,10 @@ public without sharing class WorkOrderCreation {
                             WorkOrderLineItem woli = new WorkOrderLineItem();
                             woli.WorkOrderId = wo.Id;
                             woli.AssetId = caseAsset.AssetId__c;
-                            woli.Quantity = caseAsset.Quantity_Override__c != null ? 
+                            woli.Quantity__c = caseAsset.Quantity_Override__c != null ?
                                 caseAsset.Quantity_Override__c : 1;
                             woli.Description = caseAsset.AssetId__r.Name;
-                            
+
                             lineItemsToInsert.add(woli);
                         }
                     }
@@ -564,10 +564,10 @@ public without sharing class WorkOrderCreation {
                             WorkOrderLineItem woli = new WorkOrderLineItem();
                             woli.WorkOrderId = wo.Id;
                             woli.AssetId = caseAsset.AssetId__c;
-                            woli.Quantity = caseAsset.Quantity_Override__c != null ? 
+                            woli.Quantity__c = caseAsset.Quantity_Override__c != null ?
                                 caseAsset.Quantity_Override__c : 1;
                             woli.Description = caseAsset.AssetId__r.Name;
-                            
+
                             lineItemsToInsert.add(woli);
                         }
                     }
@@ -620,12 +620,12 @@ public without sharing class WorkOrderCreation {
                                     quoteLineMap.containsKey(qo.Service_Quote_Line__c)) {
                                     
                                     SBQQ__QuoteLine__c quoteLine = quoteLineMap.get(qo.Service_Quote_Line__c);
-                                    
+
                                     WorkOrderLineItem woli = new WorkOrderLineItem();
                                     woli.WorkOrderId = wo.Id;
                                     woli.Description = quoteLine.SBQQ__Product__r.Name;
-                                    woli.Quantity = quoteLine.SBQQ__Quantity__c;
-                                    
+                                    woli.Quantity__c = quoteLine.SBQQ__Quantity__c;
+
                                     lineItemsToInsert.add(woli);
                                 }
                                 break;
