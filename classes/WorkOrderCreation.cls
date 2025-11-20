@@ -344,7 +344,7 @@ public without sharing class WorkOrderCreation {
             wo.AccountId = currentCase.Client__c;
             wo.ContactId = currentCase.ContactId;
             wo.AssetId = currentCase.AssetId;
-            wo.LocationId = currentCase.Location__c;
+            wo.Customer_Location__c = currentCase.Location__c;
             
             // Service details
             wo.Service_Date__c = currentCase.Service_Date__c;
@@ -460,9 +460,9 @@ public without sharing class WorkOrderCreation {
             // Core fields from case
             wo.CaseId = currentCase.Id;
             wo.AccountId = currentCase.Client__c;
-            wo.ContactId = quoteOrder.Onsite_Contact__c != null ? 
+            wo.ContactId = quoteOrder.Onsite_Contact__c != null ?
                 currentCase.ContactId : currentCase.ContactId;
-            wo.LocationId = currentCase.Location__c;
+            wo.Customer_Location__c = currentCase.Location__c;
             
             // Service details from quote order
             wo.Service_Date__c = quoteOrder.Service_Date__c;
