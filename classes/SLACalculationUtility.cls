@@ -12,25 +12,25 @@ public class SLACalculationUtility {
     
     @InvocableMethod(label='Set Service Date')
     public static void setServiceDate(List<Case> caseList) {
-        
+
         System.debug('kkk =>16 START setServiceDate, total cases = ' + caseList.size());
-        
+
         BusinessHours bh = [SELECT Id FROM BusinessHours WHERE IsDefault=true];
         System.debug('kkk =>18 Default Business Hours = ' + bh.Id);
-        
+
         Map<Case, Account> caseAccountMap = buildCaseLocationMap(caseList);
         System.debug('kkk =>22 caseAccountMap size = ' + caseAccountMap.size());
-        
+
         Map<Id, Case> caseMap = new Map<Id, Case>(caseList);
         Set<Id> caseIdSet = caseMap.keyset();
         System.debug('kkk =>26 caseIdSet = ' + caseIdSet);
-        
+
         List<Case> casesToUpdate = new List<Case>();
-        
+
         // STEP 1: Set entitlement
         System.debug('kkk =>31 Calling CaseEntitlement.populateEntitlement...');
         CaseEntitlement.populateEntitlement(caseList);
-        
+
         // STEP 2: collect entitlement ids
         Set<Id> entitlementIds = new Set<Id>();
         for (Case c : caseList) {
@@ -40,45 +40,45 @@ public class SLACalculationUtility {
             }
         }
         System.debug('kkk =>42 Total entitlementIds = ' + entitlementIds);
-        
+
         Map<Id, Entitlement> entitlementMap = new Map<Id, Entitlement>();
         if (!entitlementIds.isEmpty()) {
             entitlementMap = new Map<Id, Entitlement>([
                 SELECT Id, Name, Call_Time__c, Before_After__c, Override_Business_Hours__c,Service_Guarantee_Category__c
-                FROM Entitlement 
+                FROM Entitlement
                 WHERE Id IN :entitlementIds
             ]);
         }
         System.debug('kkk =>52 entitlementMap size = ' + entitlementMap.size());
-        
+
         // STEP 3: Calculate SLA
         for (Case c : caseAccountMap.keyset()) {
-            
+
             System.debug('kkk =>57 Processing Case ' + c.Id + ' SLA_Service_Date_Time__c = ' + c.SLA_Service_Date_Time__c);
-            
+
             if (c.SLA_Service_Date_Time__c == null) {
                 try {
-                    
+
                     // Check entitlement presence
                     if (c.EntitlementId == null) {
                         System.debug('kkk =>64 ERROR: EntitlementId is null for case ' + c.Id);
                         throw new NoEntitlementException('No entitlement assigned to case: ' + c.Id);
                     }
-                    
+
                     Entitlement e = entitlementMap.get(c.EntitlementId);
                     System.debug('kkk =>69 Retrieved Entitlement for Case ' + c.Id + ' = ' + e);
-                    
+
                     if (e == null) {
                         System.debug('kkk =>72 ERROR: Entitlement missing in ENT map for case ' + c.Id);
                         throw new NoEntitlementException('Entitlement not found: ' + c.EntitlementId);
                     }
-                    
+
                     System.debug('kkk =>76 Using Entitlement ' + e.Id + ' for Case ' + c.Id);
-                    
+
                     // Calculate SLA
                     Integer daysDelta = getDaysDelta(e);
                     System.debug('kkk =>80 Calculated daysDelta = ' + daysDelta + ' for Entitlement ' + e.Id);
-                    
+
                     Boolean beforeCutoff = true;
                     if (e.Call_Time__c == null && e.Before_After__c == null) {
                         Account acc = caseAccountMap.get(c);
@@ -86,33 +86,33 @@ public class SLACalculationUtility {
                         beforeCutoff = isBeforeCutoff(c, acc, 14);
                         System.debug('kkk =>87 beforeCutoff result = ' + beforeCutoff);
                     }
-                    
+
                     if (!beforeCutoff) {
                         daysDelta += 1;
                         System.debug('kkk =>92 Adjusted daysDelta due to after cutoff = ' + daysDelta);
                     }
-                    
+
                     DateTime SLADate = c.CreatedDate.addDays(daysDelta);
                     System.debug('kkk =>95 SLADate-Time = ' + SLADate);
-                    
+
                     c.Service_Date__c = SLADate.Date();
                     System.debug('kkk =>99 Initial Service_Date__c = ' + c.Service_Date__c);
-                    
+
                     while (!BusinessHours.isWithin(bh.Id, c.Service_Date__c) && !e.Override_Business_Hours__c) {
                         System.debug('kkk =>102 Not within business hours, bumping date by 1 for Case ' + c.Id);
                         c.Service_Date__c = c.Service_Date__c.addDays(1);
                     }
-                    
+
                     c.SLA_Service_Date__c = c.Service_Date__c;
                     c.SLA_Service_Date_Time__c = SLADate;
-                    
+
                     System.debug('kkk =>109 Final SLA_Service_Date__c = ' + c.SLA_Service_Date__c);
                     System.debug('kkk =>110 Final SLA_Service_Date_Time__c = ' + c.SLA_Service_Date_Time__c);
-                    
+
                 } catch (Exception ex) {
-                    
+
                     System.debug('kkk => EXCEPTION for Case ' + c.Id + ' => ' + ex.getMessage());
-                    
+
                     // Fallback logic
                     c.Service_Date__c = System.now().addDays(1).date();
                     c.SLA_Service_Date__c = c.Service_Date__c;
@@ -120,9 +120,9 @@ public class SLACalculationUtility {
                         c.SLA_Service_Date__c,
                         Time.newInstance(23, 59, 59, 59)
                     );
-                    
+
                     System.debug('kkk => FALLBACK applied: Service_Date__c = ' + c.Service_Date__c);
-                    
+
                     while (!BusinessHours.isWithin(bh.Id, c.Service_Date__c)) {
                         System.debug('kkk => Fallback: bump by +1 day due to business hours');
                         c.Service_Date__c = c.Service_Date__c.addDays(1);
@@ -133,14 +133,147 @@ public class SLACalculationUtility {
                         );
                     }
                 }
-                
+
                 casesToUpdate.add(c);
             }
         }
-        
+
         System.debug('kkk => Updating ' + casesToUpdate.size() + ' cases.');
         update casesToUpdate;
         System.debug('kkk => END setServiceDate');
+    }
+
+
+    /**
+     * @description Trigger-safe version of setServiceDate that calculates and sets SLA fields
+     * WITHOUT performing DML. This method is designed to be called from before triggers.
+     *
+     * IMPORTANT: This method modifies the Case records in-place but does NOT update them.
+     * The trigger framework will handle the DML operation.
+     *
+     * @param caseList List of cases to process
+     * @param caseLocationMap Pre-built map of Case to Account (location) relationships
+     */
+    public static void calculateAndSetSLAFields(List<Case> caseList, Map<Id, Account> caseLocationMap) {
+
+        System.debug('START calculateAndSetSLAFields (trigger-safe), total cases = ' + caseList.size());
+
+        // Query default business hours
+        BusinessHours bh = [SELECT Id FROM BusinessHours WHERE IsDefault=true];
+
+        // Build case-location map if not provided
+        Map<Case, Account> caseAccountMap = new Map<Case, Account>();
+        if (caseLocationMap != null && !caseLocationMap.isEmpty()) {
+            for (Case c : caseList) {
+                if (c.Location__c != null && caseLocationMap.containsKey(c.Location__c)) {
+                    caseAccountMap.put(c, caseLocationMap.get(c.Location__c));
+                }
+            }
+        }
+
+        // If no location map provided, build it
+        if (caseAccountMap.isEmpty()) {
+            caseAccountMap = buildCaseLocationMap(caseList);
+        }
+
+        // STEP 1: Set entitlement
+        CaseEntitlement.populateEntitlement(caseList);
+
+        // STEP 2: Collect entitlement IDs
+        Set<Id> entitlementIds = new Set<Id>();
+        for (Case c : caseList) {
+            if (c.EntitlementId != null) {
+                entitlementIds.add(c.EntitlementId);
+            }
+        }
+
+        // Query entitlements
+        Map<Id, Entitlement> entitlementMap = new Map<Id, Entitlement>();
+        if (!entitlementIds.isEmpty()) {
+            entitlementMap = new Map<Id, Entitlement>([
+                SELECT Id, Name, Call_Time__c, Before_After__c, Override_Business_Hours__c,
+                       Service_Guarantee_Category__c, Service_Guarantee_Category_Value__c
+                FROM Entitlement
+                WHERE Id IN :entitlementIds
+            ]);
+        }
+
+        // STEP 3: Calculate SLA for each case
+        for (Case c : caseAccountMap.keyset()) {
+
+            // Only process if SLA not already set
+            if (c.SLA_Service_Date_Time__c == null) {
+                try {
+
+                    // Check entitlement presence
+                    if (c.EntitlementId == null) {
+                        System.debug('WARNING: EntitlementId is null for case ' + c.Id + ', applying fallback');
+                        throw new NoEntitlementException('No entitlement assigned to case: ' + c.Id);
+                    }
+
+                    Entitlement e = entitlementMap.get(c.EntitlementId);
+
+                    if (e == null) {
+                        System.debug('WARNING: Entitlement not found for case ' + c.Id + ', applying fallback');
+                        throw new NoEntitlementException('Entitlement not found: ' + c.EntitlementId);
+                    }
+
+                    // Calculate SLA days delta
+                    Integer daysDelta = getDaysDelta(e);
+
+                    // Check if before/after cutoff time
+                    Boolean beforeCutoff = true;
+                    if (e.Call_Time__c == null && e.Before_After__c == null) {
+                        Account acc = caseAccountMap.get(c);
+                        beforeCutoff = isBeforeCutoff(c, acc, 14);
+                    }
+
+                    if (!beforeCutoff) {
+                        daysDelta += 1;
+                    }
+
+                    // Calculate SLA datetime
+                    DateTime SLADate = c.CreatedDate.addDays(daysDelta);
+                    c.Service_Date__c = SLADate.Date();
+
+                    // Adjust for business hours
+                    while (!BusinessHours.isWithin(bh.Id, c.Service_Date__c) && !e.Override_Business_Hours__c) {
+                        c.Service_Date__c = c.Service_Date__c.addDays(1);
+                    }
+
+                    // Set final SLA fields
+                    c.SLA_Service_Date__c = c.Service_Date__c;
+                    c.SLA_Service_Date_Time__c = SLADate;
+
+                    System.debug('Set SLA for Case ' + c.Id + ': Service_Date__c=' + c.Service_Date__c +
+                                ', SLA_Service_Date_Time__c=' + c.SLA_Service_Date_Time__c);
+
+                } catch (Exception ex) {
+
+                    System.debug('EXCEPTION for Case ' + c.Id + ' => ' + ex.getMessage() + ', applying fallback SLA');
+
+                    // Fallback logic: Set to next business day at 11:59 PM
+                    c.Service_Date__c = System.now().addDays(1).date();
+                    c.SLA_Service_Date__c = c.Service_Date__c;
+                    c.SLA_Service_Date_Time__c = DateTime.newInstance(
+                        c.SLA_Service_Date__c,
+                        Time.newInstance(23, 59, 59, 59)
+                    );
+
+                    // Adjust for business hours
+                    while (!BusinessHours.isWithin(bh.Id, c.Service_Date__c)) {
+                        c.Service_Date__c = c.Service_Date__c.addDays(1);
+                        c.SLA_Service_Date__c = c.Service_Date__c;
+                        c.SLA_Service_Date_Time__c = DateTime.newInstance(
+                            c.SLA_Service_Date__c,
+                            Time.newInstance(23, 59, 59, 59)
+                        );
+                    }
+                }
+            }
+        }
+
+        System.debug('END calculateAndSetSLAFields');
     }
     
     

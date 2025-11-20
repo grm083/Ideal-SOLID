@@ -143,10 +143,34 @@ public without sharing class CaseTriggerHandler {
                     processOfficeTraxSLA(casesNeedingSLA, casewithContainerMap, casewithLocationMap);
                 }
             }
-            
+
+            // Phase 4a: Calculate SLA for new cases that need it
+            // This uses the new SLACalculationUtility.calculateAndSetSLAFields() method
+            List<Case> casesNeedingSLACalculation = new List<Case>();
+            for (Case caseRecord : casesToProcess) {
+                // Include cases where SLA is not set and basic requirements are met
+                if (caseRecord.SLA_Service_Date_Time__c == null &&
+                    caseRecord.RecordTypeId != integrationRcdTypeId &&
+                    String.isNotBlank(caseRecord.Location__c) &&
+                    String.isNotBlank(caseRecord.Case_Sub_Type__c) &&
+                    String.isNotBlank(caseRecord.AssetId)) {
+
+                    // Exclude standard case types (they have their own SLA calculation)
+                    if (caseRecord.Case_Type__c != 'Activate' &&
+                        caseRecord.Case_Type__c != 'Modify' &&
+                        caseRecord.Case_Type__c != 'Deactivate') {
+                        casesNeedingSLACalculation.add(caseRecord);
+                    }
+                }
+            }
+
+            if (!casesNeedingSLACalculation.isEmpty() && !RecurrsiveTriggerHandler.bypassValidation) {
+                SLACalculationUtility.calculateAndSetSLAFields(casesNeedingSLACalculation, casewithLocationMap);
+            }
+
             // Process standard case types (Activate/Modify/Deactivate)
             processStandardCaseTypes(casesToProcess, casesNeedingSLA);
-            
+
             // Phase 5: Update contact activity dates
             if (!contactIds.isEmpty()) {
                 CaseTriggerHelper.lastContactActivityDate(contactIds);
@@ -283,10 +307,33 @@ public without sharing class CaseTriggerHandler {
                     false
                 );
             }
-            
+
+            // Phase 5a: Calculate SLA for cases where SLA was reset or is missing
+            // This uses the new SLACalculationUtility.calculateAndSetSLAFields() method
+            List<Case> casesNeedingSLACalculation = new List<Case>();
+            for (Case caseRecord : casesToProcess) {
+                // Include cases where SLA was nullified by handleSLAResets() or never set
+                if (caseRecord.SLA_Service_Date_Time__c == null &&
+                    caseRecord.RecordTypeId != integrationRcdTypeId &&
+                    String.isNotBlank(caseRecord.Location__c) &&
+                    String.isNotBlank(caseRecord.Case_Sub_Type__c)) {
+
+                    // Exclude standard case types (they have their own SLA calculation)
+                    if (caseRecord.Case_Type__c != 'Activate' &&
+                        caseRecord.Case_Type__c != 'Modify' &&
+                        caseRecord.Case_Type__c != 'Deactivate') {
+                        casesNeedingSLACalculation.add(caseRecord);
+                    }
+                }
+            }
+
+            if (!casesNeedingSLACalculation.isEmpty()) {
+                SLACalculationUtility.calculateAndSetSLAFields(casesNeedingSLACalculation, casewithLocationMap);
+            }
+
             // Process standard case types
             processStandardCaseTypesUpdate(casesToProcess, caseOldMap, casesNeedingSLA);
-            
+
             // Phase 6: Apply final updates
             isInsertForLocalAgentId = false;
             CaseTriggerHelper.UpdateLocalAgentId(caseNewMap, caseOldMap, isInsertForLocalAgentId);
@@ -768,14 +815,16 @@ public without sharing class CaseTriggerHandler {
     }
     
     /**
-     * @description Handle SLA and service date resets
+     * @description Handle SLA and service date resets based on meaningful field changes
+     * Uses SLACalculationUtility.requiresSLAandServiceDateReset() to determine if reset is needed
+     *
      * @param caseRecord Case being updated
      * @param oldCase Previous case state
      * @param newServiceRtId New Service record type ID
      * @param pickupRtId Pickup record type ID
      * @param integrationRtId Integration record type ID
      */
-    private static void handleSLAResets(Case caseRecord, Case oldCase, 
+    private static void handleSLAResets(Case caseRecord, Case oldCase,
                                        Id newServiceRtId, Id pickupRtId, Id integrationRtId) {
         // Reset SLA on record type change
         if (!caseRecord.RecordTypeId.equals(oldCase.RecordTypeId)) {
@@ -783,29 +832,21 @@ public without sharing class CaseTriggerHandler {
             caseRecord.Service_Date__c = null;
             return;
         }
-        
-        // Reset SLA on specific field changes (SDT-32829)
-        if (CaseTriggerHelper.resetSLAandServiceDate(caseRecord, oldCase)) {
+
+        // Use SLACalculationUtility.requiresSLAandServiceDateReset() to check for critical field changes
+        // This method checks: Case_Type__c, Case_Sub_Type__c, Location__c, AssetId, Reason
+        if (SLACalculationUtility.requiresSLAandServiceDateReset(caseRecord, oldCase)) {
             caseRecord.SLA_Service_Date_Time__c = null;
             caseRecord.Service_Date__c = null;
             return;
         }
-        
-        // Reset SLA on case type/subtype/reason changes
-        if (caseRecord.RecordTypeId != newServiceRtId && 
-            caseRecord.RecordTypeId != pickupRtId &&
-            caseRecord.RecordTypeId != integrationRtId && 
-            caseRecord.RecordTypeId.equals(oldCase.RecordTypeId)) {
-            
-            if ((!String.isBlank(caseRecord.Case_Type__c) && 
-                 !caseRecord.Case_Type__c.equals(oldCase.Case_Type__c)) ||
-                (!String.isBlank(caseRecord.Case_Sub_Type__c) && 
-                 !caseRecord.Case_Sub_Type__c.equals(oldCase.Case_Sub_Type__c)) ||
-                (!String.isBlank(caseRecord.Case_Reason__c) && 
-                 !caseRecord.Case_Reason__c.equals(oldCase.Case_Reason__c))) {
-                caseRecord.SLA_Service_Date_Time__c = null;
-                caseRecord.Service_Date__c = null;
-            }
+
+        // Legacy validation for asset-related changes (SDT-32829)
+        // This provides additional validation beyond the standard SLA reset conditions
+        if (CaseTriggerHelper.resetSLAandServiceDate(caseRecord, oldCase)) {
+            caseRecord.SLA_Service_Date_Time__c = null;
+            caseRecord.Service_Date__c = null;
+            return;
         }
     }
     
