@@ -4,11 +4,17 @@
         <!-- Apex Classes -->
         <members>AccountContextGetter</members>
         <members>AccountContextGetterTest</members>
+        <members>ActionMessagesPanelController</members>
+        <members>ActionMessagesPanelControllerTest</members>
         <members>AssetContextGetter</members>
         <members>AssetContextGetterTest</members>
         <members>AssetHeadersForCaseController</members>
         <members>AssetHeadersForCaseControllerTest</members>
+        <members>AssetSelectorController</members>
         <members>BusinessRuleUtility</members>
+        <members>BusinessRuleValidatorController</members>
+        <members>BusinessRuleValidatorControllerTest</members>
+        <members>CaseApprovalService</members>
         <members>CaseAssetValidator</members>
         <members>CaseAssetValidatorTest</members>
         <members>CaseAttributeService</members>
@@ -17,22 +23,32 @@
         <members>CaseBusinessRuleServiceTest</members>
         <members>CaseContextGetter</members>
         <members>CaseContextGetterTest</members>
+        <members>CaseContextService</members>
         <members>CaseController</members>
         <members>CaseControllerTest</members>
+        <members>CaseCPQService</members>
         <members>CaseDMLService</members>
         <members>CaseDMLServiceTest</members>
         <members>CaseDataGovernorService</members>
         <members>CaseDataGovernorServiceTest</members>
         <members>CaseDetailHelper</members>
+        <members>CaseHighlightStripController</members>
+        <members>CaseHighlightStripControllerTest</members>
+        <members>CaseTaskService</members>
         <members>CaseTriggerHandler</members>
         <members>CaseTriggerHandlerTest</members>
         <members>CaseTriggerHelper</members>
+        <members>CaseTypeConfiguratorController</members>
         <members>CaseUIService</members>
         <members>CaseUIServiceTest</members>
+        <members>CaseWizardService</members>
+        <members>CaseWorkOrderService</members>
+        <members>changeRecordTypeController</members>
         <members>ContactContextGetter</members>
         <members>ContactContextGetterTest</members>
         <members>ContactSearchandCreate</members>
         <members>ContactSearchandCreateTest</members>
+        <members>ContactSelectorController</members>
         <members>CreatePendingInformationTask</members>
         <members>CreatePendingInformationTaskTest</members>
         <members>CustomCaseHighlightPanelCntrl</members>
@@ -40,18 +56,53 @@
         <members>DuplicateCheckOnCaseController</members>
         <members>DuplicateCheckOnCaseControllerTest</members>
         <members>Entitlement_Utility</members>
+        <members>Entitlement_UtilityTest</members>
+        <members>EntitySelectorController</members>
         <members>GetCaseInformation</members>
         <members>GetCaseInformationTest</members>
         <members>LocationContainerController</members>
         <members>LocationContainerControllerTest</members>
         <members>QuoteContextGetter</members>
         <members>QuoteContextGetterTest</members>
-        <members>SLACalculationUtility</members>
+        <members>QuoteProcurementBusinessRuleService</members>
+        <members>QuoteProcurementBusinessRuleServiceTest</members>
+        <members>QuoteProcurementContextGetter</members>
+        <members>QuoteProcurementContextGetterTest</members>
+        <members>QuoteProcurementController</members>
+        <members>QuoteProcurementDMLService</members>
+        <members>QuoteProcurementDMLServiceTest</members>
+        <members>QuoteProcurementFavoritesService</members>
+        <members>QuoteProcurementFavoritesServiceTest</members>
+        <members>QuoteProcurementIntegrationService</members>
+        <members>QuoteProcurementIntegrationServiceTest</members>
+        <members>QuoteProcurementMASService</members>
+        <members>QuoteProcurementMASServiceTest</members>
+        <members>QuoteProcurementOrderService</members>
+        <members>QuoteProcurementOrderServiceTest</members>
+        <members>QuoteProcurementPositionService</members>
+        <members>QuoteProcurementPositionServiceTest</members>
+        <members>QuoteProcurementProductOptionService</members>
+        <members>QuoteProcurementProductOptionServiceTest</members>
+        <members>QuoteProcurementProductService</members>
+        <members>QuoteProcurementProductServiceTest</members>
+        <members>QuoteProcurementQuoteLineService</members>
+        <members>QuoteProcurementQuoteLineServiceTest</members>
+        <members>QuoteProcurementSearchService</members>
+        <members>QuoteProcurementSearchServiceTest</members>
+        <members>QuoteProcurementUIService</members>
+        <members>QuoteProcurementUIServiceTest</members>
+        <members>QuoteProcurementWrapperService</members>
+        <members>QuoteProcurementWrapperServiceTest</members>
+        <members>ServiceDateController</members>
+        <members>ServiceDateControllerTest</members>
         <members>ServiceDateContainerController</members>
         <members>ServiceDateContainerControllerTest</members>
+        <members>SLACalculationUtility</members>
+        <members>SLACalculationUtilityTest</members>
         <members>TaskContextGetter</members>
         <members>TaskContextGetterTest</members>
         <members>TaskPopUpMessageController</members>
+        <members>TestDataFactory</members>
         <members>TestDataFactoryRefactored</members>
         <members>UI_customLookUpController</members>
         <members>UniversalQueryUtility</members>
@@ -60,47 +111,92 @@
         <members>WorkOrderContextGetterTest</members>
         <members>WorkOrderCreation</members>
         <members>WorkOrderCreationTest</members>
-        <members>changeRecordTypeController</members>
+        <members>WorkOrderPreviewController</members>
+        <members>WorkOrderPreviewControllerTest</members>
         <name>ApexClass</name>
     </types>
     <types>
         <!-- Lightning Web Components -->
+        <members>actionMessagesPanel</members>
         <members>addFavoriteContainersLWC</members>
+        <members>assetSelector</members>
+        <members>businessRuleValidator</members>
+        <members>caseDataGovernor</members>
         <members>caseDataGovernorLWC</members>
+        <members>caseHighlightStrip</members>
         <members>caseLocationDetailsLWC</members>
+        <members>caseManagerContainer</members>
+        <members>caseNavigation</members>
         <members>caseNavigationLWC</members>
         <members>caseQuoteModalLWC</members>
+        <members>caseSummaryCard</members>
+        <members>caseTypeConfigurator</members>
+        <members>caseWizardStepper</members>
+        <members>changeRecordType</members>
         <members>changeRecordTypeLWC</members>
+        <members>clientContainer</members>
         <members>clientContainerLWC</members>
+        <members>clientSearch</members>
         <members>clientSearchLWC</members>
+        <members>closeCasePop</members>
         <members>closeCasePopLWC</members>
+        <members>contactSelector</members>
+        <members>createNewAccountTitle</members>
         <members>createNewAccountTitleLWC</members>
+        <members>createPendingInformationTask</members>
         <members>createPendingInformationTaskLWC</members>
         <members>customCalendarLWC</members>
+        <members>customCaseHighlightPanel</members>
         <members>customCaseHighlightPanelLWC</members>
+        <members>customerInfoPanel</members>
+        <members>entitySelector</members>
         <members>existingQuoteModalLWC</members>
+        <members>fillCaseSubType</members>
         <members>fillCaseSubTypeLWC</members>
+        <members>hoverOverCards</members>
         <members>hoverOverCardsLWC</members>
+        <members>inlineDetailCard</members>
         <members>locationAssetSearchLWC</members>
+        <members>locationContainer</members>
         <members>locationContainerLWC</members>
         <members>ntebRulesModalLWC</members>
+        <members>progressIndicator</members>
+        <members>recordSearchBase</members>
+        <members>searchExistingContact</members>
         <members>searchExistingContactLWC</members>
+        <members>serviceDateContainer</members>
         <members>serviceDateContainerLWC</members>
+        <members>serviceDateSelector</members>
+        <members>setCaseCustomerInfo</members>
         <members>setCaseCustomerInfoLWC</members>
         <members>setCaseSLADateLWC</members>
+        <members>showAssetHeadersOnCase</members>
         <members>showAssetHeadersOnCaseLWC</members>
+        <members>showCaseMessages</members>
         <members>showCaseMessagesLWC</members>
+        <members>uiCustomLookup</members>
         <members>uiCustomLookupLWC</members>
+        <members>uiCustomLookupResult</members>
         <members>uiCustomLookupResultLWC</members>
+        <members>validationMessageBar</members>
+        <members>vendorContainer</members>
         <members>vendorContainerLWC</members>
         <members>vendorSearchLWC</members>
         <members>wmCapacityLWC</members>
+        <members>workOrderPreview</members>
         <name>LightningComponentBundle</name>
     </types>
     <types>
         <!-- Lightning Message Channels -->
         <members>CaseDataChannel</members>
+        <members>CaseUpdated__c</members>
         <name>LightningMessageChannel</name>
+    </types>
+    <types>
+        <!-- Aura Components -->
+        <members>CustomCaseHighlightPanel</members>
+        <members>ShowCaseMessages</members>
+        <name>AuraDefinitionBundle</name>
     </types>
     <version>62.0</version>
 </Package>
