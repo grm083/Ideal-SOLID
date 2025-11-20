@@ -1115,37 +1115,41 @@ public without sharing class CaseTriggerHandler {
      */
     public static Map<Id, Asset> getAssetRecordValue(Set<Id> assetIdSet, Boolean serviceHeaderCheck) {
         Map<Id, Asset> assetMap = new Map<Id, Asset>();
-        
+
         try {
             if (assetIdSet == null || assetIdSet.isEmpty()) {
                 return assetMap;
             }
-            
-            String queryString = System.label.AssetQuery;
-            
-            if (!serviceHeaderCheck) {
-                queryString += Constant_Util.BLANKSPACE + Constant_Util.ASSETWHEREQUERY;
-            } else {
-                queryString += Constant_Util.BLANKSPACE + Constant_Util.ASSETWHEREQUERY_SERVICEHEADER;
-            }
-            
-            queryString += Constant_Util.BLANKSPACE + Constant_Util.LIMITVAL;
-            
-            List<Asset> assetList = Database.query(queryString);
-            
+
+            // Query assets with ChildAssets relationship for Case Asset creation (SDT-8435)
+            // This ensures CaseAssetValidator has the required hierarchy data
+            List<Asset> assetList = [
+                SELECT Id, Name, Occurrence_Type__c, ProductFamily,
+                    Product2.Equipment_Type__c, Product2.Family, Product2Id, Product2.Name,
+                    Material_Type__c, Is_Active__c, Start_Date__c, End_Date__c,
+                    Service_Header_Id__c,
+                    (SELECT Id, Name, ParentId, Service_Type__c, Start_Date__c, End_Date__c,
+                        ProductFamily, Occurrence_Type__c, Material_Type__c, Has_Extra_Pickup__c,
+                        Is_Active__c, Is_Core_Service__c, Service_Header_Id__c
+                        FROM ChildAssets)
+                FROM Asset
+                WHERE Id IN :assetIdSet
+                LIMIT 49999
+            ];
+
             if (assetList != null && !assetList.isEmpty()) {
                 assetMap = new Map<Id, Asset>(assetList);
             }
-            
+
         } catch (Exception ex) {
             UTIL_LoggingService.logHandledException(
-                ex, 
-                UserInfo.getOrganizationId(), 
-                UTIL_ErrorConstants.ERROR_APPLICATION, 
+                ex,
+                UserInfo.getOrganizationId(),
+                UTIL_ErrorConstants.ERROR_APPLICATION,
                 LoggingLevel.ERROR
             );
         }
-        
+
         return assetMap;
     }
     
