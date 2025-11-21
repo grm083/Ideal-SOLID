@@ -796,30 +796,36 @@ public class QuoteProcurementController {
     @AuraEnabled
     public static List<ProductsWrapper> getDuplicates(String CaseId) {
         List<ProductsWrapper> caseProducts = new List<ProductsWrapper>();
-        
+
         List<SBQQ__Quote__c> caseQuotes = new List<SBQQ__Quote__c>();
         Case c = [SELECT Id, Location__c, Service_Date__c
                  FROM Case
                  WHERE Id =: CaseId];
-        
-        caseQuotes = [SELECT Id 
+
+        // Check if Service_Date__c is null to prevent null pointer exception
+        if (c.Service_Date__c == null) {
+            system.debug('Service_Date__c is null for Case: ' + CaseId + '. Cannot check for quote duplicates.');
+            return caseProducts; // Return empty list
+        }
+
+        caseQuotes = [SELECT Id
                       FROM SBQQ__Quote__c
                      WHERE SBQQ__Account__c =: c.Location__c AND
                         SBQQ__StartDate__c >=: c.Service_Date__c - 3 AND
                         SBQQ__StartDate__c <=: c.Service_Date__c + 3];
-        
+
         for (SBQQ__Quote__c q : caseQuotes) {
-            
+
             ProductsWrapper pw = new ProductsWrapper();
             pw = buildQuoteWrapper(q.Id);
             caseProducts.add(pw);
-            
+
         }
-        
+
         system.debug(caseProducts);
-        
+
         return caseProducts;
-        
+
     }
 
     @AuraEnabled
