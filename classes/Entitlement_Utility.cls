@@ -15,21 +15,25 @@ public class Entitlement_Utility {
 
     // Constants invoked throughout the classes to reduce variability or redundancy
     static final String QUERY_INTRO = 'Select Id';
-    static final String IND_STANDARD = 'Industry Standard';
+    static final String IND_STANDARD = 'Industry_SLA';
     static final String CUST_ENTITLEMENT = 'Customer Specific Entitlement';
 
     /**
+     * @deprecated Static variables violate SOLID principles and create hidden coupling.
      * Use the parameter-based methods instead (getPrioritizedEntitlements, getRelevantEntitlements).
      * These static variables will be removed in a future release.
      * Migration: Extract accountIds and minimumServiceDate from your records and pass them as parameters.
      */
+    
     public static Set<Id> accountIdSet = new Set<Id>{ null };
 
     /**
+     * @deprecated Static variables violate SOLID principles and create hidden coupling.
      * Use the parameter-based methods instead (getPrioritizedEntitlements, getRelevantEntitlements).
      * These static variables will be removed in a future release.
      * Migration: Extract accountIds and minimumServiceDate from your records and pass them as parameters.
      */
+    
     public static Date minimumServiceDate;
 
     /**
@@ -88,6 +92,8 @@ public class Entitlement_Utility {
         List<priorityFields> priorityFieldList = new List<priorityFields>();
         List<Entitlement_Field_Mapping__mdt> fieldMapping = getFieldMapping();
         //System.debug('fieldMapping:: '+fieldMapping);
+        //System.debug('fieldMapping size:: '+fieldMapping.size());
+        
         Set<Id> caseIdSet = new Set<Id>();
         Set<Id> quoteIdSet = new Set<Id>();
 
@@ -103,7 +109,7 @@ public class Entitlement_Utility {
 		//System.debug('quoteIdSet:: '+quoteIdSet);
 
         // REFACTORED: Collect accountIds and minimumServiceDate from records
-        Set<Id> collectedAccountIds = new Set<Id>{ null };  // Include null for industry standard entitlements
+        Set<Id> collectedAccountIds = new Set<Id>();
         Date minServiceDate = Date.today();
 
         if (!caseIdSet.isEmpty()) {
@@ -113,12 +119,14 @@ public class Entitlement_Utility {
             if (caseResult.minimumServiceDate < minServiceDate) {
                 minServiceDate = caseResult.minimumServiceDate;
             }
-            System.debug('63.priorityFieldsMap'+priorityFieldsMap);
+            //System.debug('63.priorityFieldsMap'+priorityFieldsMap);
         }
         if (!quoteIdSet.isEmpty()) {
             QuoteDetailsResult quoteResult = getQuoteDetailsWithMetadata(quoteIdSet, priorityFieldsMap, fieldMapping);
             priorityFieldsMap.putAll(quoteResult.priorityFieldsMap);
             collectedAccountIds.addAll(quoteResult.accountIds);
+            //System.debug('priorityFieldsMap: '+priorityFieldsMap);
+            //System.debug('collectedAccountIds: '+collectedAccountIds);
         }
         //System.debug('priorityFieldsMap:: '+priorityFieldsMap);
 
@@ -130,7 +138,7 @@ public class Entitlement_Utility {
         for (List<priorityFields> fieldList : priorityFieldsMap.values()) {
             priorityFieldList.addAll(fieldList);
         }
-        //System.debug('75. priorityFieldList:'+priorityFieldList);
+        //System.debug('priorityFieldList:: '+priorityFieldList);
         return new CommonEntitlementData(priorityFieldList, allEntitlementsMap);
     }
 
@@ -158,10 +166,13 @@ public class Entitlement_Utility {
      * This fulfills the "GOAL STATEMENT" from the original class.
      */
     public static Map<String, Entitlement> getPrioritizedEntitlements(Set<Id> targetRecords) {
-        //SYstem.debug('In getPrioritizedEntitlements()');
+        //System.debug('In getPrioritizedEntitlements()');
+        //System.debug('targetRecords:: '+targetRecords);
         // 1. Get common data
         CommonEntitlementData commonData = getCommonEntitlementData(targetRecords);
-		//System.debug('commonData::: '+commonData);
+		//System.debug('priorityFieldList::: '+commonData.priorityFieldList);
+        //System.debug('allEntitlementsMap::: '+commonData.allEntitlementsMap);
+        
         // 2. Call the prioritization logic
         Map<String, Entitlement> prioritizedMap = prioritizeEntitlements(
             commonData.priorityFieldList,
@@ -332,6 +343,10 @@ public class Entitlement_Utility {
         Map<String, List<priorityFields>> quotePriorityFields,
         List<Entitlement_Field_Mapping__mdt> fieldMapping
     ) {
+        
+        //System.debug('In getQuoteDetailsWithMetadata::::');
+        //System.debug('quotePriorityFields::::'+quotePriorityFields);
+        //System.debug('fieldMapping::::'+fieldMapping);
         QuoteDetailsResult result = new QuoteDetailsResult();
         QuoteProcurementController.ProductsWrapper productDesignations = new QuoteProcurementController.ProductsWrapper();
 
@@ -340,6 +355,7 @@ public class Entitlement_Utility {
             List<priorityFields> quoteFields = new List<priorityFields>();
 
             for (QuoteProcurementController.HeaderWrapper hw : productDesignations.configuredProducts) {
+                //System.debug('hw: '+hw);
                 for (Entitlement_Field_Mapping__mdt field : fieldMapping) {
                     priorityFields priorityInstance = new priorityFields();
                     priorityInstance.priorityLevel = field.Priority_Value__c;
@@ -347,6 +363,7 @@ public class Entitlement_Utility {
                     priorityInstance.commonName = field.MasterLabel;
                     priorityInstance.entitlementField = field.Entitlement__c;
                     priorityInstance.objectValue = (String) hw.getField(field.Quote__c);
+                    //System.debug('priorityInstance: '+priorityInstance);
                     quoteFields.add(priorityInstance);
                 }
                 // REFACTORED: Collect account IDs into result instead of static variable
@@ -356,7 +373,7 @@ public class Entitlement_Utility {
             }
             result.priorityFieldsMap.put(quoteId, quoteFields);
         }
-
+		//System.debug('result: '+result);
         return result;
     }
 
@@ -370,6 +387,12 @@ public class Entitlement_Utility {
         Set<Id> paramAccountIdSet,
         Date paramMinimumServiceDate
     ) {
+        
+        //System.debug('In getEntitlementsWithParams(): ');
+        //System.debug('priorityFields: '+priorityFields);
+        //System.debug('mappedFields: '+mappedFields);
+        //System.debug('paramMinimumServiceDate: '+paramMinimumServiceDate);
+        
         Map<String, List<Entitlement>> entitlementMap = new Map<String, List<Entitlement>>();
         List<Entitlement> entitlementList = new List<Entitlement>();
 
@@ -389,18 +412,24 @@ public class Entitlement_Utility {
         }
 
         // REFACTORED: Use parameters instead of static variables
-        queryString += ' FROM Entitlement WHERE AccountId IN :paramAccountIdSet AND StartDate <= :paramMinimumServiceDate AND Status__c = :approved AND Status !=:STATUS_EXPIRED LIMIT 49999 ';
+        queryString += ' FROM Entitlement WHERE AccountId IN :paramAccountIdSet AND StartDate <= :paramMinimumServiceDate'; 
+        queryString += ' AND Status__c = :approved AND Status !=:STATUS_EXPIRED LIMIT 49999 ';
+        //System.debug('queryString:: '+queryString);
         entitlementList = Database.Query(queryString);
-
+        
+        //System.debug('entitlementList:: '+entitlementList);
+        //System.debug('entitlementList size:: '+entitlementList.size());
         entitlementMap = filterEntitlementsByTime(priorityFields, entitlementList);
 
         return entitlementMap;
     }
 
     /**
+     * @deprecated This method uses static variables which violate SOLID principles.
      * Use getCaseDetailsWithMetadata instead, or use the public getPrioritizedEntitlements method.
      * This method is maintained for backward compatibility only and will be removed in a future release.
      */
+    
     public static Map<String, List<priorityFields>> getCaseDetails(Set<Id> caseIdSet,Map<String, List<priorityFields>> casePriorityFields,List<Entitlement_Field_Mapping__mdt> fieldMapping) {
 
         //As part of this acivity we want to construct a very specific query to return a case record with appropriate lookups
@@ -510,9 +539,11 @@ public class Entitlement_Utility {
     }
 
     /**
+     * @deprecated This method uses static variables which violate SOLID principles.
      * Use getQuoteDetailsWithMetadata instead, or use the public getPrioritizedEntitlements method.
      * This method is maintained for backward compatibility only and will be removed in a future release.
      */
+    
     public static Map<String, List<priorityFields>> getQuoteDetails(
         Set<Id> quoteIdSet,Map<String, List<priorityFields>> quotePriorityFields,List<Entitlement_Field_Mapping__mdt> fieldMapping) {
 
@@ -541,9 +572,11 @@ public class Entitlement_Utility {
     }
 
     /**
+     * @deprecated This method uses static variables (accountIdSet, minimumServiceDate) which violate SOLID principles.
      * Use getEntitlementsWithParams instead, or use the public getPrioritizedEntitlements method.
      * This method is maintained for backward compatibility only and will be removed in a future release.
      */
+    
     public static Map<String, List<Entitlement>> getEntitlements(Map<String, List<priorityFields>> priorityFields, List<Entitlement_Field_Mapping__mdt> mappedFields) {
 
         //System.debug('In getEntitlements():: ');
@@ -594,8 +627,8 @@ public class Entitlement_Utility {
  public static Map<String, List<Entitlement>> filterEntitlementsByTime(Map<String, List<priorityFields>> priorityFields, 
     List<Entitlement> entitlementList) {
         //System.debug('In filterEntitlementsByTime::: ');
-        //System.debug('priorityFields:: '+priorityFields);
-        //System.debug('entitlementList:: '+entitlementList);
+        /*System.debug('priorityFields:: '+priorityFields);
+        System.debug('entitlementList:: '+entitlementList.size());*/
         
     Map<String, List<Entitlement>> entitlementMap = new Map<String, List<Entitlement>>();
     
@@ -604,26 +637,33 @@ public class Entitlement_Utility {
         List<Entitlement> relatedEntitlementList = new List<Entitlement>();
         
         for (priorityFields p : priorityFields.get(key)) {
+            //System.debug('p.commonName:: '+p.commonName);
             if (p.commonName != 'Account Name') {
                 continue;
             }
             
             for (Entitlement e : entitlementList) {
+                
+                //System.debug('e.Id:: '+e.Id);
                 // Skip if already added
                 if (addedEntitlementIds.contains(e.Id)) {
-                    //System.debug('SKIPPED: Already added - ' + e.Call_On__c);
+                    //System.debug('SKIPPED: Id Already added - ');
                     continue;
                 }
                 
                 DateTime currentDateTime = System.now();
                 String dayOfWeek = currentDateTime.format('E');
+                //System.debug('currentDateTime:: '+currentDateTime);
+                //System.debug('dayOfWeek:: '+dayOfWeek);
                 
+                //System.debug('e.Call_On__c:: '+e.Call_On__c);
                 // Check day of week
                 if (e.Call_On__c != null && !e.Call_On__c.contains(dayOfWeek)) {
                     //System.debug('SKIPPED: Day does not match - ' + e.Call_On__c);
                     continue;
                 }
                 
+                //System.debug('e.Before_After__c:: '+e.Before_After__c);
                 // Check required fields
                 if (e.Call_Time__c == null || e.Before_After__c == null) {
                     //System.debug('SKIPPED: Missing required fields');
@@ -655,12 +695,13 @@ public class Entitlement_Utility {
                    // System.debug('ADDED ENTITLEMENT: ' + e.Call_On__c + ' (Total now: ' + relatedEntitlementList.size() + ')');
                 }
                 /*System.debug('=== Processing Entitlement ===');
-                    System.debug('Entitlement AccountId: ' + e.AccountId);
-                    System.debug('Entitlement Call_On__c: ' + e.Call_On__c);
-                    System.debug('Entitlement Before_After__c: ' + e.Before_After__c);
-                    System.debug('Entitlement Call_Time__c: ' + e.Call_Time__c);
-                    System.debug('Current Day: ' + dayOfWeek);
-                    System.debug('Current Hour: ' + currentDateTime.hour());*/
+                System.debug('Entitlement Name: ' + e.Name);
+                System.debug('Entitlement AccountId: ' + e.AccountId);
+                System.debug('Entitlement Call_On__c: ' + e.Call_On__c);
+                System.debug('Entitlement Before_After__c: ' + e.Before_After__c);
+                System.debug('Entitlement Call_Time__c: ' + e.Call_Time__c);
+                System.debug('Current Day: ' + dayOfWeek);
+                System.debug('Current Hour: ' + currentDateTime.hour());*/
             }
         }
         
@@ -677,27 +718,32 @@ public class Entitlement_Utility {
      * It is now called by the new getPrioritizedEntitlements() public method.
      */
   public static Map<String, Entitlement> prioritizeEntitlements(List<priorityFields> mappedFields, Map<String, List<Entitlement>> entitlementRules) {
-      System.debug('--- INSIDE prioritizeEntitlements ---');
-      //System.debug('mappedFields ---'+ mappedFields);
-      //System.debug('entitlementRules: '+ entitlementRules);
-    
-    Map<String, Entitlement> finalEntitlementMap = new Map<String, Entitlement>();
-    
-    // Group priority fields by record ID for easier lookup
-    Map<String, List<priorityFields>> priorityFieldsByRecord = new Map<String, List<priorityFields>>();
-    for (priorityFields pf : mappedFields) {
-        if (pf.recordId != null) {
-            if (!priorityFieldsByRecord.containsKey(pf.recordId)) {
-                priorityFieldsByRecord.put(pf.recordId, new List<priorityFields>());
-            }
-            priorityFieldsByRecord.get(pf.recordId).add(pf);
-        }
-    }
+      //System.debug('--- INSIDE prioritizeEntitlements() ---');
+      
+      /*for(String key: entitlementRules.keySet()){
+          System.debug('Key: '+key);
+          System.debug('Key corresponding entitlementRules: '+entitlementRules.get(key).size());
+          for(Entitlement ent: entitlementRules.get(key)){
+              System.debug('Entitlement: '+ent);
+          }
+      }*/
+      
+      Map<String, Entitlement> finalEntitlementMap = new Map<String, Entitlement>();
+      
+      // Group priority fields by record ID for easier lookup
+      Map<String, List<priorityFields>> priorityFieldsByRecord = new Map<String, List<priorityFields>>();
+      for (priorityFields pf : mappedFields) {
+          if (pf.recordId != null) {
+              if (!priorityFieldsByRecord.containsKey(pf.recordId)) {
+                  priorityFieldsByRecord.put(pf.recordId, new List<priorityFields>());
+              }
+              priorityFieldsByRecord.get(pf.recordId).add(pf);
+          }
+      }
       //System.debug('priorityFieldsByRecord: '+ priorityFieldsByRecord);
       
     for (String recordId : entitlementRules.keySet()) {
         //System.debug('recordId: '+ recordId);
-        //System.debug('priorityFieldsByRecord.get(recordId): '+ priorityFieldsByRecord.get(recordId));
         List<prioritizationResult> prList = new List<prioritizationResult>();
         
         // Get the priority fields for THIS specific record
@@ -708,21 +754,33 @@ public class Entitlement_Utility {
         }
         
         for (Entitlement e : entitlementRules.get(recordId)) {
-            //System.debug('e: '+ e);
+            
+            Boolean noMatch = false;
             prioritizationResult pr = new prioritizationResult();
             pr.entitlementRecord = e;
             
             Integer customerScore = 0, serviceScore = 0, transactionScore = 0;
             
+            //System.debug('Entitlement: ' + e.Name);
+            
             // Match THIS record's fields against the entitlement
             for (priorityFields pf : recordPriorityFields) {
-                if (pf.commonName == null || pf.objectValue == null) {
+                
+                /*System.debug('pf.commonName : ' + pf.commonName);
+                System.debug('pf.objectValue : ' + pf.objectValue);
+                System.debug('pf.entitlementField : ' + pf.entitlementField);
+                System.debug('entitlementValue : ' + e.get(pf.entitlementField));*/
+                if (pf.commonName == null) {
                     continue;
                 }
                 
                 Object entitlementValue = e.get(pf.entitlementField);
-                Boolean match = (entitlementValue != null && 
-                                String.valueOf(entitlementValue) == pf.objectValue);
+                
+                //Something is a match when the entitlement value equals the object value OR
+                //the object value is populated but the entitlement value is blank
+                
+                Boolean match = (String.valueOf(entitlementValue) == pf.objectValue || 
+                                 (pf.objectValue != null && String.valueOf(entitlementValue) == null));
                 
                 //System.debug('match: '+match);
                 if (match) {
@@ -732,27 +790,36 @@ public class Entitlement_Utility {
                     // 2A-2C = Material/Schedule (Service - Priority 1)
                     // 3A-3C = Request/Service/Case (Transaction - Priority 2)
                     // 4A-4N = Call time/SLA/Timezone (Transaction)
-                    
+                    //System.debug('priorityLevel : ' + pf.priorityLevel);
                     if (pf.priorityLevel != null) {
-                        String priorityPrefix = pf.priorityLevel.substring(0, 1);
                         
+                        String priorityPrefix = pf.priorityLevel.substring(0, 1);
+                        //System.debug('priorityPrefix : ' + priorityPrefix);
                         if (priorityPrefix == '0' || priorityPrefix == '1') {
                             // Customer identification fields
                             customerScore++;
                             pr.customerIdentification = true;
+                            //System.debug('customerScore : ' + customerScore);
+                            //System.debug('pr.customerIdentification : ' + pr.customerIdentification);
                         } else if (priorityPrefix == '2') {
                             // Service identification fields (Priority 1)
                             serviceScore++;
                             pr.serviceIdentification = true;
+                            //System.debug('serviceScore : ' + serviceScore);
+                            //System.debug('pr.serviceIdentification : ' + pr.serviceIdentification);
                         } else if (priorityPrefix == '3' || priorityPrefix == '4') {
                             // Transaction identification fields (Priority 2)
                             transactionScore++;
                             pr.transactionIdentification = true;
+                            //System.debug('transactionScore : ' + transactionScore);
+                            //System.debug('pr.transactionIdentification : ' + pr.transactionIdentification);
                         }
                     }
+                } else {
+                    noMatch = true;
                 }
             }
-            
+
             pr.customerRank = customerScore;
             pr.serviceRank = serviceScore;
             pr.transactionRank = transactionScore;
@@ -775,14 +842,14 @@ public class Entitlement_Utility {
             } else {
                 pr.priorityRank = 7; // Nothing matched = lowest priority
             }
-
-            prList.add(pr);
+            
+            if (!noMatch) prList.add(pr);
             //System.debug('prList:: ' +prList);
-            System.debug('Entitlement: ' + e.Name + 
+            /*System.debug('Entitlement: ' + e.Name + 
                         ', Customer: ' + customerScore + 
                         ', Service: ' + serviceScore + 
                         ', Transaction: ' + transactionScore + 
-                        ', Priority Rank: ' + pr.priorityRank);
+                        ', Priority Rank: ' + pr.priorityRank);*/
         }
         
         // Sort by priority (lowest rank = highest priority)
@@ -791,8 +858,16 @@ public class Entitlement_Utility {
         prList.sort(new ServicePriorityCompare());
         prList.sort(new CustomerPriorityCompare());*/
         
+        /*System.debug('mappedFields size ---'+ mappedFields.size());
+        for(priorityFields pr: mappedFields){
+            System.debug('Mapped Field: '+pr);
+        }*/
+        
         // Sort by composite priority (priority rank first, then individual scores)
         prList.sort(new CompositePriorityCompare());
+        /*for(prioritizationResult pr : prList){
+            System.debug('pr: '+pr);
+        }*/
         
         // Get the best entitlement (first in sorted list)
         if (!prList.isEmpty()) {
@@ -809,7 +884,7 @@ public class Entitlement_Utility {
         
         
     }
-    System.debug('finalEntitlementMap: '+ finalEntitlementMap);
+    //System.debug('finalEntitlementMap: '+ finalEntitlementMap);
     return finalEntitlementMap;
 }
     
@@ -823,6 +898,7 @@ public class Entitlement_Utility {
 
     //New method for Industry based SLA - Added by Srishti as part of CNM-4
     public static List<Entitlement> getIndustryStandardSLA(Case caseRecord) {
+    System.debug('$$*** Inside EU - getIndustryStandardSLA: ');
     List<Entitlement_Field_Mapping__mdt> mappedFields = getFieldMapping();
     List<Entitlement> industrySLAList = new List<Entitlement>();
     String queryString = 'SELECT Id, Name';
@@ -840,19 +916,25 @@ public class Entitlement_Utility {
         String Service=caseRecord.Case_Sub_Type__c;
         String caseReason = caseRecord.Case_Reason__c;
            
-    queryString += ' FROM Entitlement WHERE RecordType.DeveloperName = \'Industry_SLA\'';
-    queryString += ' AND Account.Name = \'WM SBS Standard Entitlements\'';
-    queryString += ' AND Request_Type__c = \'' + RequestType + '\'';
-    queryString += ' AND Service__c = \'' + Service + '\'';
-    queryString += ' AND Case_Reason__c = \'' + caseReason + '\'';
+    queryString += ' FROM Entitlement WHERE RecordType.DeveloperName = :IND_STANDARD';
+    queryString += ' AND (Request_Type__c = :RequestType OR Request_Type__c = null)';
+    // Add Service__c only if not blank
+    if (String.isNotBlank(Service)) {
+        queryString += ' AND (Service__c = :Service OR (Service__c = null AND Request_Type__c != null))';
+    }
+    
+    // Add Case_Reason__c only if not blank
+    if (String.isNotBlank(caseReason)) {
+        queryString += ' AND (Case_Reason__c = :caseReason OR (Case_Reason__c = null AND Service__c != null))';
+    }
+	
     queryString += ' LIMIT 49999';
     
     
     
     industrySLAList = Database.query(queryString);
-    System.debug('Industry SLA  query: ' + queryString);   
-    System.debug('Industry SLA List Size: ' + industrySLAList.size());
-    
+    System.debug('$$*** Industry SLA  query: ' + queryString);   
+    System.debug('$$*** Industry SLA List Size: ' + industrySLAList.size()+industrySLAList );
     return industrySLAList;
 }
 
@@ -1059,10 +1141,13 @@ public class Entitlement_Utility {
 	*/
     public class CompositePriorityCompare implements Comparator<prioritizationResult> {
         public Integer compare(prioritizationResult p1, prioritizationResult p2) {
+            //System.debug('p1: '+p1);
+            //System.debug('p2: '+p2);
             // First compare by priority rank (lower is better)
             if (p1.priorityRank != p2.priorityRank) {
                 if (p1.priorityRank == null) return 1;
                 if (p2.priorityRank == null) return -1;
+                //System.debug('priorityRank::');
                 return p1.priorityRank - p2.priorityRank; // Ascending order
             }
             
@@ -1070,6 +1155,7 @@ public class Entitlement_Utility {
             if (p1.customerRank != p2.customerRank) {
                 if (p1.customerRank == null) return 1;
                 if (p2.customerRank == null) return -1;
+                //System.debug('customerRank:: ');
                 return p2.customerRank - p1.customerRank; // Descending order
             }
             
@@ -1077,6 +1163,7 @@ public class Entitlement_Utility {
             if (p1.serviceRank != p2.serviceRank) {
                 if (p1.serviceRank == null) return 1;
                 if (p2.serviceRank == null) return -1;
+                //System.debug('serviceRank:: ');
                 return p2.serviceRank - p1.serviceRank; // Descending order
             }
             
@@ -1084,6 +1171,7 @@ public class Entitlement_Utility {
             if (p1.transactionRank != p2.transactionRank) {
                 if (p1.transactionRank == null) return 1;
                 if (p2.transactionRank == null) return -1;
+                //System.debug('transactionRank:: ');
                 return p2.transactionRank - p1.transactionRank; // Descending order
             }
             
