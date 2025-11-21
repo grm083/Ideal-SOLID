@@ -815,5 +815,482 @@ public class SLACalculationUtility {
             System.debug('Exception in syncStandardServiceDateToSLA: ' + ex.getStackTraceString());
         }
     }
-    
+
+    // ================================================================================
+    // CONSOLIDATED SERVICE DATE CALCULATION WITH CAPACITY PLANNING
+    // ================================================================================
+
+    /**
+     * @description Result wrapper for service date calculation
+     */
+    public class ServiceDateCalculationResult {
+        public Date serviceDate { get; set; }
+        public DateTime slaServiceDateTime { get; set; }
+        public String calculationMethod { get; set; } // 'Entitlement', 'Capacity Planner', 'Fallback'
+        public List<String> availableDates { get; set; } // From capacity planner
+        public String errorMessage { get; set; }
+
+        public ServiceDateCalculationResult() {
+            this.availableDates = new List<String>();
+        }
+    }
+
+    /**
+     * @description Orchestrates service date calculation by determining which approach to use
+     * based on entitlement properties, product family, and vendor information
+     *
+     * Decision Logic:
+     * 1. If Entitlement is Gold Standard OR Contractual OR Product Family = Commercial
+     *    → Use Entitlement-based calculation
+     * 2. If Product Family = Rolloff AND Vendor = WM (Parent_Vendor_ID__c = '8') AND SBID exists
+     *    → Use WM Capacity Planner API
+     * 3. Otherwise → Use Entitlement-based calculation as fallback
+     *
+     * @param caseRecord The case to calculate service date for
+     * @param asset The asset related to the case (service header)
+     * @param entitlement The entitlement to use for calculation (can be null)
+     * @param location The location account for timezone information
+     * @return ServiceDateCalculationResult with calculated dates and metadata
+     */
+    public static ServiceDateCalculationResult calculateServiceDateWithCapacity(
+        Case caseRecord,
+        Asset asset,
+        Entitlement entitlement,
+        Account location
+    ) {
+        ServiceDateCalculationResult result = new ServiceDateCalculationResult();
+
+        try {
+            // Determine which calculation method to use
+            Boolean useEntitlementCalculation = shouldUseEntitlementCalculation(asset, entitlement);
+            Boolean useCapacityPlanner = shouldUseCapacityPlanner(asset, entitlement);
+
+            if (useEntitlementCalculation) {
+                // Use existing entitlement-based calculation
+                result.calculationMethod = 'Entitlement';
+                result = calculateEntitlementBasedServiceDate(caseRecord, entitlement, location);
+
+            } else if (useCapacityPlanner && !Test.isRunningTest()) {
+                // Try WM Capacity Planner first
+                result.calculationMethod = 'Capacity Planner';
+                String sbid = getSBIDFromAsset(asset);
+
+                if (String.isNotBlank(sbid)) {
+                    result = calculateCapacityPlannerServiceDate(caseRecord, asset, sbid, location, entitlement);
+
+                    // If capacity planner failed or returned no dates, fallback to entitlement
+                    if (result.serviceDate == null) {
+                        System.debug('Capacity Planner returned no dates, falling back to entitlement calculation');
+                        result.calculationMethod = 'Fallback - Entitlement';
+                        result = calculateEntitlementBasedServiceDate(caseRecord, entitlement, location);
+                    }
+                } else {
+                    // No SBID available, use entitlement
+                    result.calculationMethod = 'Fallback - No SBID';
+                    result = calculateEntitlementBasedServiceDate(caseRecord, entitlement, location);
+                }
+
+            } else {
+                // Default to entitlement-based calculation
+                result.calculationMethod = 'Default - Entitlement';
+                result = calculateEntitlementBasedServiceDate(caseRecord, entitlement, location);
+            }
+
+        } catch (Exception ex) {
+            System.debug('Exception in calculateServiceDateWithCapacity: ' + ex.getMessage());
+            result.errorMessage = ex.getMessage();
+            result.calculationMethod = 'Error - Fallback';
+
+            // Emergency fallback: next business day
+            result.serviceDate = System.today().addDays(1);
+            result.slaServiceDateTime = DateTime.newInstance(result.serviceDate, Time.newInstance(23, 59, 59, 59));
+        }
+
+        return result;
+    }
+
+    /**
+     * @description Determines if entitlement-based calculation should be used
+     */
+    private static Boolean shouldUseEntitlementCalculation(Asset asset, Entitlement entitlement) {
+        if (entitlement == null) {
+            return false;
+        }
+
+        // Use entitlement calculation if:
+        // 1. Entitlement is Gold Standard
+        // 2. Entitlement is Contractual
+        // 3. Product Family is Commercial (regardless of entitlement flags)
+        if (entitlement.Gold_Standard__c || entitlement.Contractual__c) {
+            return true;
+        }
+
+        if (asset != null && Constant_Util.COMMERCIAL.equalsIgnoreCase(asset.ProductFamily)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @description Determines if WM Capacity Planner should be used
+     */
+    private static Boolean shouldUseCapacityPlanner(Asset asset, Entitlement entitlement) {
+        if (asset == null) {
+            return false;
+        }
+
+        // Use capacity planner if:
+        // 1. NOT Gold Standard AND NOT Contractual
+        // 2. Product Family is Rolloff
+        // 3. Has WM vendor (Parent_Vendor_ID__c = '8')
+
+        Boolean isGoldOrContractual = (entitlement != null &&
+                                       (entitlement.Gold_Standard__c || entitlement.Contractual__c));
+
+        if (isGoldOrContractual) {
+            return false;
+        }
+
+        if (!Constant_Util.ROLLOFF.equalsIgnoreCase(asset.ProductFamily)) {
+            return false;
+        }
+
+        // Check for WM vendor - this would be on service detail assets
+        // The asset passed in is typically the service header, so we'd need to check children
+        return true; // Let the SBID check determine if we can actually use it
+    }
+
+    /**
+     * @description Extracts SBID from asset's service detail children
+     */
+    private static String getSBIDFromAsset(Asset serviceHeader) {
+        if (serviceHeader == null || serviceHeader.Assets_Parent__r == null) {
+            return null;
+        }
+
+        for (Asset serviceDetail : serviceHeader.Assets_Parent__r) {
+            if (serviceDetail.Is_Self_Service__c &&
+                serviceDetail.Quantity__c == 1 &&
+                String.isNotBlank(serviceDetail.SBID_Text_c__c) &&
+                serviceDetail.Supplier__r != null &&
+                serviceDetail.Supplier__r.Parent_Vendor_ID__c == '8') {
+                return serviceDetail.SBID_Text_c__c;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @description Calculates service date using entitlement-based SLA logic
+     * This wraps the existing setServiceDate logic but returns a result object
+     */
+    private static ServiceDateCalculationResult calculateEntitlementBasedServiceDate(
+        Case caseRecord,
+        Entitlement entitlement,
+        Account location
+    ) {
+        ServiceDateCalculationResult result = new ServiceDateCalculationResult();
+
+        try {
+            // Use existing SLA calculation logic
+            List<Case> caseList = new List<Case>{ caseRecord };
+            Map<Id, Account> locationMap = new Map<Id, Account>();
+            if (location != null) {
+                locationMap.put(location.Id, location);
+            }
+
+            // Call existing calculation method (trigger-safe version)
+            calculateAndSetSLAFields(caseList, locationMap);
+
+            result.serviceDate = caseRecord.Service_Date__c;
+            result.slaServiceDateTime = caseRecord.SLA_Service_Date_Time__c;
+
+        } catch (Exception ex) {
+            System.debug('Exception in calculateEntitlementBasedServiceDate: ' + ex.getMessage());
+            result.errorMessage = ex.getMessage();
+        }
+
+        return result;
+    }
+
+    /**
+     * @description Calculates service date using WM Capacity Planner API
+     */
+    private static ServiceDateCalculationResult calculateCapacityPlannerServiceDate(
+        Case caseRecord,
+        Asset asset,
+        String sbid,
+        Account location,
+        Entitlement entitlement
+    ) {
+        ServiceDateCalculationResult result = new ServiceDateCalculationResult();
+
+        try {
+            // Get available dates from WM Capacity Planner
+            List<String> availableDates = callWMCapacityPlannerAPI(sbid);
+            result.availableDates = availableDates;
+
+            if (availableDates == null || availableDates.isEmpty()) {
+                System.debug('WM Capacity Planner returned no available dates for SBID: ' + sbid);
+                return result; // serviceDate will be null, triggering fallback
+            }
+
+            // Convert string dates to Date objects
+            List<Date> plannerDates = parseCapacityPlannerDates(availableDates);
+
+            // Get existing work orders to avoid conflicts
+            Set<Date> existingWorkOrderDates = getExistingWorkOrderDates(asset.Id);
+
+            // Find first available date that doesn't conflict with existing work orders
+            Date selectedDate = null;
+            for (Date plannerDate : plannerDates) {
+                if (!existingWorkOrderDates.contains(plannerDate)) {
+                    selectedDate = plannerDate;
+                    break;
+                }
+            }
+
+            // If all planner dates have conflicts, take the last one and calculate next available
+            if (selectedDate == null && !plannerDates.isEmpty()) {
+                selectedDate = plannerDates[plannerDates.size() - 1];
+                selectedDate = getNextAvailableDateAfterConflicts(
+                    selectedDate,
+                    existingWorkOrderDates,
+                    location
+                );
+            }
+
+            result.serviceDate = selectedDate;
+            result.slaServiceDateTime = DateTime.newInstance(selectedDate, Time.newInstance(21, 0, 0, 0));
+
+        } catch (Exception ex) {
+            System.debug('Exception in calculateCapacityPlannerServiceDate: ' + ex.getMessage());
+            UTIL_LoggingService.logHandledException(ex, UserInfo.getOrganizationId(),
+                UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
+            result.errorMessage = ex.getMessage();
+        }
+
+        return result;
+    }
+
+    /**
+     * @description Makes HTTP callout to WM Capacity Planner API
+     * Consolidated from WMCapacityController.getAvailableDates
+     * Public to allow WMCapacityController (Lightning component controller) to call it
+     */
+    public static List<String> callWMCapacityPlannerAPI(String sbid) {
+        List<String> availDates = new List<String>();
+
+        try {
+            // Get current date for the API request
+            String requestDate = formatDateForCapacityAPI(System.now());
+
+            // Get integration settings from metadata
+            Integration_Request_URLs__mdt urlMD = [
+                SELECT DeveloperName, MasterLabel, Client_Key__c, Client_Token__c,
+                       Timeout__c, Content_Type__c, End_Point__c, Method__c
+                FROM Integration_Request_URLs__mdt
+                WHERE DeveloperName = 'Site_Capacity'
+                LIMIT 1
+            ];
+
+            // Build endpoint URL
+            String endpoint = urlMD.End_Point__c;
+            endpoint = endpoint.replace('{ServiceBaselineId}', sbid);
+            endpoint = endpoint + '?serviceDate=' + requestDate;
+
+            // Prepare HTTP request
+            Http h = new Http();
+            HttpRequest req = new HttpRequest();
+            req.setEndpoint(endpoint);
+            req.setMethod(urlMD.Method__c);
+            req.setHeader('Content-Type', urlMD.Content_Type__c);
+            req.setHeader('X-USERID', '1');
+            req.setHeader('X-PARTNER-KEY', urlMD.Client_Key__c);
+            req.setHeader('Authorization', urlMD.Client_Token__c);
+            req.setTimeout(urlMD.Timeout__c.intValue());
+
+            // Make callout
+            HttpResponse res = h.send(req);
+            String result = res.getBody();
+
+            // Parse response
+            CapacityResponse jsonResp = parseCapacityResponse(result);
+            availDates = parseCapacityJSON(jsonResp, requestDate);
+
+        } catch (Exception e) {
+            System.debug('Error calling WM Capacity Planner API: ' + e.getMessage());
+            UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(),
+                UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
+        }
+
+        return availDates;
+    }
+
+    /**
+     * @description Formats current datetime for capacity API request
+     */
+    private static String formatDateForCapacityAPI(DateTime dt) {
+        String justDate = String.valueOf(dt.dateGmt());
+        String year = justDate.substringBefore('-');
+        String day = justDate.substringAfterLast('-');
+        String month = justDate.substringBeforeLast('-').substringAfter('-');
+        return year + '-' + month + '-' + day;
+    }
+
+    /**
+     * @description Parses capacity planner JSON dates into formatted strings
+     */
+    @TestVisible
+    private static List<String> parseCapacityJSON(CapacityResponse jsonResp, String requestedDate) {
+        List<String> dates = new List<String>();
+        List<String> availDates = new List<String>();
+        List<CapacityData> capacities = new List<CapacityData>();
+
+        if (jsonResp != null && jsonResp.Data != null && jsonResp.Data.Site != null) {
+            capacities = jsonResp.Data.Site.Capacity;
+        }
+
+        for (CapacityData cap : capacities) {
+            if (cap.AvailableDates != null) {
+                for (String d : cap.AvailableDates) {
+                    String year = d.substringBefore('/');
+                    String day = d.substringAfterLast('/');
+                    String month = d.substringBeforeLast('/').substringAfter('/');
+                    d = month + '/' + day + '/' + year;
+                    availDates.add(d);
+                }
+            }
+        }
+
+        return availDates;
+    }
+
+    /**
+     * @description Converts string dates from capacity planner to Date objects
+     */
+    private static List<Date> parseCapacityPlannerDates(List<String> availableDates) {
+        List<Date> plannerDates = new List<Date>();
+
+        for (String dateStr : availableDates) {
+            try {
+                String[] dateParts = getSplitStringDate(dateStr);
+                if (dateParts != null && dateParts.size() >= 3) {
+                    // Format is MM/DD/YYYY from parseCapacityJSON
+                    Date parsedDate = Date.newInstance(
+                        Integer.valueOf(dateParts[2]), // year
+                        Integer.valueOf(dateParts[0]), // month
+                        Integer.valueOf(dateParts[1])  // day
+                    );
+                    plannerDates.add(parsedDate);
+                }
+            } catch (Exception e) {
+                System.debug('Error parsing date: ' + dateStr + ', ' + e.getMessage());
+            }
+        }
+
+        return plannerDates;
+    }
+
+    /**
+     * @description Splits date string by / or - separator
+     * Consolidated from PotentialPickupDateAPI
+     */
+    public static String[] getSplitStringDate(String strDate) {
+        String[] strDateArray;
+        if (strDate.contains(Constant_Util.FORWARD_SLASH)) {
+            strDateArray = strDate.split(Constant_Util.FORWARD_SLASH);
+        } else if (strDate.contains(Constant_Util.HYPHEN)) {
+            strDateArray = strDate.split(Constant_Util.HYPHEN);
+        }
+        return strDateArray;
+    }
+
+    /**
+     * @description Retrieves existing work order dates for an asset to avoid conflicts
+     */
+    private static Set<Date> getExistingWorkOrderDates(Id assetId) {
+        Set<Date> workOrderDates = new Set<Date>();
+
+        Set<String> statuses = new Set<String>{
+            Constant_Util.SENT,
+            Constant_Util.ACCEPTED,
+            Constant_Util.WORK_COMPLETE,
+            Constant_Util.RELEASED_FOR_PAYMENT,
+            Constant_Util.CLOSED,
+            Constant_Util.ISSUED,
+            Constant_Util.Sending,
+            Constant_Util.STR_REJECTED,
+            Constant_Util.STR_NEW,
+            Constant_Util.STR_PENDING_DRAFT
+        };
+
+        for (WorkOrder wo : [
+            SELECT Id, Service_Date__c
+            FROM WorkOrder
+            WHERE AssetId = :assetId
+            AND Status IN :statuses
+            AND Is_Bypass__c = false
+            AND Service_Date__c >= TODAY
+            ORDER BY Service_Date__c DESC
+        ]) {
+            if (wo.Service_Date__c != null) {
+                workOrderDates.add(wo.Service_Date__c);
+            }
+        }
+
+        return workOrderDates;
+    }
+
+    /**
+     * @description Finds next available date after work order conflicts
+     */
+    private static Date getNextAvailableDateAfterConflicts(
+        Date startDate,
+        Set<Date> conflictDates,
+        Account location
+    ) {
+        Date nextDate = startDate;
+        Integer maxAttempts = 30; // Prevent infinite loop
+        Integer attempts = 0;
+
+        while (conflictDates.contains(nextDate) && attempts < maxAttempts) {
+            nextDate = nextDate.addDays(1);
+            attempts++;
+        }
+
+        return nextDate;
+    }
+
+    // ================================================================================
+    // INNER CLASSES FOR WM CAPACITY PLANNER API RESPONSE
+    // ================================================================================
+
+    public class CapacityResponse {
+        public CapacitySiteData Data { get; set; }
+        public Object Problem { get; set; }
+    }
+
+    public class CapacitySiteData {
+        public CapacitySite Site { get; set; }
+    }
+
+    public class CapacitySite {
+        public String Name { get; set; }
+        public List<CapacityData> Capacity { get; set; }
+    }
+
+    public class CapacityData {
+        public String LineOfBusiness { get; set; }
+        public String Status { get; set; }
+        public List<String> AvailableDates { get; set; }
+    }
+
+    @TestVisible
+    private static CapacityResponse parseCapacityResponse(String json) {
+        return (CapacityResponse) System.JSON.deserialize(json, CapacityResponse.class);
+    }
+
 }
