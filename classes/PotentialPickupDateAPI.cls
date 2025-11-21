@@ -1,9 +1,17 @@
 /*************************************************************
 @Name: PotentialPickupDateAPI
-@LastModifiedBy: Srishti Gupta
-@LastModifiedDate: 11/13/2025
+@LastModifiedBy: Claude AI Assistant
+@LastModifiedDate: 2025-11-21
 @UsedBy: CNM-27
-@Modified: Refactored to use SLACalculationUtility instead of CaseTriggerHelper
+@Modified: Refactored to use SLACalculationUtility.calculateServiceDateWithCapacity
+           for consolidated service date calculation logic that handles both
+           Entitlement-based SLA and WM Capacity Planner API integration
+@Architecture: This REST API now delegates all service date calculation to
+               SLACalculationUtility, which consolidates:
+               - Entitlement-based SLA calculation
+               - WM Capacity Planner API callouts
+               - Work order conflict resolution
+               - Business hours and timezone adjustments
 **************************************************************/
 @RestResource(urlMapping='/PotentialPickupDate/V1/*') 
 global with sharing class PotentialPickupDateAPI {        
@@ -130,39 +138,25 @@ global with sharing class PotentialPickupDateAPI {
                 
                 newCaseList = caseList;
                 
-                //George noodling here
+                // Get the calculated service date from the first case
                 Case returnCase = caseList[0];
                 potentialPickupDate = String.valueOf(returnCase.Service_Date__c);
-                
-                /*
 
-                // Create Key to invoke FetchSLA Method of CaseTriggerHelper
-                for(Case c : newCaseList){
-                    String container    = containerWithContainerIdMap != null && containerWithContainerIdMap.containsKey(c.AssetId) ? containerWithContainerIdMap.get(c.AssetId).Product2.ProductTypeSelected__c : null;
-                    String scheduleType = containerWithContainerIdMap != null && containerWithContainerIdMap.containsKey(c.AssetId) ? containerWithContainerIdMap.get(c.AssetId).Duration__c : null;
-                    String casekey =  c.Client__c + Constant_Util.STAR + c.Location__c + Constant_Util.STAR + container + Constant_Util.STAR + c.Case_Sub_Type__c + Constant_Util.STAR + scheduleType;
-                    if(CaseTriggerHelper.casekeywithEntitlementMap != null && CaseTriggerHelper.casekeywithEntitlementMap.size() > 0 && CaseTriggerHelper.casekeywithEntitlementMap.containskey(casekey)){
-                        getEntitlementByAssetId.put(c.AssetId,CaseTriggerHelper.casekeywithEntitlementMap.get(casekey));
-                    }
-                    //Create the Map of Asset & Case <SLA Date>
-                    mapCaseAsset.put(c.AssetId, c);
-                } 
-                Set<string> potentialWorkOrderStatus = new set<string>{Constant_Util.SENT,Constant_Util.ACCEPTED,Constant_Util.WORK_COMPLETE,Constant_Util.RELEASED_FOR_PAYMENT,Constant_Util.CLOSED,Constant_Util.ISSUED,Constant_Util.Sending,Constant_Util.STR_REJECTED,Constant_Util.STR_NEW,Constant_Util.STR_PENDING_DRAFT};        
-                for(WorkOrder objWO :  [SELECT Id, Is_Bypass__c, Service_Date__c, SLA_Service_Date_Time__c, Status, AssetId, CaseId, Case.Case_Type__c,
-                                            Case.Case_Sub_Type__c, Case.Case_Reason__c,CreatedDate 
-                                            FROM WorkOrder
-                                            WHERE AssetId =: assetId AND Status IN: potentialWorkOrderStatus 
-                                            AND Is_Bypass__c = false AND Service_Date__c >= TODAY
-                                            ORDER By Service_Date__c DESC]) {          
-                                                if(getWoListByAssetId.containsKey(objWO.AssetId) && objWO.Service_Date__c >= System.today()) {
-                                                    getWoListByAssetId.get(objWO.AssetId).add(objWO.Service_Date__c); 
-                                                } else if(objWO.Service_Date__c >= System.today()) {
-                                                    getWoListByAssetId.put(objWO.AssetId, new set<Date>{objWO.Service_Date__c});
-                                                }                  
-                                            }
-            }
-*/
-            //string potentialPickupDate = null;
+                // ============================================================
+                // NOTE: The complex logic for determining service dates has been
+                // consolidated into SLACalculationUtility.calculateServiceDateWithCapacity()
+                // which handles:
+                // - Entitlement-based SLA calculation (Gold Standard, Contractual, Commercial)
+                // - WM Capacity Planner API integration (Rolloff products with WM vendor)
+                // - Work order conflict resolution
+                // - Weekly frequency and occurrence day logic
+                // - Business hours adjustments
+                // - Timezone conversions
+                //
+                // The old inline implementation has been removed to eliminate duplication
+                // and improve maintainability. See SLACalculationUtility for the consolidated
+                // service layer architecture.
+                // ============================================================
 
             }
             Date potentialDate = null;
@@ -222,91 +216,59 @@ global with sharing class PotentialPickupDateAPI {
         }
     }
     
-    /*global static String getNextServiceDate(Asset objAsset){
-        String nextServiceDate = Null;
-        if(objAsset != Null){
-            string loczone = Constant_Util.EMPTY_STRING;
-            if(CaseTriggerHelper.casewithLocation.containsKey(objAsset.Location__c)){
-                loczone = CaseTriggerHelper.casewithLocation.get(objAsset.Location__c).tz__Timezone_SFDC__c;
-            }
-            
-            Id businessHoursId = CaseTriggerHelper.businessIdMap.get(locZone);
-            if(getWoListByAssetId.get(objAsset.Id) == NULL || getWoListByAssetId.isEmpty()){
-                if(mapCaseAsset.containsKey(objAsset.Id)){
-                    nextServiceDate = String.valueOf(mapCaseAsset.get(objAsset.Id).Service_Date__c); 
-                }
-            }
-            //For Gold Standard and Contractual SLAs            
-            if(getEntitlementByAssetId != NULL && !getEntitlementByAssetId.isEmpty() && getEntitlementByAssetId.get(objAsset.Id) != NULL && (getEntitlementByAssetId.get(objAsset.Id).Gold_Standard__c || getEntitlementByAssetId.get(objAsset.Id).Contractual__c || Constant_Util.COMMERCIAL.equalsIgnoreCase(objAsset.ProductFamily))){
-                if(getWoListByAssetId.get(objAsset.Id) != NULL && mapCaseAsset.get(objAsset.Id) != Null) {
-                    nextServiceDate = String.valueOf(getNextAvailableDateFromSLA(businessHoursId,getWoListByAssetId.get(objAsset.Id),mapCaseAsset.get(objAsset.Id).Service_Date__c,mapCaseAsset.get(objAsset.Id).SLA_Service_Date_Time__c,locZone, Constant_Util.COMMERCIAL.equalsIgnoreCase(objAsset.ProductFamily) && Constant_Util.SCHEDULED.equals(objAsset.Occurrence_Type__c) && !hasweeklyfrequencymap.isEmpty() && hasweeklyfrequencymap.containskey(objAsset.Id) && hasweeklyfrequencymap.get(objAsset.Id) ? Integer.valueof(System.Label.Next_Business_Days) : 0 , assetIdOccurencemap != null && assetIdOccurencemap.containskey(objAsset.Id) ? assetIdOccurencemap.get(objAsset.Id) : null));
-                } else if(Constant_Util.SCHEDULED.equals(objAsset.Occurrence_Type__c) && !hasweeklyfrequencymap.isEmpty() && hasweeklyfrequencymap.containskey(objAsset.Id) && hasweeklyfrequencymap.get(objAsset.Id)
-                          && assetIdOccurencemap != null && assetIdOccurencemap.containskey(objAsset.Id) && mapCaseAsset != null && mapCaseAsset.containskey(objAsset.Id)){
-                              nextServiceDate =  getPotentialDate(objAsset);
-                          }
-            }            
-            //For Not-Gold Standard/No Entitlement Found
-            else if((getEntitlementByAssetId != NULL && !getEntitlementByAssetId.isEmpty() && getEntitlementByAssetId.containskey(objAsset.Id) && !getEntitlementByAssetId.get(objAsset.Id).Gold_Standard__c) && !getEntitlementByAssetId.get(objAsset.Id).Contractual__c || getEntitlementByAssetId.isEmpty() || (!getEntitlementByAssetId.isEmpty() && !getEntitlementByAssetId.containskey(objAsset.Id))){
-                List<String> availDates = new List<String>();
-                List<Date> plannerDates = new List<Date>();
-                if(!mapSBID.isEmpty() && mapSBID.containskey(objAsset.Id) && Constant_Util.ROLLOFF.equalsIgnoreCase(objAsset.ProductFamily) && !Test.isRunningTest()){
-                    List<String> capacityDates = WMCapacityController.getAvailableDates(mapSBID.get(objAsset.Id));
-                    if(capacityDates != null){
-                        availDates.addAll(capacityDates);
-                    }
-                }
-                if(Test.isRunningTest()){
-                    availDates.add(String.valueOf(System.today()));
-                }        
-                if(!availDates.IsEmpty() && availDates.size() >0){
-                    for(String s : availDates){
-                        String[] strDate = getSplitStringDate(s);
-                        if(strDate != Null && !strDate.isEmpty()){
-                            Date t = null;
-                            if(Test.isRunningTest()) {
-                                t = Date.newInstance(Integer.valueOf(strDate[0]),Integer.valueOf(strDate[1]),Integer.valueOf(strDate[2]));
-                            } else {
-                                t = Date.newInstance(Integer.valueOf(strDate[2]),Integer.valueOf(strDate[0]),Integer.valueOf(strDate[1]));
-                            }
-                            if(t >= mapCaseAsset.get(objAsset.Id).Service_Date__c || Test.isRunningTest()){
-                                plannerDates.add(t);
-                            }
-                        } 
-                    }
-                }          
-                if(availDates != NULL && !availDates.isEmpty()){
-                    if(!getWoListByAssetId.Isempty() && getWoListByAssetId.containskey(objAsset.Id)){
-                        nextServiceDate = getNextAvailableDate(businessHoursId,getWoListByAssetId.get(objAsset.Id),plannerDates,locZone);
-                    } else {
-                        nextServiceDate = string.valueof(plannerDates[0]);
-                    }
-                }
-                else {
-                    if(!getWoListByAssetId.Isempty() && getWoListByAssetId.containskey(objAsset.Id) && !mapCaseAsset.isEmpty() && mapCaseAsset.containskey(objAsset.Id)){
-                        nextServiceDate = String.valueOf(getNextAvailableDateFromSLA(businessHoursId,getWoListByAssetId.get(objAsset.Id),mapCaseAsset.get(objAsset.Id).Service_Date__c,mapCaseAsset.get(objAsset.Id).SLA_Service_Date_Time__c,locZone, Constant_Util.COMMERCIAL.equalsIgnoreCase(objAsset.ProductFamily) && Constant_Util.SCHEDULED.equals(objAsset.Occurrence_Type__c) && !hasweeklyfrequencymap.isEmpty() && hasweeklyfrequencymap.containskey(objAsset.Id) && hasweeklyfrequencymap.get(objAsset.Id) ? Integer.valueof(System.Label.Next_Business_Days) : 0,assetIdOccurencemap != null && assetIdOccurencemap.containskey(objAsset.Id) ? assetIdOccurencemap.get(objAsset.Id) : null));
-                    } else if(Constant_Util.SCHEDULED.equals(objAsset.Occurrence_Type__c) && !hasweeklyfrequencymap.isEmpty() && hasweeklyfrequencymap.containskey(objAsset.Id) && hasweeklyfrequencymap.get(objAsset.Id) 
-                              && assetIdOccurencemap != null && assetIdOccurencemap.containskey(objAsset.Id) && mapCaseAsset != null && mapCaseAsset.containskey(objAsset.Id)){
-                                  nextServiceDate = getPotentialDate(objAsset);
-                              }
-                }     
-            } 
-        }
-        return nextServiceDate;
-    }*/
+    // ================================================================================
+    // DEPRECATED: Complex service date calculation logic has been moved to
+    // SLACalculationUtility.calculateServiceDateWithCapacity()
+    //
+    // The method below was the original implementation that handled:
+    // - Entitlement-based SLA (Gold Standard, Contractual)
+    // - WM Capacity Planner API integration
+    // - Work order conflict resolution
+    //
+    // This logic is now centralized in the service layer (SLACalculationUtility)
+    // to eliminate code duplication and improve maintainability.
+    //
+    // @deprecated Use SLACalculationUtility.calculateServiceDateWithCapacity() instead
+    // ================================================================================
+    /*
+    @Deprecated
+    global static String getNextServiceDate(Asset objAsset){
+        // Complex logic moved to SLACalculationUtility.calculateServiceDateWithCapacity()
+        // This ensures all service date calculations follow the same business rules
+        // regardless of entry point (API, UI, Batch, etc.)
+    }
+    */
     
-    //Get Business Hours Datetime
+    // ================================================================================
+    // DEPRECATED HELPER METHODS
+    // These methods are kept for backward compatibility but their functionality
+    // has been consolidated into SLACalculationUtility
+    // ================================================================================
+
+    /**
+     * @deprecated Use BusinessHours.addGmt() directly
+     */
+    @Deprecated
     global static Datetime getBusinessHoursServiceDate(Id bId, Datetime serviceDate, Integer milliSeconds){
         return BusinessHours.addGmt(bId,serviceDate,milliSeconds);
-    } 
-    
-    //Get Local Busines Hours Date By Datetime
+    }
+
+    /**
+     * @deprecated Use SLACalculationUtility.convertToLocationTimezone() instead
+     */
+    @Deprecated
     global static Datetime converlocalTimeZone(Datetime dt, string localZone){
         TimeZone tz = Timezone.getTimeZone(localZone);
         dt = dt.addSeconds((tz.getOffset(dt)/1000));
         return dt;
     }
-    
-    //Get next available date using SLA
+
+    /**
+     * @deprecated Work order conflict logic is now handled in
+     * SLACalculationUtility.getNextAvailableDateAfterConflicts()
+     * and SLACalculationUtility.calculateCapacityPlannerServiceDate()
+     */
+    @Deprecated
     global static Date getNextAvailableDateFromSLA(Id bId,set<Date> woAvailDates, Date SLADate,DateTime SLADatetime,string locZone,Integer count,set<String> occurencedays){
         Date nextDate = null;
         DateTime nextDateTime = SLADatetime;
@@ -349,19 +311,20 @@ global with sharing class PotentialPickupDateAPI {
         return nextDate;
     }
     
-    //Get Date in String Format
+    /**
+     * @deprecated Use SLACalculationUtility.getSplitStringDate() instead
+     * This method has been consolidated into the utility class
+     */
+    @Deprecated
     public static String[] getSplitStringDate(String strDate){
-        String[] strDateArray;
-        if(strDate.contains(Constant_Util.FORWARD_SLASH)){
-            strDateArray = strDate.split(Constant_Util.FORWARD_SLASH);
-        } 
-        if(strDate.contains(Constant_Util.HYPHEN)){
-            strDateArray = strDate.split(Constant_Util.HYPHEN);   
-        }
-        return strDateArray;  
-    } 
-    
-    //Get next available date using WMCapacity 
+        return SLACalculationUtility.getSplitStringDate(strDate);
+    }
+
+    /**
+     * @deprecated WM Capacity date selection logic is now handled in
+     * SLACalculationUtility.calculateCapacityPlannerServiceDate()
+     */
+    @Deprecated
     global static String getNextAvailableDate(Id businessHoursId,set<Date> woAvailDates, List<Date> availDateSet,string locZone){
         Date nextAvailableDate = Null;
         string availDate = null;
@@ -380,9 +343,12 @@ global with sharing class PotentialPickupDateAPI {
         return availDate;  
     }
     
-    /***
-    ***Method to find PotentialDate when WorkOrder is not available for comerical products
-    **/
+    /**
+     * @description Method to find PotentialDate when WorkOrder is not available for commercial products
+     * @deprecated This weekly frequency logic should be consolidated into SLACalculationUtility
+     * in a future iteration for complete service date calculation centralization
+     */
+    @Deprecated
     private static String getPotentialDate(Asset objAsset){
         string nextServiceDate = null;                         
         Date serviceDate = mapCaseAsset.get(objAsset.Id).Service_Date__c;
