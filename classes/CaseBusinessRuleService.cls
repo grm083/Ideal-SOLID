@@ -576,9 +576,11 @@ public without sharing class CaseBusinessRuleService {
             result.validationMessages.add(Constant_Util.SELECT_CASESUBTYPE);
         }
 
-        // Check for Asset - required for most cases except Bales
+        // Check for Asset - required for Pickup cases (except Bales)
+        // NOTE: SELECT_ASSET message should ONLY be shown for Pickup cases
         if (String.isBlank(currentCase.AssetId) &&
-            currentCase.Case_Sub_type__c != Constant_Util.BALES) {
+            currentCase.Case_Sub_type__c != Constant_Util.BALES &&
+            currentCase.Case_Type__c == Constant_Util.PICKUP_CSTYPE) {
             result.validationMessages.add(Constant_Util.SELECT_ASSET);
         }
     }
@@ -643,11 +645,13 @@ public without sharing class CaseBusinessRuleService {
      */
     private static void validateAssetEligibility(Case currentCase, Map<String, Object> validationResult) {
         List<String> messages = (List<String>)validationResult.get('messages');
-        
+
         // Asset validation will be handled by CaseAssetValidator service
         // This is a placeholder for integration
-        if (String.isBlank(currentCase.AssetId) && 
-            currentCase.Case_Sub_type__c != Constant_Util.BALES) {
+        // NOTE: SELECT_ASSET message should ONLY be shown for Pickup cases
+        if (String.isBlank(currentCase.AssetId) &&
+            currentCase.Case_Sub_type__c != Constant_Util.BALES &&
+            currentCase.Case_Type__c == Constant_Util.PICKUP_CSTYPE) {
             validationResult.put('isValid', false);
             messages.add(Constant_Util.SELECT_ASSET);
         }
