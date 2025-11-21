@@ -250,13 +250,13 @@ public without sharing class CaseWizardService {
             result.fieldErrors.put('caseSubType', 'Case sub-type is required');
         }
 
-        // Asset is optional for some case types (e.g., New Service)
-        // Validate based on case type
-        if (data.caseType != 'New Service') {
+        // Asset is required for Pickup case types only
+        // NOTE: SELECT_ASSET message should ONLY be shown for Pickup cases
+        if (data.caseType == Constant_Util.PICKUP_CSTYPE) {
             if (String.isBlank(data.assetId)) {
                 result.isValid = false;
                 result.messages.add(Constant_Util.SELECT_ASSET);
-                result.fieldErrors.put('assetId', 'Asset is required for this case type');
+                result.fieldErrors.put('assetId', 'Asset is required for Pickup cases');
             }
         }
 
@@ -376,10 +376,12 @@ public without sharing class CaseWizardService {
             // Check if work order is needed
             Boolean woNeeded = !CaseBusinessRuleService.shouldBypassWorkOrderCreation(tempCase);
 
-            if (woNeeded && String.isBlank(tempCase.AssetId)) {
+            // NOTE: SELECT_ASSET message should ONLY be shown for Pickup cases
+            if (woNeeded && String.isBlank(tempCase.AssetId) &&
+                tempCase.Case_Type__c == Constant_Util.PICKUP_CSTYPE) {
                 result.isValid = false;
                 result.messages.add(Constant_Util.SELECT_ASSET);
-                result.fieldErrors.put('assetId', 'Asset is required for work order creation');
+                result.fieldErrors.put('assetId', 'Asset is required for Pickup work order creation');
             }
         }
     }
