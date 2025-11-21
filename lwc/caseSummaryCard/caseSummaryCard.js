@@ -18,7 +18,7 @@ import evaluateBusinessRules from '@salesforce/apex/BusinessRuleValidatorControl
  * - Business rule validation status display
  * - Visual indicators for ready/not ready state
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class CaseSummaryCard extends LightningElement {

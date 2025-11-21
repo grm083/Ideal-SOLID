@@ -715,9 +715,7 @@ public with sharing class CaseUIService {
      * @description Logic check for Progress Case button visibility
      * DEPRECATED: This method has been moved to CaseBusinessRuleService (Phase 2)
      * Kept as a stub for backward compatibility only
-     * @deprecated Use CaseBusinessRuleService.shouldShowProgressCaseButton instead
      */
-    @Deprecated
     private static Boolean progressCaseVisibilityLogicCheck(CaseUIWrapper wrapper) {
         // This method is deprecated and should not be called
         // All logic has been moved to CaseBusinessRuleService
@@ -771,9 +769,7 @@ public with sharing class CaseUIService {
      * @description Logic check for Add Quote button visibility
      * DEPRECATED: This method has been moved to CaseBusinessRuleService (Phase 2)
      * Kept as a stub for backward compatibility only
-     * @deprecated Use CaseBusinessRuleService.shouldShowAddQuoteButton instead
      */
-    @Deprecated
     private static Boolean addQuoteVisibilityLogicCheck(CaseUIWrapper wrapper) {
         // This method is deprecated and should not be called
         // All logic has been moved to CaseBusinessRuleService
@@ -827,9 +823,7 @@ public with sharing class CaseUIService {
      * @description Check user categorization code for button visibility
      * DEPRECATED: This method has been moved to CaseBusinessRuleService (Phase 2)
      * Kept as a stub for backward compatibility only
-     * @deprecated Use CaseBusinessRuleService.shouldShowAddQuoteButton instead
      */
-    @Deprecated
     private static Boolean getUserUCCDetail(CaseUIWrapper wrapper) {
         // This method is deprecated and should not be called
         // All logic has been moved to CaseBusinessRuleService

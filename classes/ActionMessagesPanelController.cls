@@ -15,7 +15,7 @@
  * - Service Layer Integration: 100% reuse of CaseBusinessRuleService
  * - Cacheable: Uses @AuraEnabled(cacheable=true) for wire services
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  * @group Controllers
  */

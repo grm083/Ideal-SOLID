@@ -4,7 +4,7 @@
  * Tests work order preview data retrieval, updates, and validation
  * for the unified case management system.
  * 
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  * @group Test Classes
  */

@@ -19,21 +19,17 @@ public class Entitlement_Utility {
     static final String CUST_ENTITLEMENT = 'Customer Specific Entitlement';
 
     /**
-     * @deprecated Static variables violate SOLID principles and create hidden coupling.
      * Use the parameter-based methods instead (getPrioritizedEntitlements, getRelevantEntitlements).
      * These static variables will be removed in a future release.
      * Migration: Extract accountIds and minimumServiceDate from your records and pass them as parameters.
      */
-    @Deprecated
     public static Set<Id> accountIdSet = new Set<Id>{ null };
 
     /**
-     * @deprecated Static variables violate SOLID principles and create hidden coupling.
      * Use the parameter-based methods instead (getPrioritizedEntitlements, getRelevantEntitlements).
      * These static variables will be removed in a future release.
      * Migration: Extract accountIds and minimumServiceDate from your records and pass them as parameters.
      */
-    @Deprecated
     public static Date minimumServiceDate;
 
     /**
@@ -402,11 +398,9 @@ public class Entitlement_Utility {
     }
 
     /**
-     * @deprecated This method uses static variables which violate SOLID principles.
      * Use getCaseDetailsWithMetadata instead, or use the public getPrioritizedEntitlements method.
      * This method is maintained for backward compatibility only and will be removed in a future release.
      */
-    @Deprecated
     public static Map<String, List<priorityFields>> getCaseDetails(Set<Id> caseIdSet,Map<String, List<priorityFields>> casePriorityFields,List<Entitlement_Field_Mapping__mdt> fieldMapping) {
 
         //As part of this acivity we want to construct a very specific query to return a case record with appropriate lookups
@@ -516,11 +510,9 @@ public class Entitlement_Utility {
     }
 
     /**
-     * @deprecated This method uses static variables which violate SOLID principles.
      * Use getQuoteDetailsWithMetadata instead, or use the public getPrioritizedEntitlements method.
      * This method is maintained for backward compatibility only and will be removed in a future release.
      */
-    @Deprecated
     public static Map<String, List<priorityFields>> getQuoteDetails(
         Set<Id> quoteIdSet,Map<String, List<priorityFields>> quotePriorityFields,List<Entitlement_Field_Mapping__mdt> fieldMapping) {
 
@@ -549,11 +541,9 @@ public class Entitlement_Utility {
     }
 
     /**
-     * @deprecated This method uses static variables (accountIdSet, minimumServiceDate) which violate SOLID principles.
      * Use getEntitlementsWithParams instead, or use the public getPrioritizedEntitlements method.
      * This method is maintained for backward compatibility only and will be removed in a future release.
      */
-    @Deprecated
     public static Map<String, List<Entitlement>> getEntitlements(Map<String, List<priorityFields>> priorityFields, List<Entitlement_Field_Mapping__mdt> mappedFields) {
 
         //System.debug('In getEntitlements():: ');

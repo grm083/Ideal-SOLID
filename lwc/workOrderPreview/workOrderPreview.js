@@ -18,7 +18,7 @@ import updateWorkOrderPreviewFields from '@salesforce/apex/WorkOrderPreviewContr
  * - Existing work order alerts
  * - Save/Reset functionality
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class WorkOrderPreview extends LightningElement {

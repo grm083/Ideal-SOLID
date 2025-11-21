@@ -20,7 +20,6 @@ public without sharing class CaseTriggerHelper {
     public static Integer runCount = 0;
 
     /**
-     * @deprecated ARCHITECTURAL ANTI-PATTERN: Static variables violate SOLID principles and create hidden coupling.
      * These maps are used for inter-class communication which makes code difficult to test and understand.
      *
      * MIGRATION GUIDE:
@@ -38,13 +37,10 @@ public without sharing class CaseTriggerHelper {
      * - CaseTriggerHelper.fetchSLA: REFACTORED - no longer uses Entitlement_Utility static variables
      * - Entitlement_Utility: REFACTORED - static variables deprecated, parameter-based methods added
      */
-    @Deprecated
     public static Map<Id,Asset> casewithContainer = new Map<Id,Asset>();
 
     /**
-     * @deprecated See casewithContainer deprecation notice above. Same anti-pattern applies.
      */
-    @Deprecated
     public static Map<Id,Account> casewithLocation = new Map<Id,Account>();
 
     // Other static collections (not yet deprecated, need further analysis)

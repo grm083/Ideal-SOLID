@@ -4,7 +4,7 @@
  * Tests case highlight strip data retrieval and field status determination
  * for the unified case management system.
  * 
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  * @group Test Classes
  */

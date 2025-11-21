@@ -15,7 +15,7 @@
  * - Service Layer Integration: Delegates to CaseWorkOrderService for business logic
  * - 100% reuse of existing validation logic
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  * @group Controllers
  */

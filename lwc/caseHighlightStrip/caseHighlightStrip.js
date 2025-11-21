@@ -18,7 +18,7 @@ import getCaseHighlightData from '@salesforce/apex/CaseHighlightStripController.
  *
  * Replaces: CustomCaseHighlightPanel (Aura + LWC)
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class CaseHighlightStrip extends LightningElement {

@@ -1518,7 +1518,6 @@ public without sharing class CaseBusinessRuleService {
     
     /**
      * @description Initiates work order creation process for one or more cases
-     * @deprecated Use CaseWorkOrderService.initiateWorkOrderCreation() instead (Phase 5E refactoring)
      * This method is maintained for backward compatibility only.
      * All work order orchestration logic has been moved to CaseWorkOrderService.
      *
@@ -1526,7 +1525,6 @@ public without sharing class CaseBusinessRuleService {
      * @param caseIdList List of case IDs to create work orders for (may be multi-case)
      * @return SUCCESS or FAILURE status string
      */
-    @Deprecated
     public static String initiateWorkOrderCreation(String caseId, List<String> caseIdList) {
         // REFACTORED (Phase 5E): Delegate to CaseWorkOrderService
         // All logic moved to proper service layer
