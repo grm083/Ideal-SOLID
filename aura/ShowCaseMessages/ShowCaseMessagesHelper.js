@@ -150,8 +150,8 @@
                 disableAddQuote: false
             });
 
-            // CPQ validation for New cases with Assets
-            if (wrapper.CaseStatus === 'New' && wrapper.caseData && wrapper.caseData.AssetId) {
+            // CPQ validation for New cases with Assets (Add/Change path only, not New Service)
+            if (wrapper.CaseStatus === 'New' && wrapper.caseData && wrapper.caseData.AssetId && wrapper.CaseType !== 'New Service') {
                 this._launchCPQValidation(component);
             }
         } else {
@@ -537,12 +537,9 @@
                 this._updateButtonState(component, { isAddCaseAsset: true });
             }
 
-            if (sMsg && sMsg === 'Select the appropriate asset header to Progress Case') {
-                component.set('v.CaseMsg', sMsg);
-                this._updateDisplayState(component, { actionReqRed: true });
-            } else {
-                component.set('v.CaseMsg', ' Read the Authorization Notes ');
-            }
+            // Note: "Select the appropriate asset header" error is only shown for Pickup cases
+            // See _handlePickupCase for that logic
+            component.set('v.CaseMsg', ' Read the Authorization Notes ');
         }
         // Case 10: Open case with work order creation and manual asset
         else if (wrapper.CaseStatus === "Open" && wrapper.WorkOrderCreation &&
@@ -792,6 +789,25 @@
             });
 
             this._updateDisplayState(component, { showMultipleCaseLabel: false });
+        }
+        // Select appropriate asset header message (only for Pickup cases)
+        else if (sMsg && sMsg === 'Select the appropriate asset header to Progress Case') {
+
+            component.set('v.CaseMsg', sMsg);
+            this._updateDisplayState(component, {
+                displayMsg: true,
+                actionReqRed: true,
+                displaySummary: false
+            });
+
+            this._updateButtonState(component, {
+                subTypeBtn: false,
+                caseServiceDateBtn: false
+            });
+
+            if (assetCode.indexOf(wrapper.assetSCode) > -1) {
+                this._updateButtonState(component, { isShowProgressCase: false });
+            }
         }
         // Other messages
         else if (sMsg && sMsg !== "undefined" && sMsg !== null && sMsg !== "") {
