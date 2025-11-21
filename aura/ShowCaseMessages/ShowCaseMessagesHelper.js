@@ -150,8 +150,8 @@
                 disableAddQuote: false
             });
 
-            // CPQ validation for New cases with Assets
-            if (wrapper.CaseStatus === 'New' && wrapper.caseData && wrapper.caseData.AssetId) {
+            // CPQ validation for New cases with Assets (Add/Change path only, not New Service)
+            if (wrapper.CaseStatus === 'New' && wrapper.caseData && wrapper.caseData.AssetId && wrapper.CaseType !== 'New Service') {
                 this._launchCPQValidation(component);
             }
         } else {
