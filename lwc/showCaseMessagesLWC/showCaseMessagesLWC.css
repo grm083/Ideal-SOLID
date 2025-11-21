@@ -21,12 +21,14 @@
     flex: 1;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    white-space: pre-line;
 }
 
 .NTEmsg {
     flex: 1;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    white-space: pre-line;
     font-weight: bold;
 }
 
