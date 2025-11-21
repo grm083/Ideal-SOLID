@@ -30,7 +30,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get case messages with all validations and business rules
-* @deprecated Use CaseUIService.getCaseMessages() instead
 * @param caseId Case ID
 * @return Wrapper with comprehensive case information
 */
@@ -61,7 +60,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get business rule channel requirements and special instructions
-* @deprecated Use CaseUIService.getBusinessRule() instead
 * @param caseId Case ID
 * @return Wrapper with business rule information
 */
@@ -83,7 +81,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get SLA instructions from entitlement
-* @deprecated Use CaseUIService.getEntitlement() instead
 * @param caseId Case ID
 * @return Wrapper with SLA information
 */
@@ -117,7 +114,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get case summary for related cases
-* @deprecated Use CaseUIService.getCaseSummary() instead
 * @param caseId Case ID
 * @param referenceNo Reference number
 * @param parentId Parent case ID
@@ -169,7 +165,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get list of case record types
-* @deprecated Use CaseUIService.getCaseRecordTypeList() instead
 * @return List of record type names
 */
     @AuraEnabled
@@ -186,7 +181,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get record type ID for case
-* @deprecated Use CaseUIService.getRecordTypeId() instead
 * @param caseId Case ID
 * @return Record type ID
 */
@@ -204,7 +198,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get case record details
-* @deprecated Use CaseUIService.getCaseRecordDetails() instead
 * @param caseId Case ID
 * @return List of case details
 */
@@ -222,7 +215,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get case asset details
-* @deprecated Use CaseUIService.getCaseAssetDetails() instead
 * @param caseId Case ID
 * @return List of cases with asset details
 */
@@ -261,7 +253,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get asset validation details for pickup cases
-* @deprecated Use CaseAssetValidator.validatePickupAssets() instead
 * @param assetParam Map of Asset ID to Service Date
 * @return Map of Asset ID to validation message
 */
@@ -278,7 +269,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Get asset validation details for non-pickup cases
-* @deprecated Use CaseAssetValidator.validateNonPickupAssets() instead
 * @param assetParam Map of Asset ID to Service Date
 * @return Map of Asset ID to validation message
 */
@@ -369,7 +359,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Check if user has CPQ license and permissions
-* @deprecated Use CaseUIService.hasCPQAccess() instead
 * @return True if user has CPQ access
 */
     public static Boolean getUserDetail() { 
@@ -387,7 +376,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Check if user can update active assets
-* @deprecated Use CaseUIService.hasUpdateAssetAccess() instead
 * @return True if user has update asset permissions
 */
     public static Boolean getActiveAssetUserDetail() {
@@ -407,7 +395,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Copy Acorn comments from parent to child case
-* @deprecated Use CaseBusinessRuleService.copyAcornComments() instead
 * @param recordId Parent case ID
 * @param caseObj Child case object
 */
@@ -482,14 +469,12 @@ public with sharing class GetCaseInformation {
     
     /**
      * @description Creates Opportunity and Quote from Case
-     * @deprecated Use CaseCPQService.createQuoteFromCase() instead (Phase 5C refactoring)
      * This method is maintained for backward compatibility only.
      * All CPQ logic has been moved to CaseCPQService.
      *
      * @param CaseId Case ID
      * @return Quote ID of created quote
      */
-    @Deprecated
     @AuraEnabled
     public static String createOppQuote(String CaseId) {
         // REFACTORED (Phase 5C): Delegate to CaseCPQService
@@ -822,7 +807,6 @@ public with sharing class GetCaseInformation {
     
     /**
 * @description Legacy wrapper class for Case UI data
-* @deprecated Use CaseUIService.CaseUIWrapper instead
 */
     public with sharing class Wrapper {
         @AuraEnabled public List<String> caseRecordTypeList {get;set;}

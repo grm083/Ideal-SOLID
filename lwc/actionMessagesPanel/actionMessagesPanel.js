@@ -23,7 +23,7 @@ import getActionPanelData from '@salesforce/apex/ActionMessagesPanelController.g
  *
  * Replaces: ShowCaseMessages (Aura + LWC)
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class ActionMessagesPanel extends NavigationMixin(LightningElement) {

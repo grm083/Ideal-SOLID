@@ -25,7 +25,7 @@ import validateAssetSelection from '@salesforce/apex/AssetSelectorController.val
  * - Inline asset detail display
  * - Active/inactive asset filtering
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class AssetSelector extends LightningElement {

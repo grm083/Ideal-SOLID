@@ -20,7 +20,7 @@ import { NavigationMixin } from 'lightning/navigation';
  * - State management across all phases
  * - Integration with CaseWizardService
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class CaseManagerContainer extends NavigationMixin(LightningElement) {

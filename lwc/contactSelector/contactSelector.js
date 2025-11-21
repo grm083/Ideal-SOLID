@@ -30,7 +30,7 @@ import validateContactSelection from '@salesforce/apex/ContactSelectorController
  * - Account title/department management
  * - Vendor contact search
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class ContactSelector extends LightningElement {

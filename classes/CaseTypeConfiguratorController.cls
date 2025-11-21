@@ -13,7 +13,7 @@
  *
  * Refactored from: changeRecordTypeController.cls
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 public with sharing class CaseTypeConfiguratorController {

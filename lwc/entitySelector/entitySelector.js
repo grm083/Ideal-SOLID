@@ -21,7 +21,7 @@ import validateEntitySelection from '@salesforce/apex/EntitySelectorController.v
  * - Detail display using inlineDetailCard
  * - Validation on selection
  *
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  */
 export default class EntitySelector extends LightningElement {

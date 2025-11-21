@@ -4,7 +4,7 @@
  * Tests business rule evaluation, validation, and button visibility logic
  * for the unified case management system.
  * 
- * @author Claude (AI Assistant)
+ * @author George Martin
  * @date 2025-11-18
  * @group Test Classes
  */
