@@ -551,7 +551,7 @@
             this._updateDisplayState(component, {
                 displayMsg: true,
                 actionReqRed: false,
-                displaySummary: true,
+                displaySummary: false,
                 showMultipleCaseLabel: false,
                 displayMultipleAssetCases: false
             });
@@ -610,15 +610,16 @@
                 });
             } else {
                 component.set('v.CaseMsg', '');
+                // Only show View Case Summary button when status is 'New'
                 this._updateDisplayState(component, {
-                    displaySummary: true,
+                    displaySummary: wrapper.CaseStatus === "New",
                     displayMsg: true,
                     actionReqRed: false,
                     showMultipleCaseLabel: true
                 });
 
                 // Set button label based on capacity eligibility
-                if (!stateFlags.isCapacityEligible) {
+                if (!stateFlags.isCapacityEligible && wrapper.CaseStatus === "New") {
                     component.find("disablebuttonid").set("v.label", 'View Case Summary');
                 }
 
