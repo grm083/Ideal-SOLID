@@ -322,13 +322,20 @@ public without sharing class CaseTriggerHandler {
 
             // Phase 5a: Calculate SLA for cases where SLA was reset or is missing
             // This uses the new SLACalculationUtility.calculateAndSetSLAFields() method
+            // NOTE: Per user requirements, SLA should recalculate when Location__c, AssetId,
+            // Case_Type__c, Case_Sub_Type__c, or Case_Reason__c changes
             List<Case> casesNeedingSLACalculation = new List<Case>();
             for (Case caseRecord : casesToProcess) {
                 // Include cases where SLA was nullified by handleSLAResets() or never set
+                // IMPORTANT: This condition must match beforeInsert logic for consistency
                 if (caseRecord.SLA_Service_Date_Time__c == null &&
                     caseRecord.RecordTypeId != integrationRcdTypeId &&
                     String.isNotBlank(caseRecord.Location__c) &&
                     String.isNotBlank(caseRecord.Case_Sub_Type__c)) {
+
+                    // AssetId is optional but recommended - if blank, entitlement logic will use fallback
+                    // No AssetId check here to allow SLA calculation even without AssetId
+                    // (matches user scenario where Location__c, ContactId, Case_Sub_Type__c trigger SLA)
 
                     // Exclude standard case types (they have their own SLA calculation)
                     if (caseRecord.Case_Type__c != 'Activate' &&

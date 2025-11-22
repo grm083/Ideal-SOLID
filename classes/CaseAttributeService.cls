@@ -407,7 +407,12 @@ public with sharing class CaseAttributeService {
                         }
 
                         // Update Case Sub Type based on asset (Issue fix)
-                        caseRecord.Case_Sub_Type__c = determineCaseSubType(caseRecord, asset);
+                        // FIX: Only auto-populate if blank to prevent overwriting user-supplied values
+                        // This ensures SLA recalculation triggers correctly when user manually sets Case_Sub_Type__c
+                        String determinedSubType = determineCaseSubType(caseRecord, asset);
+                        if (String.isBlank(caseRecord.Case_Sub_Type__c) && String.isNotBlank(determinedSubType)) {
+                            caseRecord.Case_Sub_Type__c = determinedSubType;
+                        }
                     }
             }
 
