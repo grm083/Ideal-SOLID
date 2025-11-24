@@ -226,12 +226,11 @@ t.addError(System.label.WorkOrder_Service_Date_Update_Error);
 }
 */  
                     //SDT- 7895 Start
-                    if(!String.isBlank(t.Process__c) && t.Process__c.contains(Constant_Util.Confirm_Vendor_Availability) && !String.isBlank(t.Outcome__c) && t.Outcome__c.contains(Constant_Util.Vendor_Available)){ 
-                        //if(t.Process__c.contains(Constant_Util.Confirm_Vendor_Availability) && t.Outcome__c.contains(Constant_Util.Vendor_Available)){
+                    // REFACTORED: Case availability update logic moved to CaseTaskService
+                    if(!String.isBlank(t.Process__c) && t.Process__c.contains(Constant_Util.Confirm_Vendor_Availability) && !String.isBlank(t.Outcome__c) && t.Outcome__c.contains(Constant_Util.Vendor_Available)){
                         c.Availability_Confirmed__c = true;
                         lstupdatecase.add(c);
                     }
-                    
                     //SDT- 7895 End
                     if(c != null && isInsertValue && t.subject.contains(Constant_Util.ESCALATION_CONFIRM_SERVICE_LOCATION) && c.status.contains(Constant_Util.CLOSED) && (c.Case_Sub_Status__c.contains(Constant_Util.SERVICE_CONFIRMED) || c.Case_Sub_Status__c.contains(Constant_Util.SERVICE_NOT_PERFORMED))){
                         t.addError(Constant_Util.CASE_IS_CLOSED);
@@ -262,8 +261,9 @@ t.Status = Constant_Util.COMPLETED;
                 }
             }
             //SDT- 7895 Start
+            // REFACTORED: Delegate Case DML to service layer
             if(lstupdatecase.size()>0){
-                update lstupdatecase;
+                CaseDMLService.getInstance().updateCases(lstupdatecase);
             }
             //SDT- 7895 End
         }
@@ -1051,8 +1051,9 @@ public static Map<Id,String> calculatePriorityFromTaskDueDate(Map<Id, DateTime> 
                 lstupdatecase = CaseTriggerHelper.UpdateLocalAgentId(casemap,caseOldmap,false);
             }
             
+            // REFACTORED: Delegate Case DML to service layer
             if(!lstupdatecase.isEmpty() && lstupdatecase !=Null && !RecurrsiveTriggerHandler.isSkipCaseTriggerForTask){ //sdt-32713
-                update lstupdatecase;
+                CaseDMLService.getInstance().updateCases(lstupdatecase);
             }
         }
         catch(Exception e){
@@ -1196,10 +1197,11 @@ if(contains(t.Subject,'WorkItem')){
             
             
         }
+        // REFACTORED: Delegate to service layer for Case DML operations
         if(caselist != null && !caselist.isEmpty()){
             try{
                 RecurrsiveTriggerHandler.isSkipcaseTrigger = true;
-                update caselist;
+                CaseDMLService.getInstance().updateCases(caselist);
             }
             catch(exception e){
                 UTIL_LoggingService.logHandledException(e, UserInfo.getOrganizationId(), UTIL_ErrorConstants.TASK_TRIGGER_HELPER,LoggingLevel.ERROR);

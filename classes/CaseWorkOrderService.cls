@@ -236,6 +236,245 @@ public class CaseWorkOrderService {
     }
 
     // ========================================================================
+    // CASE UPDATE METHODS (REFACTORED FROM WORKORDERTRIGGERHELPER)
+    // ========================================================================
+
+    /**
+     * @description Updates Cases based on WorkOrder status changes
+     * REFACTORED: Extracted from WorkOrderTriggerHelper.updateCaseDetail() lines 19-147
+     * This consolidates all WorkOrder-driven Case updates into the service layer
+     *
+     * @param workOrderMap Map of WorkOrder Id to WorkOrder record
+     * @param oldWorkOrderMap Map of old WorkOrder records (for comparison)
+     * @param relatedCaseMap Map of Case Id to Case record
+     */
+    public static void updateCasesFromWorkOrderChanges(
+        Map<Id, WorkOrder> workOrderMap,
+        Map<Id, WorkOrder> oldWorkOrderMap,
+        Map<Id, Case> relatedCaseMap
+    ) {
+        if (workOrderMap == null || workOrderMap.isEmpty() || relatedCaseMap == null || relatedCaseMap.isEmpty()) {
+            return;
+        }
+
+        List<Case> caseRelatedList = new List<Case>();
+        List<Case> caseupdateList = new List<Case>();
+        Map<String, String> caseWOIdMap = new Map<String, String>();
+        Map<String, String> caseVendorIdMap = new Map<String, String>();
+        Set<Id> woVendorList = new Set<Id>();
+        Map<Id, Account> vendorsMap;
+
+        try {
+            // Build mappings
+            for (WorkOrder woRecord : workOrderMap.values()) {
+                caseWOIdMap.put(woRecord.CaseId, woRecord.Id);
+                if (woRecord.Vendor_Account_Id__c != null) {
+                    woVendorList.add(woRecord.Vendor_Account_Id__c);
+                    caseVendorIdMap.put(woRecord.CaseId, woRecord.Vendor_Account_Id__c);
+                }
+            }
+
+            // Query vendor accounts if needed
+            if (!woVendorList.isEmpty()) {
+                vendorsMap = new Map<Id, Account>([
+                    SELECT Id, Contact_Manually_Vendor__c
+                    FROM Account
+                    WHERE Id IN :woVendorList
+                ]);
+            }
+
+            // Process each case
+            if (!caseWOIdMap.isEmpty()) {
+                for (Case caseRecord : relatedCaseMap.values()) {
+                    // Link Work Order to Case if not already set
+                    if (String.isBlank(caseRecord.Work_Order__c)) {
+                        caseRecord.Work_Order__c = caseWOIdMap.get(caseRecord.Id);
+                    }
+
+                    WorkOrder woRecord = workOrderMap.get(caseWOIdMap.get(caseRecord.Id));
+                    if (woRecord == null) continue;
+
+                    WorkOrder oldWoRecord = new WorkOrder();
+                    if (oldWorkOrderMap != null && !oldWorkOrderMap.isEmpty() && oldWorkOrderMap.containsKey(caseWOIdMap.get(caseRecord.Id))) {
+                        oldWoRecord = oldWorkOrderMap.get(caseWOIdMap.get(caseRecord.Id));
+                    }
+
+                    // Update Proposed Service Date from Service_Date__c
+                    if (!Constant_Util.CLOSED.equalsIgnoreCase(caseRecord.Status) &&
+                        ((oldWoRecord != null && woRecord.Service_Date__c != oldWoRecord.Service_Date__c &&
+                          woRecord.Vendor_Service_Status__c != oldWoRecord.Vendor_Service_Status__c) ||
+                         !RecurrsiveTriggerHandler.bypassValidation)) {
+                        caseRecord.Proposed_Service_Date__c = woRecord.Service_Date__c;
+                    }
+
+                    // Update Proposed Service Date from Rescheduled_Date__c
+                    if (!Constant_Util.CLOSED.equalsIgnoreCase(caseRecord.Status) &&
+                        ((oldWoRecord != null && woRecord.Rescheduled_Date__c != oldWoRecord.Rescheduled_Date__c &&
+                          woRecord.Vendor_Service_Status__c != oldWoRecord.Vendor_Service_Status__c) ||
+                         !RecurrsiveTriggerHandler.bypassValidation)) {
+                        caseRecord.Proposed_Service_Date__c = woRecord.Rescheduled_Date__c != null ? woRecord.Rescheduled_Date__c.Date() : null;
+                    }
+
+                    // Set to Pending Manual Dispatch
+                    if ((oldWoRecord == null || (oldWoRecord != null && oldWoRecord.Acorn_WorkOrder_Number__c != woRecord.Acorn_WorkOrder_Number__c)) &&
+                        Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status) &&
+                        (vendorsMap != null && caseVendorIdMap != null && caseVendorIdMap.get(caseRecord.Id) != null &&
+                         vendorsMap.get(caseVendorIdMap.get(caseRecord.Id)).Contact_Manually_Vendor__c) &&
+                        caseRecord.Service_Date__c >= caseRecord.Service_date_from_local_time__c &&
+                        !Constant_UTIL.Pending_Manual_Dispatch.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) &&
+                        !woRecord.Is_Bypass__c) {
+                        caseRecord.Case_Sub_Status__c = Constant_UTIL.Pending_Manual_Dispatch;
+                        caseRecord.Status = Constant_Util.OPEN;
+                    } else {
+                        // Set to Pending Dispatch
+                        if (((Constant_UTIL.PENDING_SERVICE_INTEGRATION.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) ||
+                              caseRecord.Source_System__c == 'Acorn') &&
+                             Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status)) &&
+                            (Constant_UTIL.ISSUED.equalsIgnoreCase(woRecord.Status) ||
+                             (Constant_UTIL.SENT.equalsIgnoreCase(woRecord.Status) &&
+                              Constant_UTIL.SCHEDULED.equalsIgnoreCase(woRecord.send_status__c))) &&
+                            !Constant_UTIL.Pending_Dispatch.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) &&
+                            !(vendorsMap != null && caseVendorIdMap != null && caseVendorIdMap.get(caseRecord.Id) != null &&
+                              vendorsMap.get(caseVendorIdMap.get(caseRecord.Id)).Contact_Manually_Vendor__c)) {
+                            caseRecord.Case_Sub_Status__c = Constant_UTIL.Pending_Dispatch;
+                        }
+                    }
+
+                    // Service Not Performed (Confirmed Negative)
+                    if (woRecord.Vendor_Service_Status__c != null && woRecord.Vendor_Service_Status__c.contains(Constant_Util.CONFIRMED_NEGATIVE)) {
+                        if (Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status)) {
+                            caseRelatedList.add(caseRecord);
+                        }
+                        caseRecord.Case_Sub_Status__c = Constant_Util.SERVICE_NOT_PERFORMED;
+                        caseRecord.Status = Constant_Util.CLOSED;
+                    }
+
+                    // Pending Service/Schedule Confirmation
+                    if ((Constant_UTIL.SENT.equalsIgnoreCase(woRecord.Send_Status__c) || Constant_UTIL.DELIVERED.equalsIgnoreCase(woRecord.Send_Status__c)) &&
+                        (!Constant_Util.ACCEPTED.equalsIgnoreCase(woRecord.Status) || !Constant_Util.CANCELLED.equalsIgnoreCase(woRecord.Status) ||
+                         !Constant_Util.CLOSED.equalsIgnoreCase(woRecord.Status)) &&
+                        !Constant_Util.CLOSED.equalsIgnoreCase(caseRecord.Status) && caseRecord.Service_Date__c >= System.today() &&
+                        !Constant_Util.Pending_Service_Confirmation.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) &&
+                        !Constant_Util.Pending_Schedule_Confirmation.equalsIgnoreCase(caseRecord.Case_Sub_Status__c)) {
+                        if (caseRecord.Availability_Confirmed__c) {
+                            caseRecord.Case_Sub_Status__c = Constant_Util.Pending_Service_Confirmation;
+                        } else {
+                            caseRecord.Case_Sub_Status__c = Constant_Util.Pending_Schedule_Confirmation;
+                        }
+                        caseRecord.Status = Constant_Util.OPEN;
+                    }
+
+                    // Service Confirmed (Confirmed Positive)
+                    if (woRecord.Vendor_Service_Status__c != null && oldWoRecord.Vendor_Service_Status__c != woRecord.Vendor_Service_Status__c &&
+                        woRecord.Vendor_Service_Status__c.contains(Constant_Util.CONFIRMED_POSITIVE) &&
+                        (Constant_Util.CLOSED.equalsIgnoreCase(caseRecord.Status) ||
+                         ((Constant_Util.SENT.equalsIgnoreCase(woRecord.Status) || Constant_Util.RELEASED_FOR_PAYMENT.equalsIgnoreCase(woRecord.Status) ||
+                           Constant_Util.ACCEPTED.equalsIgnoreCase(woRecord.Status) || Constant_Util.WORK_COMPLETE.equalsIgnoreCase(woRecord.Status) ||
+                           Constant_Util.CLOSED.equalsIgnoreCase(woRecord.Status)) &&
+                          Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status) && !Constant_Util.Pending_Manual_Dispatch.equalsIgnoreCase(caseRecord.Case_Sub_Status__c)))) {
+                        caseRecord.Case_Sub_Status__c = Constant_Util.SERVICE_CONFIRMED;
+                        caseRecord.Status = Constant_Util.CLOSED;
+                    }
+
+                    // Additional Pending Service Confirmation scenarios
+                    if (oldWoRecord != null && (!Constant_Util.Pending_Service_Confirmation.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) &&
+                        Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status) &&
+                        ((((woRecord.Status != oldWoRecord.Status) &&
+                           (Constant_Util.SENT.equalsIgnoreCase(woRecord.Status) || Constant_Util.RELEASED_FOR_PAYMENT.equalsIgnoreCase(woRecord.Status) ||
+                            Constant_Util.ACCEPTED.equalsIgnoreCase(woRecord.Status) || Constant_Util.WORK_COMPLETE.equalsIgnoreCase(woRecord.Status) ||
+                            Constant_Util.CLOSED.equalsIgnoreCase(woRecord.Status))) &&
+                          woRecord.Service_Date__c < System.today() && Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status) &&
+                          !Constant_Util.Pending_Manual_Dispatch.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) &&
+                          (String.isBlank(woRecord.Vendor_Service_Status__c) || Constant_Util.SCHEDULED.equalsIgnoreCase(woRecord.Vendor_Service_Status__c))) ||
+                         (Constant_Util.SCHEDULED.equalsIgnoreCase(woRecord.Vendor_Service_Status__c) || !String.isBlank(woRecord.MAS_Ticket__c)) ||
+                         (Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status) && !Constant_Util.Pending_Manual_Dispatch.equalsIgnoreCase(caseRecord.Case_Sub_Status__c) &&
+                          Constant_Util.ACCEPTED.equalsIgnoreCase(woRecord.Status))))) {
+                        caseRecord.Status = Constant_Util.OPEN;
+                        caseRecord.Case_Sub_Status__c = Constant_Util.Pending_Service_Confirmation;
+                    }
+
+                    // Request Canceled
+                    if (oldWoRecord.Status != woRecord.Status && Constant_Util.CANCELLED.equalsIgnoreCase(woRecord.Status) &&
+                        Constant_Util.OPEN.equalsIgnoreCase(caseRecord.Status) && !Constant_Util.Request_Canceled.equalsIgnoreCase(caseRecord.Case_Sub_Status__c)) {
+                        caseRecord.Status = Constant_Util.CLOSED;
+                        caseRecord.Case_Sub_Status__c = Constant_Util.Request_Canceled;
+                    }
+
+                    // WorkOrder Rejected
+                    if (Constant_UTIL.REJECTED.equalsIgnoreCase(woRecord.Status)) {
+                        caseRecord.Status = Constant_Util.CLOSED;
+                    }
+
+                    caseupdateList.add(caseRecord);
+                }
+            }
+
+            // Create related cases for Service Not Performed scenarios
+            if (!caseRelatedList.isEmpty()) {
+                CaseCreation.createRelatedCase(caseRelatedList);
+            }
+
+            // Perform DML through service layer
+            if (!caseupdateList.isEmpty()) {
+                if (!System.isBatch() && !System.isFuture() && caseupdateList.size() > 1) {
+                    // Use batch for large volumes
+                    SObjectUpdateBatch b = new SObjectUpdateBatch(caseupdateList);
+                    Database.executeBatch(b, 10);
+                } else {
+                    // Use service layer for normal DML
+                    CaseDMLService.getInstance().updateCases(caseupdateList);
+                }
+            }
+
+        } catch (Exception excp) {
+            UTIL_LoggingService.logHandledException(excp, UserInfo.getOrganizationId(), UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
+        }
+    }
+
+    /**
+     * @description Updates Case task creation flags when WorkOrder service dates change
+     * REFACTORED: Extracted from WorkOrderTriggerHelper.ServiceDateChanges() lines 216-232
+     * Updates Is_Case_OSC_Created__c and Is_Case_CSC_Created__c flags based on service date changes
+     *
+     * @param caseTaskFlagMap Map of Case Id to flag type ('OSC' or 'CSC')
+     */
+    public static void updateCaseTaskFlagsForServiceDateChanges(Map<Id, String> caseTaskFlagMap) {
+        if (caseTaskFlagMap == null || caseTaskFlagMap.isEmpty()) {
+            return;
+        }
+
+        List<Case> updateCaseLst = new List<Case>();
+
+        try {
+            for (Id caseId : caseTaskFlagMap.keySet()) {
+                Case cse = new Case(Id = caseId);
+                String flagType = caseTaskFlagMap.get(caseId);
+
+                if (flagType == 'OSC') {
+                    cse.Is_Case_OSC_Created__c = false;
+                } else if (flagType == 'CSC') {
+                    cse.Is_Case_CSC_Created__c = false;
+                }
+                updateCaseLst.add(cse);
+            }
+
+            if (!updateCaseLst.isEmpty()) {
+                CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(updateCaseLst);
+
+                // Log any errors that occurred
+                if (result.hasErrors) {
+                    for (CaseDMLService.DMLError error : result.errors) {
+                        System.debug('Error updating case task flags: ' + error.message);
+                    }
+                }
+            }
+
+        } catch (Exception excp) {
+            UTIL_LoggingService.logHandledException(excp, UserInfo.getOrganizationId(), UTIL_ErrorConstants.ERROR_APPLICATION, LoggingLevel.ERROR);
+        }
+    }
+
+    // ========================================================================
     // HELPER METHODS AND INNER CLASSES
     // ========================================================================
 

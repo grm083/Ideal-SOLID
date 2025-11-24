@@ -226,6 +226,170 @@ public class CaseTaskService {
     }
 
     // ========================================================================
+    // CASE UPDATE METHODS (REFACTORED FROM TASKTRIGGERHELPER)
+    // ========================================================================
+
+    /**
+     * @description Updates Case Availability_Confirmed flag when vendor confirms availability
+     * REFACTORED: Extracted from TaskTriggerHelper.validateCase() lines 229-266
+     *
+     * @param taskMap Map of Task Id to Task record with Vendor Available outcome
+     * @param relatedCaseMap Map of Case Id to Case record
+     */
+    public static void updateCaseAvailabilityFromTask(Map<Id, Task> taskMap, Map<Id, Case> relatedCaseMap) {
+        if (taskMap == null || taskMap.isEmpty() || relatedCaseMap == null || relatedCaseMap.isEmpty()) {
+            return;
+        }
+
+        List<Case> casesToUpdate = new List<Case>();
+
+        try {
+            for (Task t : taskMap.values()) {
+                if (!String.isBlank(t.Process__c) &&
+                    t.Process__c.contains(Constant_Util.Confirm_Vendor_Availability) &&
+                    !String.isBlank(t.Outcome__c) &&
+                    t.Outcome__c.contains(Constant_Util.Vendor_Available) &&
+                    relatedCaseMap.containsKey(t.WhatId)) {
+
+                    Case c = relatedCaseMap.get(t.WhatId);
+                    c.Availability_Confirmed__c = true;
+                    casesToUpdate.add(c);
+                }
+            }
+
+            if (!casesToUpdate.isEmpty()) {
+                CaseDMLService.getInstance().updateCases(casesToUpdate);
+            }
+
+        } catch (Exception e) {
+            UTIL_LoggingService.logHandledException(
+                e,
+                UserInfo.getOrganizationId(),
+                'CaseTaskService.updateCaseAvailabilityFromTask',
+                LoggingLevel.ERROR
+            );
+        }
+    }
+
+    /**
+     * @description Updates Case Last Agent ID based on Task updates
+     * REFACTORED: Extracted from TaskTriggerHelper.lastAgentIdUpdate() lines 1036-1061
+     * Delegates to CaseTriggerHelper.UpdateLocalAgentId() for business logic
+     *
+     * @param tasks List of Tasks being updated
+     */
+    public static void updateCaseLastAgentFromTasks(List<Task> tasks) {
+        if (tasks == null || tasks.isEmpty()) {
+            return;
+        }
+
+        Set<Id> caseIds = new Set<Id>();
+        Map<Id, Case> caseMap = new Map<Id, Case>();
+        List<Case> casesToUpdate = new List<Case>();
+
+        try {
+            // Build case map from tasks
+            for (Task t : tasks) {
+                if (t.WhatId != null && t.WhatId.getSObjectType() == Case.sObjectType) {
+                    Case c = new Case(Id = t.WhatId);
+                    caseMap.put(t.WhatId, c);
+                }
+            }
+
+            // Only proceed if we have cases and the trigger is not skipped
+            if (!caseMap.isEmpty() && !RecurrsiveTriggerHandler.isSkipCaseTriggerForTask) {
+                // Delegate to CaseTriggerHelper for business logic
+                casesToUpdate = CaseTriggerHelper.UpdateLocalAgentId(caseMap, new Map<Id, Case>(), false);
+
+                if (!casesToUpdate.isEmpty()) {
+                    CaseDMLService.getInstance().updateCases(casesToUpdate);
+                }
+            }
+
+        } catch (Exception e) {
+            UTIL_LoggingService.logHandledException(
+                e,
+                UserInfo.getOrganizationId(),
+                'CaseTaskService.updateCaseLastAgentFromTasks',
+                LoggingLevel.ERROR
+            );
+        }
+    }
+
+    /**
+     * @description Updates Case team assignment details from Case Assignment tasks
+     * REFACTORED: Extracted from TaskTriggerHelper.updateCaseDetails() lines 1163-1208
+     * Handles both standard case assignment and escalation scenarios
+     *
+     * @param taskMap Map of Task Id to Task record
+     */
+    public static void updateCaseTeamFromAssignmentTasks(Map<Id, Task> taskMap) {
+        if (taskMap == null || taskMap.isEmpty()) {
+            return;
+        }
+
+        List<Case> casesToUpdate = new List<Case>();
+
+        try {
+            for (Task tsk : taskMap.values()) {
+                // Standard Case Assignment process
+                if (Constant_Util.CASE_ASSIGNMENT.equalsIgnoreCase(tsk.Process__c) &&
+                    tsk.WhatId != null && tsk.WhatId.getSObjectType() == Case.sObjectType) {
+
+                    Case c = new Case(Id = tsk.WhatId);
+
+                    if (tsk.Task_Team_Name__c != null) {
+                        // Team-based assignment
+                        c.Team_Name__c = tsk.Task_Team_Name__c;
+                        c.Team_Queue__c = tsk.Task_Team_Queue__c;
+                        c.User_Name__c = null;
+                    } else {
+                        // User-based assignment
+                        c.Team_Name__c = null;
+                        c.Team_Queue__c = null;
+                        c.User_Name__c = tsk.OwnerId;
+                    }
+                    casesToUpdate.add(c);
+                }
+
+                // Escalation Obtain Vendor Information scenario (SDT-21868)
+                if (tsk.Subject == Constant_Util.STR_ESCALATION_OBTAIN_VENDOR_INFORMATION &&
+                    !(Constant_Util.CASE_ASSIGNMENT.equalsIgnoreCase(tsk.Process__c)) &&
+                    tsk.WhatId != null && tsk.WhatId.getSObjectType() == Case.sObjectType) {
+
+                    Case ca = new Case(Id = tsk.WhatId);
+                    ca.Team_Name__c = Constant_Util.Vendor_Relations_Mgmnt;
+                    ca.Team_Queue__c = Constant_Util.VRM_Inquiry;
+                    ca.User_Name__c = null;
+                    casesToUpdate.add(ca);
+                }
+            }
+
+            if (!casesToUpdate.isEmpty()) {
+                // Set recursive trigger flag to prevent loops
+                RecurrsiveTriggerHandler.isSkipcaseTrigger = true;
+
+                CaseDMLService.DMLResult result = CaseDMLService.getInstance().updateCases(casesToUpdate);
+
+                // Error handling is done in CaseDMLService, but log if needed
+                if (result.hasErrors) {
+                    for (CaseDMLService.DMLError error : result.errors) {
+                        System.debug('Error updating case team assignment: ' + error.message);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            UTIL_LoggingService.logHandledException(
+                e,
+                UserInfo.getOrganizationId(),
+                'CaseTaskService.updateCaseTeamFromAssignmentTasks',
+                LoggingLevel.ERROR
+            );
+        }
+    }
+
+    // ========================================================================
     // HELPER METHODS AND INNER CLASSES
     // ========================================================================
 
