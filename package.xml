@@ -15,6 +15,8 @@
         <members>BusinessRuleValidatorController</members>
         <members>BusinessRuleValidatorControllerTest</members>
         <members>CaseApprovalService</members>
+        <members>CaseAssetTriggerHandler</members>
+        <members>CaseAssetTriggerHelper</members>
         <members>CaseAssetValidator</members>
         <members>CaseAssetValidatorTest</members>
         <members>CaseAttributeService</members>
@@ -62,8 +64,12 @@
         <members>GetCaseInformationTest</members>
         <members>LocationContainerController</members>
         <members>LocationContainerControllerTest</members>
+        <members>PotentialPickupDateAPI</members>
+        <members>PricingRequestSelector</members>
         <members>QuoteContextGetter</members>
         <members>QuoteContextGetterTest</members>
+        <members>QuoteLineServices</members>
+        <members>QuoteOnlyController</members>
         <members>QuoteProcurementBusinessRuleService</members>
         <members>QuoteProcurementBusinessRuleServiceTest</members>
         <members>QuoteProcurementContextGetter</members>
@@ -107,6 +113,9 @@
         <members>UI_customLookUpController</members>
         <members>UniversalQueryUtility</members>
         <members>UniversalQueryUtilityTest</members>
+        <members>UTIL_ErrorConstants</members>
+        <members>UTIL_LoggingService</members>
+        <members>WMCapacityController</members>
         <members>WorkOrderContextGetter</members>
         <members>WorkOrderContextGetterTest</members>
         <members>WorkOrderCreation</members>
@@ -117,9 +126,25 @@
     </types>
     <types>
         <!-- Lightning Web Components -->
+        <members>aavAlternateContainers</members>
+        <members>aavAppInputPanel</members>
+        <members>aavAppOutputDeliverySection</members>
+        <members>aavAppOutputOutageSection</members>
+        <members>aavAppOutputPanel</members>
+        <members>aavAppOutputServiceSection</members>
+        <members>aavCustomDatePicker</members>
+        <members>aavDeliveryDatesUI</members>
+        <members>aavReusablePagination</members>
+        <members>aavUtilityMethods</members>
+        <members>acornWODetails</members>
         <members>actionMessagesPanel</members>
         <members>addFavoriteContainersLWC</members>
+        <members>addNTERulesSA</members>
+        <members>alertCard</members>
+        <members>allRulesModal</members>
+        <members>assetHoverCard</members>
         <members>assetSelector</members>
+        <members>businessNotificationCmp</members>
         <members>businessRuleValidator</members>
         <members>caseDataGovernor</members>
         <members>caseDataGovernorLWC</members>
@@ -129,11 +154,15 @@
         <members>caseNavigation</members>
         <members>caseNavigationLWC</members>
         <members>caseQuoteModalLWC</members>
+        <members>caseRulesModal</members>
         <members>caseSummaryCard</members>
         <members>caseTypeConfigurator</members>
         <members>caseWizardStepper</members>
         <members>changeRecordType</members>
+        <members>changeRecordTypeCard</members>
         <members>changeRecordTypeLWC</members>
+        <members>changeRTCard</members>
+        <members>chatNowTranscript</members>
         <members>clientContainer</members>
         <members>clientContainerLWC</members>
         <members>clientSearch</members>
@@ -146,24 +175,43 @@
         <members>createPendingInformationTask</members>
         <members>createPendingInformationTaskLWC</members>
         <members>customCalendarLWC</members>
+        <members>customCaseComment</members>
         <members>customCaseHighlightPanel</members>
         <members>customCaseHighlightPanelLWC</members>
         <members>customerInfoPanel</members>
+        <members>emailMessageInput</members>
         <members>entitySelector</members>
         <members>existingQuoteModalLWC</members>
         <members>fillCaseSubType</members>
         <members>fillCaseSubTypeLWC</members>
+        <members>hoverCard</members>
         <members>hoverOverCards</members>
         <members>hoverOverCardsLWC</members>
         <members>inlineDetailCard</members>
         <members>locationAssetSearchLWC</members>
         <members>locationContainer</members>
         <members>locationContainerLWC</members>
+        <members>maintainVendorEscalationCom</members>
+        <members>maintainVendorEscalationContact</members>
+        <members>multiAssetCaseCard</members>
+        <members>multiVendorPricingResponse</members>
+        <members>ntebRulesModal</members>
         <members>ntebRulesModalLWC</members>
+        <members>populateCaseSubType</members>
+        <members>pricingMultiVendorOutputScreen</members>
+        <members>pricingOutputScreen</members>
+        <members>pricingRequestInput</members>
         <members>progressIndicator</members>
+        <members>pubsub</members>
+        <members>quoteDetailsComp</members>
+        <members>quotelineDetailsComp</members>
+        <members>quoteOrderComp</members>
+        <members>quoteSummaryComp</members>
         <members>recordSearchBase</members>
+        <members>reusableCustomDropdownWithSearchLwc</members>
         <members>searchExistingContact</members>
         <members>searchExistingContactLWC</members>
+        <members>sendAlert</members>
         <members>serviceDateContainer</members>
         <members>serviceDateContainerLWC</members>
         <members>serviceDateSelector</members>
@@ -178,10 +226,13 @@
         <members>uiCustomLookupLWC</members>
         <members>uiCustomLookupResult</members>
         <members>uiCustomLookupResultLWC</members>
+        <members>updatePortal</members>
         <members>validationMessageBar</members>
         <members>vendorContainer</members>
         <members>vendorContainerLWC</members>
         <members>vendorSearchLWC</members>
+        <members>viewComments</members>
+        <members>wasteStreamComp</members>
         <members>wmCapacityLWC</members>
         <members>workOrderPreview</members>
         <name>LightningComponentBundle</name>
@@ -194,8 +245,210 @@
     </types>
     <types>
         <!-- Aura Components -->
+        <members>AccountTeamsTable</members>
+        <members>AddComment</members>
+        <members>AddFavoriteContainers</members>
+        <members>AnalyticsApplicationEvent</members>
+        <members>AssetDetailsTreeGrid</members>
+        <members>AssetPriceRefreshEvent</members>
+        <members>AssetQuoteCreationWrapper</members>
+        <members>AssetSelectionEvent</members>
+        <members>AssignToMeComponent</members>
+        <members>BR_RelatedList</members>
+        <members>CaseActivityTimeline</members>
+        <members>CaseAssetComponent</members>
+        <members>CaseAssetComponentPopup</members>
+        <members>CaseAttachUploadComp</members>
+        <members>CaseCopyEmail</members>
+        <members>CaseCreationComponent</members>
+        <members>CaseCustomLookup</members>
+        <members>CaseCustomLookupResult</members>
+        <members>CaseDetailCard</members>
+        <members>CaseDetailPopup</members>
+        <members>CaseDuplicateCheckEvent</members>
+        <members>CaseEditComponent</members>
+        <members>CaseHighlightPanel</members>
+        <members>CaseLocationDetails</members>
+        <members>CaseNavigation</members>
+        <members>CaseQuoteModal</members>
+        <members>CaseReadOnlyComponent</members>
+        <members>CaseReassignment</members>
+        <members>CaseTaskAssignmentPopup</members>
+        <members>CentralizedQuoteActions</members>
+        <members>changeRecordType</members>
+        <members>CharacterRemainingComponent</members>
+        <members>ChartToggleBar</members>
+        <members>ClientContainer</members>
+        <members>ClientSearch</members>
+        <members>CloneCaseCreation</members>
+        <members>CloseCasePop</members>
+        <members>closeEmailTaskComponent</members>
+        <members>closeModalBoxEvent</members>
+        <members>CloseParentContainerEvent</members>
+        <members>CollapseComponent</members>
+        <members>CompanyCategoryComponent</members>
+        <members>ContactByRoleComponent</members>
+        <members>CopyEmailToComment</members>
+        <members>CreateContactWithNewTitle</members>
+        <members>createNewAccountTitle</members>
+        <members>createNewAccountTitleEvt</members>
+        <members>CreateNewAcornCaseComment</members>
+        <members>CreatePendingInformationTask</members>
+        <members>CustomAppPageTemplate</members>
+        <members>CustomCalendar</members>
+        <members>CustomCalendarApp</members>
         <members>CustomCaseHighlightPanel</members>
+        <members>customCaseCommentAura</members>
+        <members>CustomCaseTemplate</members>
+        <members>CustomCommentContainer</members>
+        <members>CustomHomePageTemplate</members>
+        <members>customLookup</members>
+        <members>customLookupResult</members>
+        <members>CustomTimeline</members>
+        <members>DashboardDataTable</members>
+        <members>DashboardDatatableRefreshEvent</members>
+        <members>DisplayCaseAssets</members>
+        <members>DisplayTaskRelatedList</members>
+        <members>DuplicateCheckClose</members>
+        <members>DuplicateCheckOnCase</members>
+        <members>DuplicateCheckOnMultiDate</members>
+        <members>DynamicQuestions</members>
+        <members>EmailDetailViewApp</members>
+        <members>EmailDetailViewComponent</members>
+        <members>EmailMessageList</members>
+        <members>EmailRelatedListComponent</members>
+        <members>EmailViewWithCaseEditComp</members>
+        <members>ErrorResponseHandlerBGUtility</members>
+        <members>ETAOnWorkOrder</members>
+        <members>ETAWindowComponent</members>
+        <members>ETAWindowComponentWO</members>
+        <members>ExistingQuoteModal</members>
+        <members>ExternalComments</members>
+        <members>ExternalSLA</members>
+        <members>FetchEmailMessagesComponent</members>
+        <members>FetchServiceApproverEvent</members>
+        <members>FillCaseSubType</members>
+        <members>FinancialDetailComponent</members>
+        <members>flowCaseSubstatus</members>
+        <members>flowCompanyCategory</members>
+        <members>flowDaysofWeek</members>
+        <members>flowFalseFinish</members>
+        <members>flowNavigateToRecord</members>
+        <members>flowStagesVisual</members>
+        <members>GetApproverDetails</members>
+        <members>GetBusinessRulesforApprovers</members>
+        <members>GetQuotePricing</members>
+        <members>GetQuotePricingOnly</members>
+        <members>GetQuoteSTP</members>
+        <members>GetQuoteSTPPricing</members>
+        <members>GreenPages</members>
+        <members>HoverCardAura</members>
+        <members>HoverOverCards</members>
+        <members>InternalSLA</members>
+        <members>IVRExitPoint</members>
+        <members>LightningCell</members>
+        <members>LightningTable</members>
+        <members>ListOfTableDetailsCmp</members>
+        <members>locationBusinessRuleTab</members>
+        <members>LocationContainer</members>
+        <members>LocationAssetSearch</members>
+        <members>LocationPositionComponent</members>
+        <members>lookUpEvent</members>
+        <members>maintainVendorEscalationConOverrideButton</members>
+        <members>ManualTaskCreation</members>
+        <members>MASLookupComponent</members>
+        <members>MasterIntakeShell</members>
+        <members>multiCaseTaskPopUp</members>
+        <members>MultipleCaseCreation</members>
+        <members>MyOpenCases</members>
+        <members>MyOpenTasks</members>
+        <members>NewPricingRequest</members>
+        <members>NotificationRecordsCmp</members>
+        <members>NotificationRecordsCmpWO</members>
+        <members>OpenBusinessRulesReport</members>
+        <members>OpenCloseModal</members>
+        <members>openSetCaseSLACompEvnt</members>
+        <members>OpenTaskQueue</members>
+        <members>OpenTaskQueueAll</members>
+        <members>overrideNewButton</members>
+        <members>PassPricingResult</members>
+        <members>PortalMessages</members>
+        <members>ProgressCaseComponent</members>
+        <members>QuoteCreationWrapper</members>
+        <members>QuoteFavorites</members>
+        <members>QuoteLineClassificationChanges</members>
+        <members>QuoteOrderDetails</members>
+        <members>QuoteOverview</members>
+        <members>QuoteProductDetails</members>
+        <members>QuoteProducts</members>
+        <members>QuoteProductsCloseModal</members>
+        <members>QuoteProductsDetailsCloseModal</members>
+        <members>QuoteResyncAction</members>
+        <members>QuoteSummaryConfirmation</members>
+        <members>RefreshConfiguredProducts</members>
+        <members>RefreshEvent</members>
+        <members>RelatedCaseListener</members>
+        <members>renderRedNotes</members>
+        <members>ReportLinks</members>
+        <members>schedulerQuoteOverViewCmpEvt</members>
+        <members>SearchExistingContact</members>
+        <members>selectedUserEvent</members>
+        <members>selectUserPopup</members>
+        <members>ServiceApproverEvent</members>
+        <members>ServiceApprovers</members>
+        <members>ServiceDateContainer</members>
+        <members>ServiceScheduler</members>
+        <members>SetCaseCustomerInfo</members>
+        <members>SetCaseSLADate</members>
+        <members>showApprovalLogs</members>
+        <members>ShowAcornComments</members>
+        <members>ShowAllOpenCases</members>
+        <members>ShowAllOpenTasks</members>
+        <members>ShowAllTeamOpenCases</members>
+        <members>ShowAllTeamOpenTasks</members>
+        <members>ShowAssetHeadersOnCase</members>
         <members>ShowCaseMessages</members>
+        <members>ShowExternalComments</members>
+        <members>ShowLocalVendors</members>
+        <members>showmulticaseTask</members>
+        <members>ShowMultipleAssetCases</members>
+        <members>ShowPricingOnQuote</members>
+        <members>showQuoteLineHistory</members>
+        <members>showReferenceInfoOnCase</members>
+        <members>ShowTeamsOpenCases</members>
+        <members>ShowTeamsOpenTask</members>
+        <members>SingleTabComponentRefresh</members>
+        <members>SubStatusPathContainer</members>
+        <members>SupervisorDashboardHeaderRegion</members>
+        <members>SupervisorWorkflowGroupingDashboard</members>
+        <members>SupplementalInstructions</members>
+        <members>TableListCmp</members>
+        <members>TaskBundlingChartEvent</members>
+        <members>TaskBundlingChartOnclickEvent</members>
+        <members>TaskBundlingDashboard</members>
+        <members>TaskBundlingDashboardUserOnSelectEvent</members>
+        <members>TaskModalDialog</members>
+        <members>TeamQuoteAll</members>
+        <members>TeamUserQuotes</members>
+        <members>ToolTabURLComp</members>
+        <members>TwoWayCommunication</members>
+        <members>UI_customLookup</members>
+        <members>UI_customLookupResult</members>
+        <members>UI_selectedsObjectRecordEvent</members>
+        <members>updateMultiTaskTable</members>
+        <members>updateQuoteProductsEvent</members>
+        <members>UpdateSummaryEvent</members>
+        <members>UpdateWrapperStateEvent</members>
+        <members>User_RecordRemoveEvent</members>
+        <members>VendorContainer</members>
+        <members>VendorLookupComponent</members>
+        <members>VendorSearch</members>
+        <members>ViewNavisionNotes</members>
+        <members>WMCapacity</members>
+        <members>WorkOrderPDFComp</members>
+        <members>WorkOrderReportLink</members>
+        <members>aavNewAvailabilityButton</members>
+        <members>caseBusinessRuleTab</members>
         <name>AuraDefinitionBundle</name>
     </types>
     <version>62.0</version>
